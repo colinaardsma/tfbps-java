@@ -14,7 +14,7 @@ public class AuthenticationController extends AbstractController {
 
     @RequestMapping(value = "/")
     public String index(){
-        return "redirect:index";
+        return "index";
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.GET)

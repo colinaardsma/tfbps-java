@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+
+<head th:replace="template :: head">
+</head>
+<body>
+	<div class="container">
+
+		<div id="top" th:include="template :: masthead"></div>
+
+		<div id="middle">
+
+			<p>admin</p>
+			<ul class="nav nav-pills"
+				style="margin: 5px auto 20px; display: inline-block;">
+				<li><a href="/fpprojbdatapull">batter pull data</a></li>
+				<li><a href="/fpprojpdatapull">pitcher pull data</a></li>
+			</ul>
+			<ul>
+				<li><a href="/flushfpprojb">flush fantasy pros batter projs</a></li>
+				<li><a href="/flushfpprojp">flush fantasy pros pitcher
+						projs</a></li>
+				<li><a href="/flush">*** Flush Entire Memcache ***</a></li>
+			</ul>
+			<ul>
+				<li><a href="/blog/new_post">new post</a></li>
+				<li><a href="/blog/modify_post">modify post</a></li>
+				<li><a href="/blog/archive">archive</a></li>
+			</ul>
+		</div>
+
+		<div th:replace="template :: footer"></div>
+	</div>
+</body>
+</html>
