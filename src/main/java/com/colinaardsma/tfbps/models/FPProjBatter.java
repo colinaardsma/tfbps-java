@@ -2,12 +2,16 @@ package com.colinaardsma.tfbps.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.colinaardsma.tfbps.models.util.SGPMultCalc;
+
+
 @Entity
 @Table(name = "fpprojb")
-public class Batter extends AbstractEntity {
+public class FPProjBatter extends AbstractEntity {
 	
 	private String name;
 	private String team;
@@ -17,19 +21,19 @@ public class Batter extends AbstractEntity {
 	private int hr;
 	private int rbi;
 	private int sb;
-	private float avg;
-	private float obp;
+	private double avg;
+	private double obp;
 	private int h;
 	private int dbl;
 	private int tpl;
 	private int bb;
 	private int k;
-	private float slg;
-	private float ops;
-	private float sgp;
+	private double slg;
+	private double ops;
+	private double sgp;
 	private String category;
 
-	public Batter(String name, String team, String pos, int ab, int r, int hr, int rbi, int sb, float avg, float obp, int h, int dbl, int tpl, int bb, int k, float slg, float ops, String category) {
+	public FPProjBatter(String name, String team, String pos, int ab, int r, int hr, int rbi, int sb, double avg, double obp, int h, int dbl, int tpl, int bb, int k, double slg, double ops, String category) {
 		this.name = name;
 		this.team = team;
 		this.pos = pos;
@@ -47,11 +51,12 @@ public class Batter extends AbstractEntity {
 		this.k = k;
 		this.slg = slg;
 		this.ops = ops;
-		this.sgp = this.setSgp();
+		calcSgp(SGPMultCalc.sgpMultR(), SGPMultCalc.sgpMultHR(), SGPMultCalc.sgpMultRBI(), SGPMultCalc.sgpMultSB(), SGPMultCalc.sgpMultOPS());
+
 		this.category = category;
 	}
 	
-	public Batter() {}
+	public FPProjBatter() {}
 	
 //			name = playerList[i]
 //            team = playerList[i + 1]
@@ -60,15 +65,15 @@ public class Batter extends AbstractEntity {
 //            hr = int(playerList[i + 5])
 //            rbi = int(playerList[i + 6])
 //            sb = int(playerList[i + 7])
-//            avg = float(playerList[i + 8])
-//            obp = float(playerList[i + 9])
+//            avg = double(playerList[i + 8])
+//            obp = double(playerList[i + 9])
 //            h = int(playerList[i + 10])
 //            double = int(playerList[i + 11])
 //            triple = int(playerList[i + 12])
 //            bb = int(playerList[i + 13])
 //            k = int(playerList[i + 14])
-//            slg = float(playerList[i + 15])
-//            ops = float(playerList[i + 16])
+//            slg = double(playerList[i + 15])
+//            ops = double(playerList[i + 16])
 //            category = "fpprojb"
 
     @NotNull
@@ -77,7 +82,7 @@ public class Batter extends AbstractEntity {
 		return name;
 	}
 
-	public void setName(String name) {
+    protected void setName(String name) {
 		this.name = name;
 	}
 
@@ -87,7 +92,7 @@ public class Batter extends AbstractEntity {
 		return team;
 	}
 
-	public void setTeam(String team) {
+    protected void setTeam(String team) {
 		this.team = team;
 	}
 
@@ -97,8 +102,18 @@ public class Batter extends AbstractEntity {
 		return pos;
 	}
 
-	public void setPos(String pos) {
+    protected void setPos(String pos) {
 		this.pos = pos;
+	}
+
+    @NotNull
+    @Column(name = "ab")
+	public int getAb() {
+		return ab;
+	}
+
+    protected void setAb(int ab) {
+		this.ab = ab;
 	}
 
     @NotNull
@@ -107,7 +122,7 @@ public class Batter extends AbstractEntity {
 		return r;
 	}
 
-	public void setR(int r) {
+    protected void setR(int r) {
 		this.r = r;
 	}
 
@@ -117,7 +132,7 @@ public class Batter extends AbstractEntity {
 		return hr;
 	}
 
-	public void setHr(int hr) {
+    protected void setHr(int hr) {
 		this.hr = hr;
 	}
 
@@ -127,7 +142,7 @@ public class Batter extends AbstractEntity {
 		return rbi;
 	}
 
-	public void setRbi(int rbi) {
+    protected void setRbi(int rbi) {
 		this.rbi = rbi;
 	}
 
@@ -137,27 +152,27 @@ public class Batter extends AbstractEntity {
 		return sb;
 	}
 
-	public void setSb(int sb) {
+    protected void setSb(int sb) {
 		this.sb = sb;
 	}
 
     @NotNull
     @Column(name = "avg")
-	public float getAvg() {
+	public double getAvg() {
 		return avg;
 	}
 
-	public void setAvg(float avg) {
+    protected void setAvg(double avg) {
 		this.avg = avg;
 	}
 
     @NotNull
     @Column(name = "obp")
-	public float getObp() {
+	public double getObp() {
 		return obp;
 	}
 
-	public void setObp(float obp) {
+    protected void setObp(double obp) {
 		this.obp = obp;
 	}
 
@@ -167,7 +182,7 @@ public class Batter extends AbstractEntity {
 		return h;
 	}
 
-	public void setH(int h) {
+    protected void setH(int h) {
 		this.h = h;
 	}
 
@@ -177,7 +192,7 @@ public class Batter extends AbstractEntity {
 		return dbl;
 	}
 
-	public void setDbl(int dbl) {
+    protected void setDbl(int dbl) {
 		this.dbl = dbl;
 	}
 
@@ -187,7 +202,7 @@ public class Batter extends AbstractEntity {
 		return tpl;
 	}
 
-	public void setTpl(int tpl) {
+    protected void setTpl(int tpl) {
 		this.tpl = tpl;
 	}
 
@@ -197,7 +212,7 @@ public class Batter extends AbstractEntity {
 		return bb;
 	}
 
-	public void setBb(int bb) {
+    protected void setBb(int bb) {
 		this.bb = bb;
 	}
 
@@ -207,39 +222,39 @@ public class Batter extends AbstractEntity {
 		return k;
 	}
 
-	public void setK(int k) {
+    protected void setK(int k) {
 		this.k = k;
 	}
 
     @NotNull
     @Column(name = "slg")
-	public float getSlg() {
+	public double getSlg() {
 		return slg;
 	}
 
-	public void setSlg(float slg) {
+    protected void setSlg(double slg) {
 		this.slg = slg;
 	}
 
     @NotNull
     @Column(name = "ops")
-	public float getOps() {
+	public double getOps() {
 		return ops;
 	}
 
-	public void setOps(float ops) {
+    protected void setOps(double ops) {
 		this.ops = ops;
 	}
 
     @NotNull
     @Column(name = "sgp")
-	public float getSgp() {
+	public double getSgp() {
 		return sgp;
 	}
 
-	public void setSgp(float sgpMultR, float sgpMultHR, float sgpMultRBI, float sgpMultSB, float sgpMultOPS) {
-        this.sgp = (float) ((this.r/sgpMultR)+(this.hr/sgpMultHR)+(this.rbi/sgpMultRBI)+(this.sb/sgpMultSB)+((((((this.obp*(this.ab*1.15))+2178.8)/((this.ab*1.15)+6682))+(((this.slg*this.ab)+2528.5)/(this.ab+5993)))-0.748)/sgpMultOPS));
-	}
+    protected void setSgp(double sgp) {
+    	this.sgp = sgp;
+    }
 
     @NotNull
     @Column(name = "category")
@@ -247,7 +262,12 @@ public class Batter extends AbstractEntity {
 		return category;
 	}
 
-	public void setCategory(String category) {
+    protected void setCategory(String category) {
 		this.category = category;
 	}
+
+    protected void calcSgp(double sgpMultR, double sgpMultHR, double sgpMultRBI, double sgpMultSB, double sgpMultOPS) {
+        this.sgp = (this.r/sgpMultR)+(this.hr/sgpMultHR)+(this.rbi/sgpMultRBI)+(this.sb/sgpMultSB)+((((((this.obp*(this.ab*1.15))+2178.8)/((this.ab*1.15)+6682))+(((this.slg*this.ab)+2528.5)/(this.ab+5993)))-0.748)/sgpMultOPS);
+	}
+    
 }

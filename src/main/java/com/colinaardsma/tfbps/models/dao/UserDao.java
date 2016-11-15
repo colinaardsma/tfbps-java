@@ -11,7 +11,7 @@ import com.colinaardsma.tfbps.models.User;
 @Repository
 public interface UserDao extends CrudRepository<User, Integer> {
 
-    User findByUserName(String userName); // get user object with username only
-    User findByUid(int uid); // get user object with unique id only
+    User findByUserName(String userName); // get user with username only
+    User findByUid(int uid); // get user with unique id only
 
 }
