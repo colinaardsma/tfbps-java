@@ -36,10 +36,9 @@
 
         </div>
 
-        <div id="bottom" th:fragment="footer">
-            <p><a href="/logout">Log Out</a></p>
-        </div>
-
+        <div id="bottom" th:fragment="footer(username)">
+        	<a th:href="(${username} ? '/logout' : '/login')" th:text="(${username} ? 'Log Out' : 'Log In')"></a>
+		</div>
     </div>
 </body>
 </html>

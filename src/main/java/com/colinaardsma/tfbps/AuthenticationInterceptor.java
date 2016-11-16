@@ -23,45 +23,72 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
     	
-    	// logged out user access list
-        List<String> outAuthPages = Arrays.asList("/login", "/register", "/logout", "/");
         // basic user access list
-        List<String> basicAuthPages = Arrays.asList("/fpprojb", "/fpprojp", "/blog");
-        // commish user access list
+        List<String> basicAuthPages = Arrays.asList("/fpprojb", "/fpprojp", "/blog", "/welcome");
         
+        // commish user access list
+        List<String> commishAuthPages = Arrays.asList("/test");
+
         // blogger user access list
+        List<String> bloggerAuthPages = Arrays.asList("/blog/new_post", "/blog/modify", "/blog/delete", "/blog/archive"); // add re for individual posts and user posts
         
         // power-user user access list
+        List<String> puAuthPages = Arrays.asList("/fpprojbdatapull", "/fpprojpdatapull"); // change to re
         
         // admin access list
         List<String> adminAuthPages = Arrays.asList("/admin");
+        
+        // expand access groups to hold lower levels as needed
+        // admin
         adminAuthPages.addAll(basicAuthPages);
+        adminAuthPages.addAll(commishAuthPages);
+        adminAuthPages.addAll(bloggerAuthPages);
+        adminAuthPages.addAll(puAuthPages);
+        
+        // power-user
+        puAuthPages.addAll(basicAuthPages);
+        puAuthPages.addAll(commishAuthPages);
+        puAuthPages.addAll(puAuthPages);
+
+        // blogger
+        puAuthPages.addAll(basicAuthPages);
+
+        // commish
+        puAuthPages.addAll(basicAuthPages);
+
 
         Integer userId = (Integer) request.getSession().getAttribute(AbstractController.userKey);
         User user = userDao.findByUid(userId);
         String userGroup = user.getuserGroup();
 
         
-//        // require sign-in for all but outAuthPages
-//        if ( !outAuthPages.contains(request.getRequestURI()) ) {
-//            if (userId == null) {
-//                response.sendRedirect("/login");
-//                return false;
-//            }
-//            // If no ID present in session, redirect to login
-//            if (user == null) {
-//                response.sendRedirect("/login");
-//                return false;
-//            }
-//        }
-        
         // verify user access group
-        if (adminAuthPages.contains(request.getRequestURI())) {
+        if (basicAuthPages.contains(request.getRequestURI())) {
+        	if (userGroup != "basic") {
+                response.sendRedirect("/");
+            	return false;
+        	}
+        } else if (commishAuthPages.contains(request.getRequestURI())) {
+        	if (userGroup != "commish") {
+                response.sendRedirect("/");
+            	return false;
+        	}
+        } else if (bloggerAuthPages.contains(request.getRequestURI())) {
+        	if (userGroup != "blogger") {
+                response.sendRedirect("/");
+            	return false;
+        	}
+        } else if (puAuthPages.contains(request.getRequestURI())) {
+        	if (userGroup != "power-user") {
+                response.sendRedirect("/");
+            	return false;
+        	}
+        } else if (adminAuthPages.contains(request.getRequestURI())) {
         	if (userGroup != "admin") {
                 response.sendRedirect("/");
             	return false;
         	}
-        }
+        } 
 
         return true;
     }

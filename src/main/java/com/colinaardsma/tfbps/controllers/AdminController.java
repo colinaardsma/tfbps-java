@@ -1,11 +1,14 @@
 package com.colinaardsma.tfbps.controllers;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.colinaardsma.tfbps.models.User;
 import com.colinaardsma.tfbps.models.dao.UserDao;
@@ -16,21 +19,21 @@ public class AdminController extends AbstractController {
 	@Autowired
 	UserDao userdao;
 	
-    @RequestMapping(value = "/admin")
+    @RequestMapping(value = "/admin", method = RequestMethod.GET)
+    public String admin(){
+        return "admin";
+    }
+
+    @RequestMapping(value = "/admin", method = RequestMethod.POST)
     public String admin(HttpServletRequest request, Model model){
-    	
-    	// determine if user is part of the admin group
-        Integer userId = (Integer) request.getSession().getAttribute(AbstractController.userKey);
-        User user = userDao.findByUid(userId);
+        List<User> users = userDao.findAll();
         
-//        // if not send back to index
-//        if (user.getuserGroup() != "admin") {
-//        	String error = "Unauthorized";
-//        	model.addAttribute("error", error);
-//        	return "redirect:index";
-//        }
+		// get user from session
+    	User user = this.getUserFromSession(request);
+
+    	model.addAttribute("user", user);
+        model.addAttribute("users", users);
         
-        // if so carry on
         return "admin";
     }
 

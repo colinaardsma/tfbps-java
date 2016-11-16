@@ -13,7 +13,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class AuthenticationController extends AbstractController {
 
     @RequestMapping(value = "/")
-    public String index(){
+    public String index(HttpServletRequest request, Model model){
+    	// get username
+    	User user;
+    	String username;
+    	try {
+    		user = this.getUserFromSession(request);
+    		username = user.getUserName();
+    	} catch (NullPointerException e) {
+			e.printStackTrace();
+			return "index";
+    	}
+    	
+    	model.addAttribute("username", username);
         return "index";
     }
 
@@ -65,13 +77,15 @@ public class AuthenticationController extends AbstractController {
         // User is valid; set in session
         request.getSession().setAttribute(userKey, user.getUid());
 
-        return "redirect:index";
+    	model.addAttribute("username", userName);
+        
+        return "index";
     }
 
     @RequestMapping(value = "/logout")
     public String logout(HttpServletRequest request){
         request.getSession().invalidate();
-        return "login";
+        return "index";
     }
 
 }

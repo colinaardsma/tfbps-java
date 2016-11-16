@@ -1,12 +1,9 @@
 package com.colinaardsma.tfbps.controllers;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.hibernate.Criteria;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -74,24 +71,8 @@ public class DataPullController extends AbstractController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		//populate html table
-		List<FPProjBatter> players = fpProjBatterDao.findAll();
 		
-		// need to figure out how to properly order
-//        Integer userId = (Integer) request.getSession().getAttribute(AbstractController.userKey);
-//        request.getSession().setAttribute(userKey, newUser.getUid());
-//        
-//        Session session = 
-//		
-//		Criteria crit = session.createCriteria(Cat.class);
-//		crit.setMaxResults(50);
-//		List cats = crit.list();
-//		List cats = sess.createCriteria(players);
-		
-		model.addAttribute("players", players);
-		
-        return "fpprojb";
+        return "redirect:fpprojb";
     }
 
 }

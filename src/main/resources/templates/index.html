@@ -10,11 +10,11 @@
 
     <div id="middle">
 
-        <p>Welcome!</p>
+		<p th:text="(${username} ? 'Welcome ' + ${username} + '!' : 'Welcome!')"></p>
 
     </div>
 
-    <div th:replace="template :: footer"></div>
+    <div th:replace="template :: footer(${username})"></div>
 </div>
 </body>
 </html>
