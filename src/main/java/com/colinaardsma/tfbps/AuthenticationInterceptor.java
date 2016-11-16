@@ -38,6 +38,7 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
         // admin access list
         List<String> adminAuthPages = Arrays.asList("/admin");
         
+        // TODO - this is not done correctly, fix 
         // expand access groups to hold lower levels as needed
         // admin
         adminAuthPages.addAll(basicAuthPages);

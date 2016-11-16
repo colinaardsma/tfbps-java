@@ -34,7 +34,7 @@ public class User extends AbstractEntity {
         return userName;
     }
 
-    protected void setUserName(String userName){
+    public void setUserName(String userName){
         this.userName = userName;
     }
 
@@ -44,7 +44,7 @@ public class User extends AbstractEntity {
         return userGroup;
     }
 
-    protected void setUserGroup(String userGroup) {
+    public void setUserGroup(String userGroup) {
         this.userGroup = userGroup;
     }
 

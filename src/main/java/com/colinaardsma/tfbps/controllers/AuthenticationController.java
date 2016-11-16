@@ -14,18 +14,13 @@ public class AuthenticationController extends AbstractController {
 
     @RequestMapping(value = "/")
     public String index(HttpServletRequest request, Model model){
-    	// get username
-    	User user;
-    	String username;
-    	try {
-    		user = this.getUserFromSession(request);
-    		username = user.getUserName();
-    	} catch (NullPointerException e) {
-			e.printStackTrace();
+		// check for user in session
+		String currentUser = this.getUsernameFromSession(request);
+		if (currentUser == null) {
 			return "index";
-    	}
-    	
-    	model.addAttribute("username", username);
+		}
+		
+    	model.addAttribute("currentUser", currentUser);
         return "index";
     }
 
@@ -51,9 +46,10 @@ public class AuthenticationController extends AbstractController {
         User newUser = new User(userName, password);
         userDao.save(newUser);
         
+        // User is valid; set in session
         request.getSession().setAttribute(userKey, newUser.getUid());
 
-
+    	model.addAttribute("currentUser", userName);
         return "index";
     }
 
@@ -77,8 +73,7 @@ public class AuthenticationController extends AbstractController {
         // User is valid; set in session
         request.getSession().setAttribute(userKey, user.getUid());
 
-    	model.addAttribute("username", userName);
-        
+    	model.addAttribute("currentUser", userName);
         return "index";
     }
 

@@ -28,5 +28,18 @@ public abstract class AbstractController {
         int userId = (int) request.getSession().getAttribute(userKey);
         return userDao.findByUid(userId);
     }
+    
+    public String getUsernameFromSession(HttpServletRequest request) {
+    	User user;
+    	String username;
+    	try {
+    		user = this.getUserFromSession(request);
+    		username = user.getUserName();
+    	} catch (NullPointerException e) {
+			e.printStackTrace();
+			return null;
+    	}
+    	return username;
+    }
 
 }

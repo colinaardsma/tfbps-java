@@ -10,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.colinaardsma.tfbps.models.FPProjBatter;
-import com.colinaardsma.tfbps.models.User;
 import com.colinaardsma.tfbps.models.dao.FPProjBatterDao;
 
 @Controller
@@ -22,20 +21,15 @@ public class ProjectionController extends AbstractController {
 	@RequestMapping(value = "/fpprojb")
     public String fpprojb(Model model, HttpServletRequest request){
 		
-		//populate html table
+		// populate html table
 		List<FPProjBatter> players = fpProjBatterDao.findAll();
 		
-		// get username
-    	User user;
-    	String username;
-    	try {
-    		user = this.getUserFromSession(request);
-    		username = user.getUserName();
-    	} catch (NullPointerException e) {
-			e.printStackTrace();
+		// check for user in session
+		String currentUser = this.getUsernameFromSession(request);
+		if (currentUser == null) {
 			return "index";
-    	}
-    	
+		}
+		
 		// need to figure out how to properly order
 //      Integer userId = (Integer) request.getSession().getAttribute(AbstractController.userKey);
 //      request.getSession().setAttribute(userKey, newUser.getUid());
@@ -48,7 +42,7 @@ public class ProjectionController extends AbstractController {
 //		List cats = sess.createCriteria(players);
 		
    	
-    	model.addAttribute("username", username);
+    	model.addAttribute("currentUser", currentUser);
 		model.addAttribute("players", players);
 
         return "fpprojb";

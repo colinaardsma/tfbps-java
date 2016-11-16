@@ -25,13 +25,22 @@ public class AdminController extends AbstractController {
     }
 
     @RequestMapping(value = "/admin", method = RequestMethod.POST)
-    public String admin(HttpServletRequest request, Model model){
+    public String admin(String changeUsername, String authorization, HttpServletRequest request, Model model){
         List<User> users = userDao.findAll();
         
-		// get user from session
-    	User user = this.getUserFromSession(request);
-
-    	model.addAttribute("user", user);
+		// check for user in session
+		String currentUser = this.getUsernameFromSession(request);
+		if (currentUser == null) {
+			return "index";
+		}
+	
+    	// change user group
+    	User changeUser = userDao.findByUserName(changeUsername);
+    	changeUser.setUserGroup(authorization);
+    	String userConfirmation[] = {changeUser.getUserName(), changeUser.getuserGroup()}; // doesn't work 
+    	
+    	model.addAttribute("userConfirmation", userConfirmation); // doesn't work
+    	model.addAttribute("currentUser", currentUser);
         model.addAttribute("users", users);
         
         return "admin";

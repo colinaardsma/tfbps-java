@@ -44,10 +44,17 @@ public class DataPullController extends AbstractController {
 						continue;
 					}
 					String[] posPull = small.get(0).text().split(" - ");
-					posPull[1] = posPull[1].replaceAll("[,]", "/");
-					String pos = posPull[1].replaceAll("[)(]", "");
+					String pos;
+					String team;
+					if (posPull.length > 1) { // if team is listed
+						posPull[1] = posPull[1].replaceAll("[,]", "/");
+						pos = posPull[1].replaceAll("[)(]", "");
+						team = a.get(1).text();
+					} else { // if not team listed
+						pos = posPull[0].replaceAll("[)(]", "");
+						team = "FA";
+					}
 					String name = a.get(0).text();
-					String team = a.get(1).text();
 					int ab = Integer.parseInt(tds.get(1).text());
 					int r = Integer.parseInt(tds.get(2).text());
 					int hr = Integer.parseInt(tds.get(3).text());

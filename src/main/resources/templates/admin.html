@@ -26,7 +26,7 @@
 					</td>
 				</tr>
 			</table>
-			<br>
+			<br/>
 			<!-- Memcache flushing -->
 			<table>
 				<tr>
@@ -47,7 +47,7 @@
 					</td>
 				</tr>
 			</table>
-			<br>
+			<br/>
 			<!-- Blog -->
 			<table>
 				<tr>
@@ -68,32 +68,28 @@
 					</td>
 				</tr>
 			</table>
-			<br>
+			<br/>
 			<!-- User Maintenance -->
-			<table>
-				<tr>
-					<form method="post">
-						<td><select name="username"> {%- for u in users %}
-								<option value={{u.username}}>{{u.username}}</option> {%- endfor
-								%}
+			<form method="post">
+				<table>
+					<tr>
+						<td><select name="username" th:each="u : ${users}">
+								<option th:value="${u.username}" th:text="${u.username}"></option>
 						</select></td>
 						<td><select name="authorization">
 								<option value="admin">admin</option>
 								<option value="power-user">power-user</option>
+								<option value="blogger">blogger</option>
 								<option value="commissioner">commissioner</option>
 								<option value="basic">basic</option>
 						</select></td>
-						<td><input type="submit"></td>
-					</form>
-				</tr>
-				{%- if userConfirmation %}
-				<tr>
-					<p>{{userConfirmation[0]}} has been granted
-						{{userConfirmation[1]}} access</p>
-				</tr>
-				{%- endif %}
-			</table>
+						<td><input type="submit" /></td>
+					</tr>
+				</table>
+			</form>
 
+<!-- 			<p th:if="${userConfirmation}"><span th:text="${userConfirmation[0]} + ' has been granted ' + ${userConfirmation[1]} + 'access'"></span></p>
+ -->
 
 
 			<!-- <ul class="nav nav-pills"
