@@ -1,20 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org/">
-
-<head th:replace="template :: head">
-</head>
-<body>
-<div class="container">
-
-    <div id="top" th:include="template :: masthead"></div>
-
-    <div id="middle">
-
-		<p th:text="(${username} ? 'Welcome ' + ${username} + '!' : 'Welcome!')"></p>
-
-    </div>
-
-    <div th:replace="template :: footer(${username})"></div>
-</div>
-</body>
+	<head th:replace="template :: head"></head>
+	<body>
+		<div class="container">
+		    <div id="top" th:include="template :: masthead"></div>
+		    <div id="middle">
+				<p th:text="(${currentUser} ? 'Welcome ' + ${currentUser} + '!' : 'Welcome!')"></p>
+		    </div>
+	    	<div th:replace="template :: footer(${currentUser})"></div>
+		</div>
+	</body>
 </html>

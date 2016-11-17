@@ -39,8 +39,8 @@ public class User extends AbstractEntity {
     }
 
     @NotNull
-    @Column(name = "userGroup")
-    public String getuserGroup() {
+    @Column(name = "usergroup")
+    public String getUserGroup() {
         return userGroup;
     }
 

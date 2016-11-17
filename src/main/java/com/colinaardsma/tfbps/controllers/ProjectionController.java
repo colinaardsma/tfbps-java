@@ -48,4 +48,19 @@ public class ProjectionController extends AbstractController {
         return "fpprojb";
     }
 
+	@RequestMapping(value = "/fpprojp")
+    public String fpprojp(Model model, HttpServletRequest request){
+		
+		// check for user in session
+		String currentUser = this.getUsernameFromSession(request);
+		if (currentUser == null) {
+			return "index";
+		}
+		
+    	model.addAttribute("currentUser", currentUser);
+
+        return "fpprojp";
+    }
+
+	
 }

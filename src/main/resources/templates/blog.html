@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+	<head th:replace="template :: head"></head>
+	<body>
+		<div class="container">
+			<div id="top" th:include="template :: masthead"></div>
+			<div id="middle">
+				<h1>blog posts!</h1>
+				<div th:each="post : ${posts}">
+					<h2>
+						<a th:href="'/blog/' + ${post.author.username} + '/' + ${post.uid}" th:text="${post.title}"></a>
+					</h2>
+					<p th:text="${post.body}"></p>
+					<p class="post-author">	written by <a th:href="'/blog/' + ${post.author.username}" th:text="${post.author.username}"></a><span th:text="' on ' + ${#dates.format(post.created, 'yyyy-MM-dd')}"></span></p>
+				</div>
+				<div th:with="prev_page=${prev_page},next_page=${next_page},offset=${offset},limit=${limit},posts=${posts}" th:replace="template :: pagination"></div>
+			</div>
+			<div th:replace="template :: footer(${currentUser})"></div>
+		</div>
+	</body>
+</html>

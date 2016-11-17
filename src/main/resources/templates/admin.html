@@ -1,97 +1,89 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org/">
-
-<head th:replace="template :: head">
-</head>
-<body>
-	<div class="container">
-
-		<div id="top" th:include="template :: masthead"></div>
-
-		<div id="middle">
-
-			<p>admin</p>
-			<!-- Data Pulling -->
-			<table>
-				<tr>
-					<td>
-						<form action="/fpprojbdatapull">
-							<button>batter pull data</button>
-						</form>
-					</td>
-					<td>
-						<form action="/fpprojpdatapull">
-							<button>pitcher pull data</button>
-						</form>
-					</td>
-				</tr>
-			</table>
-			<br/>
-			<!-- Memcache flushing -->
-			<table>
-				<tr>
-					<td>
-						<form action="/flushfpprojb">
-							<button>Flush Fant Pro Batter Projs</button>
-						</form>
-					</td>
-					<td>
-						<form action="/flushfpprojp">
-							<button>Fant Pro Pitcher Proj</button>
-						</form>
-					</td>
-					<td>
-						<form action="/flush">
-							<button>*** Flush Entire Memcache ***</button>
-						</form>
-					</td>
-				</tr>
-			</table>
-			<br/>
-			<!-- Blog -->
-			<table>
-				<tr>
-					<td>
-						<form action="/new_post">
-							<button>New Post</button>
-						</form>
-					</td>
-					<td>
-						<form action="/modify_post">
-							<button>Modify Post</button>
-						</form>
-					</td>
-					<td>
-						<form action="/archive">
-							<button>Archive</button>
-						</form>
-					</td>
-				</tr>
-			</table>
-			<br/>
-			<!-- User Maintenance -->
-			<form method="post">
+	<head th:replace="template :: head"></head>
+	<body>
+		<div class="container">
+			<div id="top" th:include="template :: masthead"></div>
+			<div id="middle">
+				<p>admin</p>
+				<!-- Data Pulling -->
 				<table>
 					<tr>
-						<td><select name="username" th:each="u : ${users}">
-								<option th:value="${u.username}" th:text="${u.username}"></option>
-						</select></td>
-						<td><select name="authorization">
-								<option value="admin">admin</option>
-								<option value="power-user">power-user</option>
-								<option value="blogger">blogger</option>
-								<option value="commissioner">commissioner</option>
-								<option value="basic">basic</option>
-						</select></td>
-						<td><input type="submit" /></td>
+						<td>
+							<form action="/fpprojbdatapull">
+								<button>batter pull data</button>
+							</form>
+						</td>
+						<td>
+							<form action="/fpprojpdatapull">
+								<button>pitcher pull data</button>
+							</form>
+						</td>
 					</tr>
 				</table>
-			</form>
-
-<!-- 			<p th:if="${userConfirmation}"><span th:text="${userConfirmation[0]} + ' has been granted ' + ${userConfirmation[1]} + 'access'"></span></p>
- -->
-
-
+				<br/>
+				<!-- Memcache flushing -->
+				<table>
+					<tr>
+						<td>
+							<form action="/flushfpprojb">
+								<button>Flush Fant Pro Batter Projs</button>
+							</form>
+						</td>
+						<td>
+							<form action="/flushfpprojp">
+								<button>Fant Pro Pitcher Proj</button>
+							</form>
+						</td>
+						<td>
+							<form action="/flush">
+								<button>*** Flush Entire Memcache ***</button>
+							</form>
+						</td>
+					</tr>
+				</table>
+				<br/>
+				<!-- Blog -->
+				<table>
+					<tr>
+						<td>
+							<form action="/new_post">
+								<button>New Post</button>
+							</form>
+						</td>
+						<td>
+							<form action="/modify_post">
+								<button>Modify Post</button>
+							</form>
+						</td>
+						<td>
+							<form action="/archive">
+								<button>Archive</button>
+							</form>
+						</td>
+					</tr>
+				</table>
+				<br/>
+				<!-- User Maintenance -->
+				<form method="post">
+					<table>
+						<tr>
+							<td><select name="changeUsername">
+									<option th:each="u : ${users}" th:value="${u.userName}" th:text="${u.userName}"></option>
+							</select></td>
+							<td><select name="authorization">
+									<option value="admin">admin</option>
+									<option value="power-user">power-user</option>
+									<option value="blogger">blogger</option>
+									<option value="commissioner">commissioner</option>
+									<option value="basic">basic</option>
+							</select></td>
+							<td><input type="submit" /></td>
+						</tr>
+					</table>
+				</form>	
+	 			<p th:if="${userConfirmation}"><span th:text="${userConfirmation} + ' has been granted ' + ${groupConfirmation} + ' access'"></span></p>
+	 			
 			<!-- <ul class="nav nav-pills"
 				style="margin: 5px auto 20px; display: inline-block;">
 				<li><a href="/fpprojbdatapull">batter pull data</a></li>
@@ -108,9 +100,10 @@
 				<li><a href="/blog/modify_post">modify post</a></li>
 				<li><a href="/blog/archive">archive</a></li>
 			</ul> -->
+			
+			
+			</div>
+			<div th:replace="template :: footer(${currentUser})"></div>
 		</div>
-
-		<div th:replace="template :: footer(${username})"></div>
-	</div>
-</body>
+	</body>
 </html>

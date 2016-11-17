@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.colinaardsma.tfbps.models.User;
 import com.colinaardsma.tfbps.models.dao.UserDao;
@@ -19,15 +18,8 @@ public class AdminController extends AbstractController {
 	@Autowired
 	UserDao userdao;
 	
-    @RequestMapping(value = "/admin", method = RequestMethod.GET)
-    public String admin(){
-        return "admin";
-    }
-
-    @RequestMapping(value = "/admin", method = RequestMethod.POST)
+    @RequestMapping(value = "/admin")
     public String admin(String changeUsername, String authorization, HttpServletRequest request, Model model){
-        List<User> users = userDao.findAll();
-        
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
 		if (currentUser == null) {
@@ -35,13 +27,21 @@ public class AdminController extends AbstractController {
 		}
 	
     	// change user group
-    	User changeUser = userDao.findByUserName(changeUsername);
-    	changeUser.setUserGroup(authorization);
-    	String userConfirmation[] = {changeUser.getUserName(), changeUser.getuserGroup()}; // doesn't work 
-    	
-    	model.addAttribute("userConfirmation", userConfirmation); // doesn't work
-    	model.addAttribute("currentUser", currentUser);
+    	List<User> users = userDao.findAll();
+
+		if (authorization != null && changeUsername != null) {
+			User changeUser = userDao.findByUserName(changeUsername);
+			changeUser.setUserGroup(authorization);
+	        userDao.save(changeUser);
+			String userConfirmation = changeUser.getUserName();
+			String groupConfirmation = changeUser.getUserGroup();
+			
+			model.addAttribute("userConfirmation", userConfirmation);
+			model.addAttribute("groupConfirmation", groupConfirmation);
+		}
+		
         model.addAttribute("users", users);
+    	model.addAttribute("currentUser", currentUser);
         
         return "admin";
     }

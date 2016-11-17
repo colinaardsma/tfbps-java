@@ -46,7 +46,7 @@ public class AuthenticationController extends AbstractController {
         User newUser = new User(userName, password);
         userDao.save(newUser);
         
-        // User is valid; set in session
+        // set user in session
         request.getSession().setAttribute(userKey, newUser.getUid());
 
     	model.addAttribute("currentUser", userName);
