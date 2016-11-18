@@ -1,7 +1,11 @@
 package com.colinaardsma.tfbps.models;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -15,6 +19,9 @@ public class User extends AbstractEntity {
     private String userName;
     private String passHash;
     private String userGroup;
+    
+	private List<Post> posts;
+
 
 //    private Map<String, StockHolding> portfolio; // turn this into custom spreadsheets
         
@@ -58,6 +65,23 @@ public class User extends AbstractEntity {
     protected void setPassHash(String passHash) {
         this.passHash = passHash;
     }
+    
+    // blog post methods
+	protected void addPost(Post post) {
+		posts.add(post);
+	}
+	
+	@OneToMany
+    @JoinColumn(name = "author_uid")
+    public List<Post> getPosts() {
+        return posts;
+    }
+	
+	public void setPosts(List<Post> posts) {
+		this.posts = posts;
+	}
+	
+	// custom spreadsheet methods
 //    // turn this into custom spreadsheets
 //    @OneToMany(cascade = CascadeType.ALL)
 //    @JoinColumn(name = "owner_id")

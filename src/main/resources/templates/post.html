@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+	<head th:replace="template :: head"></head>
+	<body>
+		<div class="container">
+			<div id="top" th:include="template :: masthead"></div>
+			<div id="middle">
+				<h2 style="text-align:left">
+					<a th:href="'/blog/' + ${username} + '/' + ${uid}" th:text="${title}"></a>
+				</h2>
+				<p style="text-align:left" th:text="${body}"></p>
+				<div th:replace="template :: writtenBy(${username},${created})"></div>
+			</div>
+			<div th:replace="template :: footer(${currentUser})"></div>
+		</div>
+	</body>
+</html>

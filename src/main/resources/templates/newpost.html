@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+	<head th:replace="template :: head"></head>
+	<body>
+		<div class="container">
+			<div id="top" th:include="template :: masthead"></div>
+			<div id="middle">
+				<h1>blog posts!</h1>
+				<form style="width:80%; margin:auto" method="post">
+				    <label style="width:80%; text-align:left">title<br/>
+			    	    <input style="width:20em" type="text" name="title" th:value="${title}"></input>
+	    			</label>
+	    			<br/>
+	    			<label style="width:80%; text-align:left">post<br/>
+	        			<textarea style="width:100%; height:20em" name="body" th:text="${body}"></textarea>
+	    			</label>
+	    			<div class="error" th:text="${error}"></div>
+	    			<label style="width:80%; text-align:left">
+	    				<button type="submit" th:text="(${edit} ? 'Save' : 'Create')"></button>
+	    			</label>
+				</form>
+			</div>
+			<div th:replace="template :: footer(${currentUser})"></div>
+		</div>
+	</body>
+</html>
+

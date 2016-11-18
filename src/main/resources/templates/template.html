@@ -24,6 +24,12 @@
                 </ul>
         	</div>
 	        <div id="middle"></div>
+	        <div id="writtenBy" th:fragment="writtenBy(username,created)">
+	        	<p class="post-author" style="text-align:right">written by <a th:href="'/blog/' + ${username}" th:text="${username}"></a><span th:text="' on ' + ${#dates.format(created, 'MM.dd.yy')}"></span></p>
+	        </div>
+	        <div id="bottom" th:fragment="pagination(prev_page, next_page, offset, limit, posts)">
+	        
+	        </div>
 	        <div id="bottom" th:fragment="footer(currentUser)">
     	    	<a th:href="(${currentUser} ? '/logout' : '/login')" th:text="(${currentUser} ? 'Log Out' : 'Log In')"></a>
 			</div>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+	<head th:replace="template :: head"></head>
+	<body>
+		<div class="container">
+			<div id="top" th:include="template :: masthead"></div>
+			<div id="middle">
+				<div th:each="post : ${posts}">
+					<hr/>
+					<table style="width:100%">
+						<tr>
+							<td style="width:100%"><div class="body-title" th:text="${post.title}"></div></td>
+							<td style="text-align:right; padding-right:0.25em" th:text="${#dates.format(post.created, 'MM.dd.yy')}"></td>
+							<td style="text-align:right; padding-right:0.25em">
+								<form th:action="'/blog/' + ${post.author.userName} + '/' + ${post.uid} + '/edit'">
+									<button>modify</button>
+								</form>
+							</td>
+							<td style="text-align:right">
+								<form>
+									<input type="button" value="delete" th:onclick="'if(confirm(\'Are you sure you want to delete this post\')) location.href = \'/blog/' + ${post.author.userName} + '/' + ${post.uid} + '/delete\''" />
+								</form>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div th:replace="template :: footer(${currentUser})"></div>
+		</div>
+	</body>
+</html>
