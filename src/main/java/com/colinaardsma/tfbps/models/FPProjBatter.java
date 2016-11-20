@@ -252,7 +252,8 @@ public class FPProjBatter extends AbstractEntity {
     	double hrSGP = this.hr / sgpMultHR;
     	double rbiSGP = this.rbi / sgpMultRBI;
     	double sbSGP = this.sb / sgpMultSB;
-    	double opsSGP = ((((((this.obp * (this.ab * 1.15)) + 2178.8) / ((this.ab * 1.15) + 6682)) + (((this.slg * this.ab) + 2528.5) / (this.ab + 5993))) - 0.748) / sgpMultOPS);
+//    	double opsSGP = ((((((this.obp * (this.ab * 1.15)) + 2178.8) / ((this.ab * 1.15) + 6682)) + (((this.slg * this.ab) + 2528.5) / (this.ab + 5993))) - 0.748) / sgpMultOPS);
+    	double opsSGP = ((this.h + this.bb + this.hbp + 2178.8) / (this.pa + 6682) + (this.h + this.dbl + (2 * this.tpl) + (3 * this.hr) + 2528.5) / (this.ab + 5993) - 0.748) / sgpMultOPS;
     			
     	this.sgp = rSGP + hrSGP + rbiSGP + sbSGP + opsSGP;
 	}

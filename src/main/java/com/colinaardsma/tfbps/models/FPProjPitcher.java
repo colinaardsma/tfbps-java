@@ -254,7 +254,7 @@ public class FPProjPitcher extends AbstractEntity {
         double eraSGP = ((475 + this.er) * 9 / (1192 + this.ip) - 3.59) / sgpMultERA;
         double whipSGP = ((1466 + this.h + this.bb) / (1192 + this.ip) - 1.23) / sgpMultWHIP;
         
-    	this.sgp = wSGP + svSGP + kSGP  +eraSGP + whipSGP;
+    	this.sgp = wSGP + svSGP + kSGP + eraSGP + whipSGP;
     }
     
 }
