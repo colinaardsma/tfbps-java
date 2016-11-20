@@ -27,7 +27,16 @@ public class PostController extends AbstractController {
 	private PostDao postDao;
 	
 	@RequestMapping(value = "/blog/new_post", method = RequestMethod.GET)
-	public String newPostForm() {
+	public String newPostForm(HttpServletRequest request, Model model) {
+
+		// check for user in session
+		String currentUser = this.getUsernameFromSession(request);
+		if (currentUser == null) {
+			return "index";
+		}
+
+		model.addAttribute("currentUser", currentUser);
+
 		return "newpost";
 	}
 	
@@ -81,7 +90,7 @@ public class PostController extends AbstractController {
 		}
 
 		// fetch posts and pass to template
-		List<Post> posts = postDao.findAll();
+		List<Post> posts = postDao.findAllByOrderByCreatedDesc();
 		
     	model.addAttribute("currentUser", currentUser);
 		model.addAttribute("posts", posts);

@@ -22,7 +22,7 @@ public class ProjectionController extends AbstractController {
     public String fpprojb(Model model, HttpServletRequest request){
 		
 		// populate html table
-		List<FPProjBatter> players = fpProjBatterDao.findAll();
+		List<FPProjBatter> players = fpProjBatterDao.findAllByOrderBySgpDesc();
 		
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);

@@ -14,6 +14,7 @@ import com.colinaardsma.tfbps.models.Post;
 public interface PostDao extends CrudRepository<Post, Integer> {
     
     List<Post> findAll();
+    List<Post> findAllByOrderByCreatedDesc();
 	
 	List<Post> findByAuthor_uid(int authorId);
     Post findByUid(int uid);

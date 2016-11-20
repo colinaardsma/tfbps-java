@@ -58,7 +58,7 @@ public class BlogController extends AbstractController {
 		}
 		
 		// fetch posts and pass to template
-		List<Post> posts = postDao.findAll();
+		List<Post> posts = postDao.findAllByOrderByCreatedDesc();
 		
 		// TODO - implement pagination
 		
@@ -78,7 +78,7 @@ public class BlogController extends AbstractController {
 		}
 		
 		// fetch posts and pass to template
-		List<Post> posts = postDao.findAll();
+		List<Post> posts = postDao.findAllByOrderByCreatedDesc();
 		
     	model.addAttribute("currentUser", currentUser);
 		model.addAttribute("posts", posts);
