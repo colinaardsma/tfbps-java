@@ -10,13 +10,18 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.colinaardsma.tfbps.models.FPProjBatter;
+import com.colinaardsma.tfbps.models.FPProjPitcher;
 import com.colinaardsma.tfbps.models.dao.FPProjBatterDao;
+import com.colinaardsma.tfbps.models.dao.FPProjPitcherDao;
 
 @Controller
 public class ProjectionController extends AbstractController {
 
 	@Autowired
 	FPProjBatterDao fpProjBatterDao;
+	
+	@Autowired
+	FPProjPitcherDao fpProjPitcherDao;
 	
 	@RequestMapping(value = "/fpprojb")
     public String fpprojb(Model model, HttpServletRequest request){
@@ -30,18 +35,6 @@ public class ProjectionController extends AbstractController {
 			return "index";
 		}
 		
-		// need to figure out how to properly order
-//      Integer userId = (Integer) request.getSession().getAttribute(AbstractController.userKey);
-//      request.getSession().setAttribute(userKey, newUser.getUid());
-//      
-//      Session session = 
-//		
-//		Criteria crit = session.createCriteria(Cat.class);
-//		crit.setMaxResults(50);
-//		List cats = crit.list();
-//		List cats = sess.createCriteria(players);
-		
-   	
     	model.addAttribute("currentUser", currentUser);
 		model.addAttribute("players", players);
 
@@ -51,6 +44,9 @@ public class ProjectionController extends AbstractController {
 	@RequestMapping(value = "/fpprojp")
     public String fpprojp(Model model, HttpServletRequest request){
 		
+		// populate html table
+		List<FPProjPitcher> players = fpProjPitcherDao.findAllByOrderBySgpDesc();
+		
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
 		if (currentUser == null) {
@@ -58,6 +54,7 @@ public class ProjectionController extends AbstractController {
 		}
 		
     	model.addAttribute("currentUser", currentUser);
+		model.addAttribute("players", players);
 
         return "fpprojp";
     }

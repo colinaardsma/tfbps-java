@@ -2,8 +2,6 @@ package com.colinaardsma.tfbps.models.dao;
 
 import java.util.List;
 
-import javax.persistence.ManyToMany;
-import javax.persistence.OrderBy;
 import javax.transaction.Transactional;
 
 import org.springframework.data.repository.CrudRepository;
@@ -15,8 +13,6 @@ import com.colinaardsma.tfbps.models.FPProjBatter;
 @Repository
 public interface FPProjBatterDao extends CrudRepository<FPProjBatter, Integer> {
 	
-//	@ManyToMany
-//	@OrderBy("sgp")
 	List<FPProjBatter> findAll(); // get all players
 	List<FPProjBatter> findAllByOrderBySgpDesc();
 	

@@ -12,24 +12,24 @@
 						<th style="padding-right: 2em">Team</th>
 						<th style="padding-right: 2em">Pos</th>
 						<th style="padding-right: 2em">SGP</th>
-						<th style="padding-right: 2em">AB</th>
-						<th style="padding-right: 2em">R</th>
-						<th style="padding-right: 2em">HR</th>
-						<th style="padding-right: 2em">RBI</th>
-						<th style="padding-right: 2em">SB</th>
-						<th>OPS</th>
+						<th style="padding-right: 2em">IP</th>
+						<th style="padding-right: 2em">W</th>
+						<th style="padding-right: 2em">SV</th>
+						<th style="padding-right: 2em">K</th>
+						<th style="padding-right: 2em">ERA</th>
+						<th>WHIP</th>
 					</tr>
 					<tr th:each="player : ${players}">
         				<td style="padding-right: 2em" th:text="${player.name}"></td>
  			   	    	<td style="padding-right: 2em" th:text="${player.team}"></td>
        			 		<td style="padding-right: 2em" th:text="${player.pos}"></td>
        		 			<td style="padding-right: 2em" th:text="${player.sgp}"></td>
-        				<td style="padding-right: 2em" th:text="${player.ab}"></td>
-		        		<td style="padding-right: 2em" th:text="${player.r}"></td>
-      			  		<td style="padding-right: 2em" th:text="${player.hr}"></td>
-	    	    		<td style="padding-right: 2em" th:text="${player.rbi}"></td>
-    		    		<td style="padding-right: 2em" th:text="${player.sb}"></td>
-        				<td style="padding-right: 2em" th:text="${player.ops}"></td>
+        				<td style="padding-right: 2em" th:text="${player.ip}"></td>
+		        		<td style="padding-right: 2em" th:text="${player.w}"></td>
+      			  		<td style="padding-right: 2em" th:text="${player.sv}"></td>
+	    	    		<td style="padding-right: 2em" th:text="${player.k}"></td>
+    		    		<td style="padding-right: 2em" th:text="${player.era}"></td>
+        				<td style="padding-right: 2em" th:text="${player.whip}"></td>
 					</tr>
 				</table>
     		</div>

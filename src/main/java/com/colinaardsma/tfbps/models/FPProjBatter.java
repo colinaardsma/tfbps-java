@@ -2,7 +2,6 @@ package com.colinaardsma.tfbps.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -58,24 +57,6 @@ public class FPProjBatter extends AbstractEntity {
 	
 	public FPProjBatter() {}
 	
-//			name = playerList[i]
-//            team = playerList[i + 1]
-//            pos = playerList[i + 2]
-//            r = int(playerList[i + 4])
-//            hr = int(playerList[i + 5])
-//            rbi = int(playerList[i + 6])
-//            sb = int(playerList[i + 7])
-//            avg = double(playerList[i + 8])
-//            obp = double(playerList[i + 9])
-//            h = int(playerList[i + 10])
-//            double = int(playerList[i + 11])
-//            triple = int(playerList[i + 12])
-//            bb = int(playerList[i + 13])
-//            k = int(playerList[i + 14])
-//            slg = double(playerList[i + 15])
-//            ops = double(playerList[i + 16])
-//            category = "fpprojb"
-
     @NotNull
     @Column(name = "name")
 	public String getName() {
@@ -267,7 +248,13 @@ public class FPProjBatter extends AbstractEntity {
 	}
 
     protected void calcSgp(double sgpMultR, double sgpMultHR, double sgpMultRBI, double sgpMultSB, double sgpMultOPS) {
-        this.sgp = (this.r/sgpMultR)+(this.hr/sgpMultHR)+(this.rbi/sgpMultRBI)+(this.sb/sgpMultSB)+((((((this.obp*(this.ab*1.15))+2178.8)/((this.ab*1.15)+6682))+(((this.slg*this.ab)+2528.5)/(this.ab+5993)))-0.748)/sgpMultOPS);
+    	double rSGP = this.r / sgpMultR;
+    	double hrSGP = this.hr / sgpMultHR;
+    	double rbiSGP = this.rbi / sgpMultRBI;
+    	double sbSGP = this.sb / sgpMultSB;
+    	double opsSGP = ((((((this.obp * (this.ab * 1.15)) + 2178.8) / ((this.ab * 1.15) + 6682)) + (((this.slg * this.ab) + 2528.5) / (this.ab + 5993))) - 0.748) / sgpMultOPS);
+    			
+    	this.sgp = rSGP + hrSGP + rbiSGP + sbSGP + opsSGP;
 	}
     
 }
