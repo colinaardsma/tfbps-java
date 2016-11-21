@@ -1,5 +1,7 @@
 package com.colinaardsma.tfbps.models;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -29,8 +31,14 @@ public class FPProjPitcher extends AbstractEntity {
 	private int gs;
 	private int l;
 	private int cg;
+	private double wSGP;
+	private double svSGP;
+	private double kSGP;
+	private double eraSGP;
+	private double whipSGP;
 	private double sgp;
 	private String category;
+	private Date created;
 
 	public FPProjPitcher(String name, String team, String pos, int ip, int k, int w, int sv, double era, double whip, int er, int h, int bb, int hr, int g, int gs, int l, int cg, String category) {
 		this.name = name;
@@ -53,6 +61,7 @@ public class FPProjPitcher extends AbstractEntity {
 		calcSgp(SGPMultCalc.sgpMultW(), SGPMultCalc.sgpMultSV(), SGPMultCalc.sgpMultK(), SGPMultCalc.sgpMultERA(), SGPMultCalc.sgpMultWHIP());
 
 		this.category = category;
+		this.created = new Date();
 	}
 	
 	public FPProjPitcher() {}
@@ -228,6 +237,56 @@ public class FPProjPitcher extends AbstractEntity {
 	}
 
 	@NotNull
+    @Column(name = "wsgp")
+	public double getWSGP() {
+		return wSGP;
+	}
+
+	public void setWSGP(double wSGP) {
+		this.wSGP = wSGP;
+	}
+
+	@NotNull
+    @Column(name = "svsgp")
+	public double getSvSGP() {
+		return svSGP;
+	}
+
+	public void setSvSGP(double svSGP) {
+		this.svSGP = svSGP;
+	}
+
+	@NotNull
+    @Column(name = "ksgp")
+	public double getKSGP() {
+		return kSGP;
+	}
+
+	public void setKSGP(double kSGP) {
+		this.kSGP = kSGP;
+	}
+
+	@NotNull
+    @Column(name = "erasgp")
+	public double getEraSGP() {
+		return eraSGP;
+	}
+
+	public void setEraSGP(double eraSGP) {
+		this.eraSGP = eraSGP;
+	}
+
+	@NotNull
+    @Column(name = "whipsgp")
+	public double getWhipSGP() {
+		return whipSGP;
+	}
+
+	public void setWhipSGP(double whipSGP) {
+		this.whipSGP = whipSGP;
+	}
+
+	@NotNull
     @Column(name = "sgp")
 	public double getSgp() {
 		return sgp;
@@ -247,14 +306,25 @@ public class FPProjPitcher extends AbstractEntity {
 		this.category = category;
 	}
 
+	@NotNull
+	@Column(name = "created")
+	public Date getCreated() {
+		return created;
+	}
+	
+	@SuppressWarnings("unused")
+	private void setCreated(Date created) {
+		this.created = created;
+	}
+	
     protected void calcSgp(double sgpMultW, double sgpMultSV, double sgpMultK, double sgpMultERA, double sgpMultWHIP) {
-        double wSGP = this.w / sgpMultW;
-        double svSGP = this.sv / sgpMultSV;
-        double kSGP = this.k / sgpMultK;
-        double eraSGP = ((475 + this.er) * 9 / (1192 + this.ip) - 3.59) / sgpMultERA;
-        double whipSGP = ((1466 + this.h + this.bb) / (1192 + this.ip) - 1.23) / sgpMultWHIP;
+        this.wSGP = (double) this.w / sgpMultW;
+        this.svSGP = (double) this.sv / sgpMultSV;
+        this.kSGP = (double) this.k / sgpMultK;
+        this.eraSGP = ((475.0 + (double) this.er) * 9.0 / (1192.0 + (double) this.ip) - 3.59) / sgpMultERA;
+        this.whipSGP = ((1466.0 + (double) this.h + (double) this.bb) / (1192.0 + (double) this.ip) - 1.23) / sgpMultWHIP;
         
-    	this.sgp = wSGP + svSGP + kSGP + eraSGP + whipSGP;
+    	this.sgp = this.wSGP + this.svSGP + this.kSGP + this.eraSGP + this.whipSGP;
     }
     
 }

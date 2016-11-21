@@ -1,5 +1,7 @@
 package com.colinaardsma.tfbps.models;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -29,8 +31,14 @@ public class FPProjBatter extends AbstractEntity {
 	private int k;
 	private double slg;
 	private double ops;
+	private double rSGP;
+	private double hrSGP;
+	private double rbiSGP;
+	private double sbSGP;
+	private double opsSGP;
 	private double sgp;
 	private String category;
+	private Date created;
 
 	public FPProjBatter(String name, String team, String pos, int ab, int r, int hr, int rbi, int sb, double avg, double obp, int h, int dbl, int tpl, int bb, int k, double slg, double ops, String category) {
 		this.name = name;
@@ -53,6 +61,7 @@ public class FPProjBatter extends AbstractEntity {
 		calcSgp(SGPMultCalc.sgpMultR(), SGPMultCalc.sgpMultHR(), SGPMultCalc.sgpMultRBI(), SGPMultCalc.sgpMultSB(), SGPMultCalc.sgpMultOPS());
 
 		this.category = category;
+		this.created = new Date();		
 	}
 	
 	public FPProjBatter() {}
@@ -227,6 +236,56 @@ public class FPProjBatter extends AbstractEntity {
 		this.ops = ops;
 	}
 
+	@NotNull
+    @Column(name = "rsgp")
+	public double getRSGP() {
+		return rSGP;
+	}
+
+	public void setRSGP(double rSGP) {
+		this.rSGP = rSGP;
+	}
+
+	@NotNull
+    @Column(name = "hrsgp")
+	public double getHrSGP() {
+		return hrSGP;
+	}
+
+	public void setHrSGP(double hrSGP) {
+		this.hrSGP = hrSGP;
+	}
+
+	@NotNull
+    @Column(name = "rbisgp")
+	public double getRbiSGP() {
+		return rbiSGP;
+	}
+
+	public void setRbiSGP(double rbiSGP) {
+		this.rbiSGP = rbiSGP;
+	}
+
+	@NotNull
+    @Column(name = "sbsgp")
+	public double getSbSGP() {
+		return sbSGP;
+	}
+
+	public void setSbSGP(double sbSGP) {
+		this.sbSGP = sbSGP;
+	}
+
+	@NotNull
+    @Column(name = "opssgp")
+	public double getOpsSGP() {
+		return opsSGP;
+	}
+
+	public void setOpsSGP(double opsSGP) {
+		this.opsSGP = opsSGP;
+	}
+
     @NotNull
     @Column(name = "sgp")
 	public double getSgp() {
@@ -247,14 +306,25 @@ public class FPProjBatter extends AbstractEntity {
 		this.category = category;
 	}
 
+	@NotNull
+	@Column(name = "created")
+	public Date getCreated() {
+		return created;
+	}
+	
+	@SuppressWarnings("unused")
+	private void setCreated(Date created) {
+		this.created = created;
+	}
+	
     protected void calcSgp(double sgpMultR, double sgpMultHR, double sgpMultRBI, double sgpMultSB, double sgpMultOPS) {
-    	double rSGP = this.r / sgpMultR;
-    	double hrSGP = this.hr / sgpMultHR;
-    	double rbiSGP = this.rbi / sgpMultRBI;
-    	double sbSGP = this.sb / sgpMultSB;
-    	double opsSGP = ((((((this.obp * (this.ab * 1.15)) + 2178.8) / ((this.ab * 1.15) + 6682)) + (((this.slg * this.ab) + 2528.5) / (this.ab + 5993))) - 0.748) / sgpMultOPS);
+    	this.rSGP = this.r / sgpMultR;
+    	this.hrSGP = this.hr / sgpMultHR;
+    	this.rbiSGP = this.rbi / sgpMultRBI;
+    	this.sbSGP = this.sb / sgpMultSB;
+    	this.opsSGP = ((((((this.obp * ((double) this.ab * 1.15)) + 2178.8) / (((double) this.ab * 1.15) + 6682.0)) + (((this.slg * this.ab) + 2528.5) / ((double) this.ab + 5993.0))) - 0.748) / sgpMultOPS);
     			
-    	this.sgp = rSGP + hrSGP + rbiSGP + sbSGP + opsSGP;
+    	this.sgp = this.rSGP + this.hrSGP + this.rbiSGP + this.sbSGP + this.opsSGP;
 	}
     
 }

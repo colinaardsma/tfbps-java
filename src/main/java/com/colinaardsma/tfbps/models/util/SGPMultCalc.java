@@ -22,7 +22,7 @@ public class SGPMultCalc {
 	}
 	
 	public static double sgpMultOPS() {
-		double sgpMultOPS = 0.0024;
+		double sgpMultOPS = 0.006;
 		return sgpMultOPS;
 	}
 	
