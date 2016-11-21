@@ -5,7 +5,7 @@
 		<div class="container">
 			<div id="top" th:include="template :: masthead"></div>
     		<div id="middle">
-        		<p th:text="'Date of last pull: ' + ${lastPullDate}"></p>
+        		<p th:text="'Date of last pull: ' + ${#dates.format(lastPullDate, 'MM.dd.yy')}"></p>
         		<table style="margin: auto">
 					<tr>
 						<th style="padding-right: 2em">Name</th>
