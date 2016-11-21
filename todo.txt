@@ -1,23 +1,60 @@
-# tFBPs (the Fantasy Baseball Projection site)
-A fantasy baseball projection site.
+HTML Parsing:
+X-Fantasy Pros Pitcher
 
-## What's coming up
-* Data import/export/analysis:
-    * Parse HTML projection (table) data from external sites
-    * Store data in SQL database
-    * Analyze data and return value for each player
-    * Store data in memcache to prevent excessive db hits
-    * Export data to json
-    * Allow users to create their own calculations
-    * Connect with Yahoo! fantasy sports API to allow users to import custom league data
-    * Allow custom calculations based on Yahoo! imported data
-* Users:
-    * Login/Logout/Register
-    * Divide users into groups with permissions varying by group
-    * Storing of personalized data
-* Blog/Posts:
-    * Allow certain users to post to blog
-    * Create/Read/Update/Delete blog posts
-    * Add snippets to main page
-* RSS import:
-    * Import and format RSS data from external sites
+Hopefully Non-HTML Parsing:
+-Custom Batter Projections (parse 3 years of past data, to include minors)
+-Custom Batter Projections (parse 3 years of past data, to include minors)
+-Fangraphs Batter
+-Fangraphs Pitcher
+
+Data Manipulation:
+-z-score
+-position filtering
+-weigh values by position
+-data sorting
+-delete spreadsheet and replace on pull
+-custom modify individual player?
+
+-Json export (added to fantasy pros b/p)
+-memcached (added to fantasy pros b/p)
+
+Users:
+X-admins
+X-power-users
+X-bloggers
+X-commissioners?
+X-basic users
+X-viewers only
+-ability to save some data manipulation/mocks (how would this work?)
+X-fix password hashing
+
+Blog/Message Board:
+X-reuse code from blog
+-shortened preview of 5 most recent entries on main page
+-update memcache upon delete/edit post
+X-add "blogger" user group (with permissions)
+-memcache pagination instead of db pagination (will save multiple db hits)
+-change from blog to link/reddit style short post submission?
+-add voting?
+
+CSS:
+X-add normalize.css
+-what sites to model after?
+
+Javascript:
+-?
+
+Non-HTML Parsing:
+-Yahoo league specific data:
+	-league number
+	-league number history
+	-custom sgp calcs
+	-Advanced plans:
+		-some sort of manager performance data?
+		-mock draft simulator
+		-integration with draft/auction webapp?
+		-advanced "auto-drafter"
+		-advanced "auto-manager"
+	-Yahoo 2016 standings:
+		-select * from fantasysports.leagues.standings where league_key='357.l.3091'
+		-https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20fantasysports.leagues.standings%20where%20league_key%3D'357.l.3091'&diagnostics=true
