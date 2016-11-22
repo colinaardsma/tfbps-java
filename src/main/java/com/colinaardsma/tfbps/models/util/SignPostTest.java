@@ -26,7 +26,7 @@ public class SignPostTest {
 	private static final Logger log = Logger.getLogger(SignPostTest.class);
 
 //	protected static String yahooServer = "https://yboss.yahooapis.com/ysearch/";
-	protected static String yahooServer = "https://fantasysports.yahooapis.com/fantasy/v2/games;game_keys=238";
+	protected static String yahooServer = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/standings";
 
 	
 	// Please provide your consumer key here
