@@ -4,11 +4,14 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import org.apache.log4j.BasicConfigurator;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
+
+import com.colinaardsma.tfbps.models.util.SignPostTest;
 
 
 //@RunWith(SpringRunner.class)
@@ -123,5 +126,22 @@ public class TfbpsJavaApplicationTests {
 		}
 		
     }
+	
+	@Test
+	public void OAuthTest() {
+
+		BasicConfigurator.configure();
+
+		try {
+
+			SignPostTest signPostTest = new SignPostTest();
+
+			signPostTest.returnHttpData();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
 
 }

@@ -14,13 +14,6 @@ public class AuthenticationController extends AbstractController {
 
     @RequestMapping(value = "/")
     public String index(HttpServletRequest request, Model model){
-		// check for user in session
-		String currentUser = this.getUsernameFromSession(request);
-		if (currentUser == null) {
-			return "index";
-		}
-		
-    	model.addAttribute("currentUser", currentUser);
         return "index";
     }
 
