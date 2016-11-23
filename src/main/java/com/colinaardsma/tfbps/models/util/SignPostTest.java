@@ -40,7 +40,9 @@ public class SignPostTest {
 			httpsRequest.setOAuthConsumer(consumer);
 
 			try {
-				log.info("sending get request to" + URLDecoder.decode(url, ENCODE_FORMAT));
+//				log.info("sending get request to: " + URLDecoder.decode(url, ENCODE_FORMAT));
+				log.info("sending get request to: " + url);
+
 				int responseCode = httpsRequest.sendGetRequest(url);
 
 				// Send the request
