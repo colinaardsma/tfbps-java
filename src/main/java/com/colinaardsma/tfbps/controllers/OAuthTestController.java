@@ -1,8 +1,5 @@
 package com.colinaardsma.tfbps.controllers;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 
@@ -10,9 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.BasicConfigurator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +18,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import com.colinaardsma.tfbps.models.util.OAuthPost;
 import com.colinaardsma.tfbps.models.util.SignPostTest;
 
 @Controller
@@ -178,10 +173,11 @@ public class OAuthTestController extends AbstractController {
 		String yahooGUID = new String();
 		
 		try {
-			SignPostTest signPostTest = new SignPostTest();
-			String url = "https://query.yahooapis.com/v1/public/yql";
+//			SignPostTest signPostTest = new SignPostTest();
+			String url = "https://query.yahooapis.com/v1/yql";
 			String query = "select * from yahoo.identity where yid='beuller43'";
-			xmlData = signPostTest.returnHttpPostData(url, query);
+//			xmlData = signPostTest.returnHttpPostData(url, query);
+			xmlData = OAuthPost.postConnection(url, query);
 
 			
 			

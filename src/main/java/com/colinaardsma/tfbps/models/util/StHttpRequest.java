@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -30,6 +31,8 @@ private static final Logger log = Logger.getLogger(StHttpRequest.class);
     private String responseBody = "";
 
     private OAuthConsumer consumer = null;
+    
+//    private HttpsURLConnection uc;
 
     /** Default Constructor */
     public StHttpRequest() { }
@@ -140,6 +143,11 @@ private static final Logger log = Logger.getLogger(StHttpRequest.class);
     }
     
     
+//    private void setConnection(URL u) throws IOException {
+//    	this.uc = (HttpsURLConnection) u.openConnection();
+//    }
+    
+    
     ///////
     
     public HttpsURLConnection postConnection(String url, String query)
@@ -151,7 +159,12 @@ private static final Logger log = Logger.getLogger(StHttpRequest.class);
      try {
              URL u = new URL(url);
 
+//             this.setConnection(u);
              HttpsURLConnection uc = (HttpsURLConnection) u.openConnection();
+
+          
+
+
              
              // already connected error, somewhere in here?
              
@@ -173,7 +186,19 @@ private static final Logger log = Logger.getLogger(StHttpRequest.class);
                  log.error("Error signing the consumer", e);
                  throw e;
                  }
-                 uc.connect();
+		            byte[] postData       = query.getBytes( StandardCharsets.UTF_8 );
+		             int    postDataLength = postData.length;
+
+		             uc.setDoOutput( true );
+		             
+		             uc.setInstanceFollowRedirects( false );
+		             uc.setRequestMethod( "POST" );
+		             uc.setRequestProperty( "Content-Type", "application/xhtml+xml"); 
+		             uc.setRequestProperty( "charset", "utf-8");
+		             uc.setRequestProperty( "Content-Length", Integer.toString( postDataLength ));
+		             uc.setUseCaches( false );
+	                 uc.connect();
+
              }
              return uc;
      } catch (IOException e) {
@@ -190,20 +215,12 @@ private static final Logger log = Logger.getLogger(StHttpRequest.class);
 
     		        int responseCode = 500;
     		        try {
-    		            HttpsURLConnection uc = getConnection(url);
+    		            HttpsURLConnection uc = postConnection(url, query);
     		             // already connected error, somewhere in here?
-
+    		             
     		             byte[] postData       = query.getBytes( StandardCharsets.UTF_8 );
-    		             int    postDataLength = postData.length;
-
-    		             uc.setDoOutput( true );
-    		             uc.setInstanceFollowRedirects( false );
-    		             uc.setRequestMethod( "POST" );
-    		             uc.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded"); 
-    		             uc.setRequestProperty( "charset", "utf-8");
-    		             uc.setRequestProperty( "Content-Length", Integer.toString( postDataLength ));
-    		             uc.setUseCaches( false );
     		  
+
     		             try( DataOutputStream wr = new DataOutputStream( uc.getOutputStream())) {
      		                wr.write( postData );
      		             }
