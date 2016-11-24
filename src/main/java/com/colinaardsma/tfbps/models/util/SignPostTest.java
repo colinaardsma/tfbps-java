@@ -22,6 +22,7 @@ public class SignPostTest {
 
 	/** The HTTPS request object used for the connection */
 	private static StHttpRequest httpsRequest = new StHttpRequest();
+	private static StHttpRequest httpsPostRequest = new StHttpRequest();
 
 	/** Encode Format */
 	private static final String ENCODE_FORMAT = "UTF-8";
@@ -89,4 +90,57 @@ public class SignPostTest {
 		return true;
 	}
 
+	
+	
+	////
+	public String returnHttpPostData(String url, String query) throws UnsupportedEncodingException, Exception{
+
+		if(this.isConsumerKeyExists() && this.isConsumerSecretExists()) {
+
+			// Create oAuth Consumer
+			OAuthConsumer consumer = new DefaultOAuthConsumer(consumer_key, consumer_secret);
+
+			// Set the HTTPS request correctly
+			httpsPostRequest.setOAuthConsumer(consumer);
+
+			try {
+//				log.info("sending get request to: " + URLDecoder.decode(url, ENCODE_FORMAT));
+				log.info("sending get request to: " + url + "?" + query);
+
+				int responseCode = httpsPostRequest.sendPostRequest(url, query);
+
+				// Send the request
+				if(responseCode == HTTP_STATUS_OK) {
+					log.info("Response ");
+				} else {
+					log.error("Error in response due to status code = " + responseCode);
+				}
+				log.info(httpsPostRequest.getResponseBody());
+
+			} catch(UnsupportedEncodingException e) {
+				log.error("Encoding/Decording error");
+			} catch (IOException e) {
+				log.error("Error with HTTP IO", e);
+			} catch (Exception e) {
+				log.error(httpsPostRequest.getResponseBody(), e);
+				return null;
+			}
+
+
+		} else {
+			log.error("Key/Secret does not exist");
+		}
+		
+		// return xml data from url
+		String xmlData = httpsPostRequest.getResponseBody();
+		return xmlData;
+
+	}
+
+
+	
+	
+	
+	
+	
 }
