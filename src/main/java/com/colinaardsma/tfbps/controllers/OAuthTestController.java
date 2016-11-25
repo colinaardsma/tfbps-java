@@ -1,11 +1,13 @@
 package com.colinaardsma.tfbps.controllers;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.BasicConfigurator;
 import org.springframework.stereotype.Controller;
@@ -17,9 +19,14 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import com.colinaardsma.tfbps.models.util.OAuthPost;
 import com.colinaardsma.tfbps.models.util.SignPostTest;
+
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
 
 @Controller
 public class OAuthTestController extends AbstractController {
@@ -126,18 +133,6 @@ public class OAuthTestController extends AbstractController {
 			e.printStackTrace();
 		}
 		
-		
-	 
-	 
-
-		
-		
-		
-		
-
-
-
-		
 		model.addAttribute("leagueName", leagueName);
 		model.addAttribute("leagueURL", leagueURL);
 		model.addAttribute("leagueScoringType", leagueScoringType);
@@ -147,203 +142,43 @@ public class OAuthTestController extends AbstractController {
         return "oauthtest";
     }
 	
-	@RequestMapping(value = "/yahoouserlookup", method = RequestMethod.GET)
-    public String yahoouserlookupform(Model model, HttpServletRequest request) {
-		return "yahoouserlookup";
-	}
+//	@RequestMapping(value = "/yahoouserlookup", method = RequestMethod.GET)
+//    public String yahoouserlookupform(Model model, HttpServletRequest request) {
+//		return "yahoouserlookup";
+//	}
 		
-	@RequestMapping(value = "/yahoouserlookup", method = RequestMethod.POST)
-    public String yahoouserlookup(Model model, HttpServletRequest request) throws MalformedURLException {
-		BasicConfigurator.configure();
+	@RequestMapping(value = "/yahoouserlookup")
+	public String yahoouserlookup(Model model, HttpServletRequest request) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException, SAXException, ParserConfigurationException {
+//		BasicConfigurator.configure();
 
-        String yahooUsername = request.getParameter("yahooUsername");
-        
-        String host = "query.yahooapis.com";
-        String path = "/v1/public/yql";
-		String baseURL = "https://query.yahooapis.com/v1/public/yql";
-		String yql = "select * from yahoo.identity where yid='" + yahooUsername + "'";
-		
-//		String url = baseURL;
-		
-		
-		// general data variables
-		String xmlData = new String();
-
-		// variables to pass to html
+		String yahooUsername = request.getParameter("yahooUsername");
 		String yahooGUID = new String();
 		
-		try {
-//			SignPostTest signPostTest = new SignPostTest();
+		if (yahooUsername != null) {
+
+			// yahoo query variables
 			String url = "https://query.yahooapis.com/v1/yql";
-			String query = "select * from yahoo.identity where yid='beuller43'";
-//			xmlData = signPostTest.returnHttpPostData(url, query);
-			xmlData = OAuthPost.postConnection(url, query);
+			String query = "select * from yahoo.identity where yid='" + yahooUsername + "'";
 
-			
-			
-			
-//		    	String request = "http://api.search.yahoo.com/WebSearchService/V1/webSearch";
-////
-//// this will connection but not authenticate ////
-//		        HttpClient client = new HttpClient();
-//		        PostMethod method = new PostMethod(baseURL);
-//		        
-//		        method.addParameter("q","select * from yahoo.identity where yid='beuller43'");
-//		        
-//		        // Send POST request
-//		        int statusCode = client.executeMethod(method);
-//		        
-//		        if (statusCode != HttpStatus.SC_OK) {
-//		        	System.err.println("Method failed: " + method.getStatusLine());
-//		        }
-//		        InputStream rstream = null;
-//		        
-//		        // Get the response body
-//		        rstream = method.getResponseBodyAsStream();
-//		        
-//		        // Process the response from Yahoo! Web Services
-//		        BufferedReader br = new BufferedReader(new InputStreamReader(rstream));
-//		        String line;
-//		        while ((line = br.readLine()) != null) {
-//		            System.out.println(line);
-//		        }
-//		        br.close();
-////			
-			
-			
-			
-//			String urlParameters  = "q=select%20*%20from%20yahoo.identity%20where%20yid%3D'beuller43'";
-//			byte[] postData       = urlParameters.getBytes( StandardCharsets.UTF_8 );
-//			int    postDataLength = urlParameters.length();
-//			String req        = baseURL + "?" + urlParameters;
-//			URL    url            = new URL( req );
-////			HttpURLConnection conn= (HttpURLConnection) url.openConnection();           
-////			conn.setDoOutput( true );
-//////			conn.setInstanceFollowRedirects( false );
-////			conn.setRequestMethod( "POST" );
-////			conn.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded"); 
-//////			conn.setRequestProperty( "charset", "utf-8");
-////			conn.setRequestProperty( "Content-Length", Integer.toString( postDataLength ));
-//////			conn.setUseCaches( false );
-//////			try( DataOutputStream wr = new DataOutputStream( conn.getOutputStream())) {
-//////			   wr.write( postData );
-//////			}
-//			InetAddress addr = InetAddress.getByName(host);
-//			HttpsURLConnection conn= (HttpsURLConnection) url.openConnection();           
-//			Socket socket = new Socket(addr, null);
-//			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
-//
-//		    bw.write("POST " + path + " HTTP/1.0\r\n");
-//
-//		    bw.write("Content-Length: " + urlParameters.length() + "\r\n");
-//
-//		    bw.write("Content-Type: application/x-www-form-urlencoded\r\n");
-//
-//		    bw.write("\r\n"); 
-//		// Send POST data string
-//
-//		    bw.write(urlParameters);
-//
-//		    bw.flush();
-//			
-//		 // Process the response from Yahoo! Web Services
-//            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//            String line;
-//            while ((line = br.readLine()) != null) {
-//                System.out.println(line);
-//            }
-//            bw.close();
-//            br.close();
-			
-			
-////			String request = "http://api.search.yahoo.com/WebSearchService/V1/webSearch";
-////		    HttpClient client = new HttpClient();
-////
-////		    PostMethod method = new PostMethod(request);
-////
-////		    // Add POST parameters
-////
-////		    method.addParameter("appid","YahooDemo");
-////
-////		    method.addParameter("query","umbrella");
-////
-////		    method.addParameter("results","10");
-////
-////
-////		    // Send POST request
-////
-////		    int statusCode = client.executeMethod(method);
-////
-////		    InputStream rstream = null;
-////
-////		    
-////		    // Get the response body
-////
-////		    rstream = method.getResponseBodyAsStream();
-////			PostMethod method = new PostMethod(request);
-//			// access public yahoo xml data			 
-//            URL u = new URL(url);
-//            
-//            URI uri = new URI(u.getProtocol(), u.getUserInfo(), u.getHost(), u.getPort(), u.getPath(), u.getQuery(), u.getRef());
-////            byte[] data = URLEncoder.encode("select * from yahoo.identity where yid='beuller43'", "UTF-8").getBytes(StandardCharsets.UTF_8);
-//
-//            int data = URLEncoder.encode("q=select * from yahoo.identity where yid='beuller43'", "UTF-8").getBytes("UTF-8").length;
-//            HttpsURLConnection uc = (HttpsURLConnection) uri.toURL().openConnection();
-//
-////            //add request header
-//            uc.setRequestMethod("POST");
-////            uc.setRequestProperty("User-Agent", "Mozilla/5.0");
-//            uc.setRequestProperty("Content-Length", String.valueOf(data));
-//
-////            uc.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-//            uc.setRequestProperty("Content-Type", "application/xml");
-//////
-//////            // Send post request
-//////            uc.setDoOutput(true);
-//////            OutputStream wr = uc.getOutputStream();
-////////            wr.writeBytes(urlParameters);
-//////            wr.flush();
-//////            wr.close();
-//////
-//////            int responseCode = uc.getResponseCode();
-////            uc.setRequestMethod("POST");
-//////            uc.setFixedLengthStreamingMode(0);
-////            uc.setChunkedStreamingMode(64);
-//            uc.setDoOutput(true);
-//            OutputStream os = uc.getOutputStream();
-//            os.write(URLEncoder.encode("q=select * from yahoo.identity where yid='beuller43'", "UTF-8").getBytes());
-            
-            
-//            // read xml data
-//            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//            StringBuffer sb = new StringBuffer();
-//            String line;
-//            while ((line = rd.readLine()) != null) {
-//            	sb.append(line);
-//            }
-//            rd.close();
-//            xmlData = sb.toString();
-//
-////			// access yahoo api via oauth and return data based on url above
-////			SignPostTest signPostTest = new SignPostTest();
-////			xmlData = signPostTest.returnHttpData(url);
-//
-//			
-//			// parse xml data
-//			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//			DocumentBuilder builder = factory.newDocumentBuilder();
-//		    InputSource is = new InputSource(new StringReader(xmlData));
-//		    Document document = builder.parse(is);
-//			
-//			// extract relevant data
-//		    yahooGUID = document.getElementsByTagName("guid").item(0).getTextContent();
-//
-		} catch (Exception e) {
-			e.printStackTrace();
+			// set xml data string
+			String xmlData = OAuthPost.postConnection(url, query);
+
+			// parse xml data
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			InputSource is = new InputSource(new StringReader(xmlData));
+			Document document = builder.parse(is);
+
+			// extract relevant data
+			try {
+				yahooGUID = document.getElementsByTagName("guid").item(0).getTextContent();
+			} catch (NullPointerException e) {
+				e.printStackTrace();
+			}
 		}
-//
-//		model.addAttribute("yahooGUID", yahooGUID);
-
+		
+		model.addAttribute("yahooGUID", yahooGUID);
+			
 		return "yahoouserlookup";
 	}
 

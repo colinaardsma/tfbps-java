@@ -32,7 +32,7 @@ public class OAuthPost {
 	        //Create an HttpURLConnection and add some headers
 	      URL url = new URL(site + "?" + URLEncoder.encode(query, "UTF-8"));
 	     HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
-	     urlConnection.setRequestProperty("Accept", "application/json");
+	     urlConnection.setRequestProperty("Accept", "application/xml");
 	     urlConnection.setRequestMethod("POST");
 	     urlConnection.setDoOutput(true);
 	 
