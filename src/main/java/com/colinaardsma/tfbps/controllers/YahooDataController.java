@@ -10,6 +10,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -22,7 +23,12 @@ import com.colinaardsma.tfbps.models.util.SignPostTest;
 @Controller
 public class YahooDataController extends AbstractController {
 	
-	@RequestMapping(value = "/oauthtest")
+	@RequestMapping(value = "/oauthtest", method = RequestMethod.GET)
+	public String oauthtestform() {
+		return "oauthtest";
+	}
+	
+	@RequestMapping(value = "/oauthtest", method = RequestMethod.POST)
     public String oauthtest(Model model, HttpServletRequest request) {
 		
 //		// check for user in session
@@ -30,15 +36,18 @@ public class YahooDataController extends AbstractController {
 
 		
 		BasicConfigurator.configure();
-		String url = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/standings";
+		String league_key = request.getParameter("league_key");	
+//		String league_key = "357.l.3091";
 
+		String url = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=" + league_key + "/standings";
+		
 		// general data variables
-		String xmlData = new String();
+		String xmlData = null;
 
 		// variables to pass to html
-		String leagueName = new String();
-		String leagueURL = new String();
-		String leagueScoringType = new String();
+		String leagueName = null;
+		String leagueURL = null;
+		String leagueScoringType = null;
 		
 		try {
 			// access yahoo api via oauth and return data based on url above

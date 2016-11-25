@@ -17,7 +17,7 @@
 				</form>
 				<br/>
 				<a th:href="${leagueURL}" th:text="${leagueName}" target="_blank"></a>
-				<p th:text="'Scoring Type: ' + ${leagueScoringType}"></p>
+				<p th:text="(${leagueScoringType} ? 'Scoring Type: ' + ${leagueScoringType} : '')"></p>
 			</div>
 		</div>
 	</body>
