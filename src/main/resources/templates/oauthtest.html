@@ -6,6 +6,16 @@
 			<div id="top" th:include="template :: masthead"></div>
 			<div id="middle">
 				<p>OAuth Test!</p>
+				<form style="width:80%; margin:auto" method="post">
+				    <label style="width:80%; text-align:left">Yahoo League Key<br/>
+			    	    <input style="width:20em" type="text" name="league_key" th:value="${league_key}"></input>
+	    			</label>
+	    			<div class="error" th:text="${error}"></div>
+	    			<label style="width:80%; text-align:left">
+	    				<button type="submit">Lookup</button>
+	    			</label>
+				</form>
+				<br/>
 				<a th:href="${leagueURL}" th:text="${leagueName}" target="_blank"></a>
 				<p th:text="'Scoring Type: ' + ${leagueScoringType}"></p>
 			</div>
