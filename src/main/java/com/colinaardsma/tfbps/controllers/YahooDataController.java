@@ -23,9 +23,11 @@ import com.colinaardsma.tfbps.models.util.SignPostTest;
 @Controller
 public class YahooDataController extends AbstractController {
 	
+	// https://developer.yahoo.com/fantasysports/guide/game-resource.html
+	
 	@RequestMapping(value = "/oauthtest", method = RequestMethod.GET)
 	public String oauthtestform() {
-		return "oauthtest";
+		return "yahooleaguelookup";
 	}
 	
 	@RequestMapping(value = "/oauthtest", method = RequestMethod.POST)
@@ -36,10 +38,14 @@ public class YahooDataController extends AbstractController {
 
 		
 		BasicConfigurator.configure();
-		String league_key = request.getParameter("league_key");	
+		String league_key = request.getParameter("league_key");
+//		String leagueYear = "357"; // 357 = 2016
+		String leagueYear = request.getParameter("leagueYear");
 //		String league_key = "357.l.3091";
+		String prevYearKey = null;
 
-		String url = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=" + league_key + "/standings";
+		String url = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=" + leagueYear + ".l." + league_key + "/standings";
+//		String url = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=" + league_key + "/standings";
 		
 		// general data variables
 		String xmlData = null;
@@ -70,6 +76,7 @@ public class YahooDataController extends AbstractController {
 					leagueName = leagueElement.getElementsByTagName("name").item(0).getTextContent();
 					leagueURL = leagueElement.getElementsByTagName("url").item(0).getTextContent();
 					leagueScoringType = leagueElement.getElementsByTagName("scoring_type").item(0).getTextContent();
+					prevYearKey = leagueElement.getElementsByTagName("renew").item(0).getTextContent();
 
 		    	}
 			    	
@@ -135,10 +142,11 @@ public class YahooDataController extends AbstractController {
 		model.addAttribute("leagueName", leagueName);
 		model.addAttribute("leagueURL", leagueURL);
 		model.addAttribute("leagueScoringType", leagueScoringType);
+		model.addAttribute("prevYearKey", prevYearKey);
 
 //    	model.addAttribute("currentUser", currentUser);
 
-        return "oauthtest";
+        return "yahooleaguelookup";
     }
 
 //	@RequestMapping(value = "/oauthtest")

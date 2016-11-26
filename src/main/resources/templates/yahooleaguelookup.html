@@ -10,6 +10,25 @@
 				    <label style="width:80%; text-align:left">Yahoo League Key<br/>
 			    	    <input style="width:20em" type="text" name="league_key" th:value="${league_key}"></input>
 	    			</label>
+	    			<br/>
+	    			<select name="leagueYear" style="text-align:left">
+						<option value="357">2016</option>
+						<option value="346">2015</option>
+						<option value="328">2014</option>
+						<option value="308">2013</option>
+						<option value="268">2012</option>
+						<option value="253">2011</option>
+						<option value="238">2010</option>
+						<option value="215">2009</option>
+						<option value="195">2008</option>
+						<option value="171">2007</option>
+						<option value="147">2006</option>
+						<option value="113">2005</option>
+						<option value="98">2004</option>
+						<option value="74">2003</option>
+						<option value="39">2002</option>
+						<option value="12">2001</option>
+					</select>
 	    			<div class="error" th:text="${error}"></div>
 	    			<label style="width:80%; text-align:left">
 	    				<button type="submit">Lookup</button>
@@ -18,6 +37,7 @@
 				<br/>
 				<a th:href="${leagueURL}" th:text="${leagueName}" target="_blank"></a>
 				<p th:text="(${leagueScoringType} ? 'Scoring Type: ' + ${leagueScoringType} : '')"></p>
+				<p th:text="(${prevYearKey} ? 'Previous Year Key: ' + ${prevYearKey} : '')"></p>
 			</div>
 		</div>
 	</body>
