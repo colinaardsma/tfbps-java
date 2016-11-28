@@ -1,8 +1,10 @@
 package com.colinaardsma.tfbps.controllers;
 
+import java.io.IOException;
 import java.io.StringReader;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -19,6 +21,10 @@ import org.xml.sax.InputSource;
 
 import com.colinaardsma.tfbps.models.util.OAuthPost;
 import com.colinaardsma.tfbps.models.util.SignPostTest;
+
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
 
 @Controller
 public class YahooDataController extends AbstractController {
@@ -208,38 +214,97 @@ public class YahooDataController extends AbstractController {
 //		return "oauthtest";
 //	}
 	
-	@RequestMapping(value = "/yahoouserlookup")
-	public String yahoouserlookup(Model model, HttpServletRequest request) {
+//	@RequestMapping(value = "/yahoouserlookup")
+//	public String yahoouserlookup(Model model, HttpServletRequest request) {
+//
+//		String yahooUsername = request.getParameter("yahooUsername");
+//		String yahooGUID = new String();
+//		String error = new String();
+//		
+//		try {
+//			if (yahooUsername != null) {
+//
+//				// yahoo query variables
+//				String url = "http://query.yahooapis.com/v1/yql";
+//				String query = "select * from yahoo.identity where yid='" + yahooUsername + "'";
+//
+//				// set xml data string
+//				String xmlData = OAuthPost.postLoginConnection(url, query);
+//
+//				// parse xml data
+//				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//				DocumentBuilder builder = factory.newDocumentBuilder();
+//				InputSource is = new InputSource(new StringReader(xmlData));
+//				Document document = builder.parse(is);
+//
+//				// extract relevant data
+//				yahooGUID = document.getElementsByTagName("guid").item(0).getTextContent();
+//			}
+//		} catch (NullPointerException e) {
+//			e.printStackTrace();
+//			error = "Yahoo! username not found.";
+//		} catch (Exception e2) {
+//			e2.printStackTrace();
+//		}
+//		
+//		model.addAttribute("yahooGUID", yahooGUID);
+//		model.addAttribute("error", error);
+//			
+//		return "yahoouserlookup";
+//	}
 
+	@RequestMapping(value = "/yahoouserlookup")
+	public String yahoouserlookup(Model model, HttpServletRequest request, HttpServletResponse response) {
+
+		String oauth_token = request.getParameter("oauth_token");
+		String oauth_verifier = request.getParameter("oauth_verifier");
+		String[] oauthURL = null;
+		try {
+			oauthURL = OAuthPost.getOAuthURL(); // [0] is url, [1] is token secret
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+
+		
 		String yahooUsername = request.getParameter("yahooUsername");
 		String yahooGUID = new String();
 		String error = new String();
 		
-		try {
-			if (yahooUsername != null) {
-
-				// yahoo query variables
-				String url = "https://query.yahooapis.com/v1/yql";
-				String query = "select * from yahoo.identity where yid='" + yahooUsername + "'";
-
-				// set xml data string
-				String xmlData = OAuthPost.postConnection(url, query);
-
-				// parse xml data
-				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-				DocumentBuilder builder = factory.newDocumentBuilder();
-				InputSource is = new InputSource(new StringReader(xmlData));
-				Document document = builder.parse(is);
-
-				// extract relevant data
-				yahooGUID = document.getElementsByTagName("guid").item(0).getTextContent();
-			}
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-			error = "Yahoo! username not found.";
-		} catch (Exception e2) {
-			e2.printStackTrace();
+		if (oauth_token == null || oauth_verifier == null) {
+			return "redirect:" + oauthURL[0];
 		}
+		
+		try {
+			OAuthPost.getOAuthAccessToken(oauth_verifier.trim(), oauth_token.trim(), oauthURL[1].trim());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+//		try {
+//			if (yahooUsername != null) {
+//
+//				// yahoo query variables
+//				String url = "http://query.yahooapis.com/v1/yql";
+//				String query = "select * from yahoo.identity where yid='" + yahooUsername + "'";
+//
+//				// set xml data string
+//				String xmlData = OAuthPost.postLoginConnection(url, query);
+//
+//				// parse xml data
+//				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//				DocumentBuilder builder = factory.newDocumentBuilder();
+//				InputSource is = new InputSource(new StringReader(xmlData));
+//				Document document = builder.parse(is);
+//
+//				// extract relevant data
+//				yahooGUID = document.getElementsByTagName("guid").item(0).getTextContent();
+//			}
+//		} catch (NullPointerException e) {
+//			e.printStackTrace();
+//			error = "Yahoo! username not found.";
+//		} catch (Exception e2) {
+//			e2.printStackTrace();
+//		}
 		
 		model.addAttribute("yahooGUID", yahooGUID);
 		model.addAttribute("error", error);
@@ -247,4 +312,5 @@ public class YahooDataController extends AbstractController {
 		return "yahoouserlookup";
 	}
 
+	
 }
