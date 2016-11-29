@@ -29,6 +29,8 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 @Controller
 public class YahooDataController extends AbstractController {
 	
+	private static String oauth_token_secret;
+	
 	// https://developer.yahoo.com/fantasysports/guide/game-resource.html
 	
 	@RequestMapping(value = "/oauthtest", method = RequestMethod.GET)
@@ -229,7 +231,7 @@ public class YahooDataController extends AbstractController {
 //				String query = "select * from yahoo.identity where yid='" + yahooUsername + "'";
 //
 //				// set xml data string
-//				String xmlData = OAuthPost.postLoginConnection(url, query);
+//				String xmlData = OAuthPost.postConnection(url, query);
 //
 //				// parse xml data
 //				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -258,27 +260,31 @@ public class YahooDataController extends AbstractController {
 
 		String oauth_token = request.getParameter("oauth_token");
 		String oauth_verifier = request.getParameter("oauth_verifier");
-		String[] oauthURL = null;
-		try {
-			oauthURL = OAuthPost.getOAuthURL(); // [0] is url, [1] is token secret
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
+		String query = request.getQueryString();
 
-		
 		String yahooUsername = request.getParameter("yahooUsername");
 		String yahooGUID = new String();
 		String error = new String();
 		
-		if (oauth_token == null || oauth_verifier == null) {
-			return "redirect:" + oauthURL[0];
+		String[] oauthURLandSecret = {};
+		if (query == null) {
+			try {
+				oauthURLandSecret = OAuthPost.getRequestToken(); // [0] is url, [1] is token secret
+				oauth_token_secret = oauthURLandSecret[1];
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
+			return "redirect:" + oauthURLandSecret[0];
 		}
 		
 		try {
-			OAuthPost.getOAuthAccessToken(oauth_verifier.trim(), oauth_token.trim(), oauthURL[1].trim());
-		} catch (IOException e) {
+			OAuthPost.getAccessToken(oauth_verifier, oauth_token, oauth_token_secret);
+		} catch (OAuthMessageSignerException | OAuthExpectationFailedException | OAuthCommunicationException
+				| IOException e) {
 			e.printStackTrace();
 		}
+
+
 		
 //		try {
 //			if (yahooUsername != null) {
