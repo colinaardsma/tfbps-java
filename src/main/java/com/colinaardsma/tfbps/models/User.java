@@ -19,6 +19,10 @@ public class User extends AbstractEntity {
     private String userName;
     private String passHash;
     private String userGroup;
+    private String email;
+    private String yahooOAuthAccessToken;
+    private String yahooOAuthSessionHandle;
+    private String yahooGUID;
     
 	private List<Post> posts;
 
@@ -55,7 +59,6 @@ public class User extends AbstractEntity {
         this.userGroup = userGroup;
     }
 
-
     @NotNull
     @Column(name = "hash")
     public String getPassHash() {
@@ -81,6 +84,45 @@ public class User extends AbstractEntity {
 		this.posts = posts;
 	}
 	
+    @Column(name = "yahooOAuthSessionHandle")
+    public String getYahooOAuthSessionHandle() {
+        return yahooOAuthSessionHandle;
+    }
+
+    public void setYahooOAuthSessionHandle(String yahooOAuthSessionHandle) {
+        this.yahooOAuthSessionHandle = yahooOAuthSessionHandle;
+    }
+
+    @Column(name = "email")
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Column(name = "yahooOAuthAccessToken")
+    public String getYahooOAuthAccessToken() {
+        return yahooOAuthAccessToken;
+    }
+
+    public void setYahooOAuthAccessToken(String yahooOAuthAccessToken) {
+        this.yahooOAuthAccessToken = yahooOAuthAccessToken;
+    }
+
+    // this doesn't initialize correctly for some reason
+//    @Column(name = "yahooGUID")
+//    public String getGUID() {
+//        return yahooGUID;
+//    }
+//
+//    public void setYahooGUID(String yahooGUID) {
+//        this.yahooGUID = yahooGUID;
+//    }
+
+
+    
 	// custom spreadsheet methods
 //    // turn this into custom spreadsheets
 //    @OneToMany(cascade = CascadeType.ALL)

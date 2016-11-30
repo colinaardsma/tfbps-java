@@ -3,15 +3,15 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.UUID;
 
 import javax.net.ssl.HttpsURLConnection;
+
+import org.apache.commons.codec.digest.HmacUtils;
 
 import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
@@ -114,6 +114,8 @@ public class OAuthPost {
 		
 		String callback = URLEncoder.encode("http://localhost:8080/yahoolinkaccount", "UTF-8");
 				
+//		HmacUtils.hmacSha1Hex(key, string_to_sign);
+		
 		String params = "oauth_consumer_key=" + consumer_key + "&oauth_nonce=" + nonce + "&oauth_signature_method=" + signature_method + "&oauth_signature=" + consumer_secret + "%26" + "&oauth_timestamp=" + timestamp + "&oauth_version=" + version + "&oauth_callback=" + callback;
 		
 		// create an HttpsURLConnection and add some headers

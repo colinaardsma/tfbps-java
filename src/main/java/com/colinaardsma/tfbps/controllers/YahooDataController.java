@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.BasicConfigurator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,15 +21,16 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import com.colinaardsma.tfbps.models.User;
+import com.colinaardsma.tfbps.models.dao.UserDao;
 import com.colinaardsma.tfbps.models.util.OAuthPost;
 import com.colinaardsma.tfbps.models.util.SignPostTest;
 
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
-
 @Controller
 public class YahooDataController extends AbstractController {
+	
+	@Autowired
+	UserDao userdao;
 	
 	private static String oauth_token_secret;
 	
@@ -259,6 +261,9 @@ public class YahooDataController extends AbstractController {
 	@RequestMapping(value = "/yahoolinkaccount")
 	public String yahoolinkaccount(Model model, HttpServletRequest request, HttpServletResponse response) {
 
+		// check for user in session
+		String currentUser = this.getUsernameFromSession(request);
+
 		// oauth request token variables
 		String xoauth_request_auth_url = null;
 		String oauth_callback_confirmed = null;
@@ -336,13 +341,23 @@ public class YahooDataController extends AbstractController {
 				System.out.println("oauth_session_handle=" + oauth_session_handle);
 				System.out.println("oauth_authorization_expires_in=" + oauth_authorization_expires_in);
 				System.out.println("xoauth_yahoo_guid=" + xoauth_yahoo_guid);
+				
+				User yahooUser = userDao.findByUserName(currentUser);
+				if (yahooUser.getGUID() == null) {
+					yahooUser.setYahooGUID(xoauth_yahoo_guid);
+				}
+				yahooUser.setYahooOAuthAccessToken(oauth_access_token);
+				yahooUser.setYahooOAuthSessionHandle(oauth_session_handle);
 
-			} catch (IOException e) {
+		} catch (IOException e) {
 				e.printStackTrace();
 			}
 			String redirect = "http://localhost:8080/yahoolinkaccount?oauth_token=" + oauth_access_token + "&oauth_session_handle=" + oauth_session_handle;
 			return "redirect:" + redirect;
 		}
+
+		oauth_access_token = request.getParameter("oauth_token");
+		oauth_session_handle = request.getParameter("oauth_session_handle");
 
 		// when refreshing access token
 		// add guid, access token, and session handle to user model and combine with try block above
@@ -371,6 +386,10 @@ public class YahooDataController extends AbstractController {
 				System.out.println("oauth_session_handle=" + oauth_session_handle);
 				System.out.println("oauth_authorization_expires_in=" + oauth_authorization_expires_in);
 				System.out.println("xoauth_yahoo_guid=" + xoauth_yahoo_guid);
+				
+				User yahooUser = userDao.findByUserName(currentUser);
+				yahooUser.setYahooOAuthAccessToken(oauth_access_token);
+				yahooUser.setYahooOAuthSessionHandle(oauth_session_handle);
 
 			} catch (IOException e) {
 				e.printStackTrace();
