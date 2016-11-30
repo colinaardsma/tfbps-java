@@ -102,7 +102,7 @@ public class User extends AbstractEntity {
         this.email = email;
     }
 
-    @Column(name = "yahooOAuthAccessToken")
+    @Column(name = "yahooOAuthAccessToken", length = 100000)
     public String getYahooOAuthAccessToken() {
         return yahooOAuthAccessToken;
     }
@@ -112,15 +112,14 @@ public class User extends AbstractEntity {
     }
 
     // this doesn't initialize correctly for some reason
-//    @Column(name = "yahooGUID")
-//    public String getGUID() {
-//        return yahooGUID;
-//    }
-//
-//    public void setYahooGUID(String yahooGUID) {
-//        this.yahooGUID = yahooGUID;
-//    }
+    @Column(name = "yahooGUID")
+    public String getYahooGUID() {
+        return yahooGUID;
+    }
 
+    public void setYahooGUID(String yahooGUID) {
+        this.yahooGUID = yahooGUID;
+    }
 
     
 	// custom spreadsheet methods

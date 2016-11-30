@@ -16,6 +16,6 @@ public interface UserDao extends CrudRepository<User, Integer> {
 	List<User> findAll(); // get all users
     User findByUserName(String userName); // get user with username only
     User findByUid(int uid); // get user with unique id only
-//    User findByYahooGUID(String yahooGUID); // get user with yahoo GUID only
+    User findByYahooGUID(String yahooGUID); // get user with yahoo GUID only
 
 }

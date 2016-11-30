@@ -25,7 +25,7 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
     	
         // basic user page list
-        List<String> basicPages = Arrays.asList("/fpprojb", "/fpprojp", "/blog", "/welcome");
+        List<String> basicPages = Arrays.asList("/fpprojb", "/fpprojp", "/blog", "/welcome", "/yahoolinkaccount");
         // basic user group access list
         List<String> basicAuthList = Arrays.asList("admin", "power-user", "blogger", "commissioner", "basic");
       

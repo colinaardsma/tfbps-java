@@ -11,8 +11,6 @@ import java.util.UUID;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import org.apache.commons.codec.digest.HmacUtils;
-
 import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthConsumer;
@@ -21,7 +19,7 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.http.HttpParameters;
 
-public class OAuthPost {
+public class YahooOAuth {
 	
 	// declare oauth variables
 	private static final String consumer_key = "dj0yJmk9YWE1SnlhV0lUbndoJmQ9WVdrOU9FUmhUelV6TkdVbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD1lMQ--";
@@ -143,6 +141,7 @@ public class OAuthPost {
 	
 	// https://developer.yahoo.com/oauth/guide/oauth-refreshaccesstoken.html
 	// https://developer.yahoo.com/oauth/guide/oauth-make-request.html
+	// https://dev.twitter.com/oauth/overview/authorizing-requests
 	
 	public static String getAccessToken(String oauth_verifier, String oauth_token, String oauth_token_secret) throws IOException {
 		
