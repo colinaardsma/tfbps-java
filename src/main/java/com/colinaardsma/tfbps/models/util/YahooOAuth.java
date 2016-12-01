@@ -183,7 +183,7 @@ public class YahooOAuth {
 
 	}
 	
-	public static String refreshAccessToken(String oauth_access_token, String oauth_session_handle) throws IOException {
+	public static String refreshAccessToken(String oauth_access_token, String oauth_session_handle, String oauth_access_token_secret) throws IOException {
 		
 		final String tokenURL = "https://api.login.yahoo.com/oauth/v2/get_token";
 		
@@ -198,7 +198,7 @@ public class YahooOAuth {
 		String version = "1.0";
 //		String lang_pref = "en-us";
 					
-		String params = "oauth_consumer_key=" + consumer_key + "&oauth_signature_method=" + signature_method + "&oauth_version=" + version + "&oauth_session_handle=" + oauth_session_handle + "&oauth_token=" + oauth_access_token + "&oauth_timestamp=" + timestamp + "&oauth_nonce=" + nonce + "&oauth_signature=" + consumer_secret + "%26";
+		String params = "oauth_consumer_key=" + consumer_key + "&oauth_signature_method=" + signature_method + "&oauth_version=" + version + "&oauth_session_handle=" + oauth_session_handle + "&oauth_token=" + oauth_access_token + "&oauth_timestamp=" + timestamp + "&oauth_nonce=" + nonce + "&oauth_signature=" + consumer_secret + "%26" + oauth_access_token_secret;
 
 		// create an HttpsURLConnection and add some headers
 		URL url = new URL(tokenURL + "?" + params);

@@ -377,11 +377,12 @@ public class YahooDataController extends AbstractController {
 		User yahooUser = userDao.findByUserName(currentUser);
 		oauth_access_token = yahooUser.getYahooOAuthAccessToken();
 		oauth_session_handle = yahooUser.getYahooOAuthSessionHandle();
+		oauth_access_token_secret = yahooUser.getYahooOAuthTokenSecret();
 
 		// refresh access token
 		if (oauth_session_handle != null) {
 			try {
-				String access_token = YahooOAuth.refreshAccessToken(oauth_access_token, oauth_session_handle);
+				String access_token = YahooOAuth.refreshAccessToken(oauth_access_token, oauth_session_handle, oauth_access_token_secret);
 
 				// parse oauth token values from string returned
 				int index = access_token.indexOf("oauth_token=") + "oauth_token=".length();
@@ -405,9 +406,9 @@ public class YahooDataController extends AbstractController {
 				System.out.println("oauth_authorization_expires_in=" + oauth_authorization_expires_in);
 				System.out.println("xoauth_yahoo_guid=" + xoauth_yahoo_guid);
 
-				yahooUser = userDao.findByUserName(currentUser);
 				yahooUser.setYahooOAuthAccessToken(oauth_access_token);
 				yahooUser.setYahooOAuthSessionHandle(oauth_session_handle);
+				yahooUser.setYahooOAuthTokenSecret(oauth_access_token_secret);
 				userDao.save(yahooUser);
 
 			} catch (IOException e) {
@@ -415,7 +416,7 @@ public class YahooDataController extends AbstractController {
 			}
 		}
 		
-		return "redirect: /useraccount";
+		return "redirect:/useraccount";
 	}
 	
 //	@RequestMapping(value = "/yahoousername")
