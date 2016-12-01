@@ -11,6 +11,8 @@ import java.util.UUID;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.apache.commons.codec.digest.HmacUtils;
+
 import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthConsumer;
@@ -97,7 +99,7 @@ public class YahooOAuth {
 
 	public static String getRequestToken () throws IOException {
 
-		final String loginURL = "https://api.login.yahoo.com/oauth/v2/get_request_token";
+		final String requestURL = "https://api.login.yahoo.com/oauth/v2/get_request_token";
 		
 		// generate nonce (number to be used once)
 		String uuid_string = UUID.randomUUID().toString();
@@ -105,19 +107,24 @@ public class YahooOAuth {
 		String nonce = uuid_string; // any relatively random alphanumeric string will work here
 		
 		String timestamp = System.currentTimeMillis()/1000L +"";
-
-		String signature_method = "plaintext";
+		String method = "GET";
+		String signature_method = "HMAC-SHA1";
 		String version = "1.0";
-//		String lang_pref = "en-us";
+		String lang_pref = "en-us";
 		
 		String callback = URLEncoder.encode("http://localhost:8080/yahoolinkaccount", "UTF-8");
+		String params = "&oauth_callback=" + callback + "&oauth_consumer_key=" + consumer_key + "&oauth_nonce=" + nonce + "&oauth_signature_method=" + signature_method + "&oauth_timestamp=" + timestamp + "&oauth_version=" + version + "&xoauth_lang_pref=" + lang_pref;
+	
+		String key = consumer_secret + "&";
+		String base_string = method + "&" + URLEncoder.encode(requestURL, "UTF-8") + "&" + params;
+		System.out.println(key);
+		System.out.println(base_string);
+		String oauth_signature = HmacUtils.hmacSha1Hex(key, base_string);
+
+		params += "&oauth_signature=" + oauth_signature;
 				
-//		HmacUtils.hmacSha1Hex(key, string_to_sign);
-		
-		String params = "oauth_consumer_key=" + consumer_key + "&oauth_nonce=" + nonce + "&oauth_signature_method=" + signature_method + "&oauth_signature=" + consumer_secret + "%26" + "&oauth_timestamp=" + timestamp + "&oauth_version=" + version + "&oauth_callback=" + callback;
-		
 		// create an HttpsURLConnection and add some headers
-		URL url = new URL(loginURL + "?" + params);
+		URL url = new URL(requestURL + "?" + params);
 		HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
 
 		// send the request and read the output
@@ -153,12 +160,18 @@ public class YahooOAuth {
 		String nonce = uuid_string; // any relatively random alphanumeric string will work here
 		
 		String timestamp = System.currentTimeMillis()/1000L +"";
-
-		String signature_method = "plaintext";
+		String method = "GET";
+		String signature_method = "HMAC-SHA1";
 		String version = "1.0";
 //		String lang_pref = "en-us";
 					
-		String params = "oauth_consumer_key=" + consumer_key + "&oauth_signature_method=" + signature_method + "&oauth_version=" + version + "&oauth_verifier=" + oauth_verifier + "&oauth_token=" + oauth_token + "&oauth_timestamp=" + timestamp + "&oauth_nonce=" + nonce + "&oauth_signature=" + consumer_secret + "%26" + oauth_token_secret;
+		String params = "oauth_consumer_key=" + consumer_key + "&oauth_signature_method=" + signature_method + "&oauth_version=" + version + "&oauth_verifier=" + oauth_verifier + "&oauth_token=" + oauth_token + "&oauth_timestamp=" + timestamp + "&oauth_nonce=" + nonce;
+		
+		String key = consumer_secret + "&" + oauth_token_secret;
+		String base_string = method + "&" + URLEncoder.encode(tokenURL, "UTF-8") + "&" + URLEncoder.encode(params, "UTF-8");
+    	String oauth_signature = HmacUtils.hmacSha1Hex(key, base_string);
+
+		params += "&oauth_signature=" + oauth_signature;
 
 		// create an HttpsURLConnection and add some headers
 		URL url = new URL(tokenURL + "?" + params);
@@ -193,12 +206,18 @@ public class YahooOAuth {
 		String nonce = uuid_string; // any relatively random alphanumeric string will work here
 		
 		String timestamp = System.currentTimeMillis()/1000L +"";
-
-		String signature_method = "plaintext";
+		String method = "GET";
+		String signature_method = "HMAC-SHA1";
 		String version = "1.0";
 //		String lang_pref = "en-us";
 					
-		String params = "oauth_consumer_key=" + consumer_key + "&oauth_signature_method=" + signature_method + "&oauth_version=" + version + "&oauth_session_handle=" + oauth_session_handle + "&oauth_token=" + oauth_access_token + "&oauth_timestamp=" + timestamp + "&oauth_nonce=" + nonce + "&oauth_signature=" + consumer_secret + "%26" + oauth_access_token_secret;
+		String params = "oauth_consumer_key=" + consumer_key + "&oauth_signature_method=" + signature_method + "&oauth_version=" + version + "&oauth_session_handle=" + oauth_session_handle + "&oauth_token=" + oauth_access_token + "&oauth_timestamp=" + timestamp + "&oauth_nonce=" + nonce;
+		
+		String key = consumer_secret + "&" + oauth_access_token_secret;
+		String base_string = method + "&" + URLEncoder.encode(tokenURL, "UTF-8") + "&" + URLEncoder.encode(params, "UTF-8");
+    	String oauth_signature = HmacUtils.hmacSha1Hex(key, base_string);
+
+		params += "&oauth_signature=" + oauth_signature;
 
 		// create an HttpsURLConnection and add some headers
 		URL url = new URL(tokenURL + "?" + params);

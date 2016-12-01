@@ -282,7 +282,6 @@ public class YahooDataController extends AbstractController {
 
 		// non-oauth variables
 		String query = request.getQueryString();
-		String error = new String();
 		
 		// when page is first loaded
 		if (query == null) {
@@ -353,10 +352,7 @@ public class YahooDataController extends AbstractController {
 			e.printStackTrace();
 		}
 		
-		model.addAttribute("yahooGUID", xoauth_yahoo_guid);
-		model.addAttribute("error", error);
-			
-		return "yahoolinkaccount";
+		return "redirect:/useraccount";
 	}
 	
 	@RequestMapping(value = "/yahoorefreshaccesstoken")
