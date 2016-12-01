@@ -4,7 +4,7 @@
 </head>
 <body>
     <div class="container">
-        <div id="top" th:include="template :: masthead"></div>
+        <div id="top" th:include="template :: masthead(${currentUser})"></div>
         <div id="middle">
             <p class="lead text-danger">
                 Sorry!
@@ -14,7 +14,7 @@
             </p>
             <a href="javascript:history.go(-1);">Back</a>
         </div>
-        <div th:replace="template :: footer"></div>
+        <div th:replace="template :: footer(${currentUser})"></div>
     </div>
 </body>
 </html>

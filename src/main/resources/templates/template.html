@@ -13,7 +13,7 @@
 	</head>
 	<body>
     	<div class="container">
-	        <div id="top" th:fragment="masthead">
+	        <div id="top" th:fragment="masthead(currentUser)">
     	        <a href="/" style="display:block;"><img th:src="@{/img/tfbps.png}" alt="tFBPs" /></a>
         	    <ul class="nav nav-pills" style="margin:5px auto 20px;display:inline-block;">
             	    <li><a href="/">home</a></li>
@@ -21,6 +21,8 @@
                 	<li><a href="/fpprojp">fantasy pros pitcher projections</a></li>
                 	<li><a href="/blog">blog</a></li>
                 	<li><a href="/admin">admin</a></li>
+                 	<li th:if="${currentUser}"><a href="/useraccount" th:text="${currentUser}"></a></li>
+                	<li><a th:href="(${currentUser} ? '/logout' : '/login')" th:text="(${currentUser} ? 'Log Out' : 'Log In')"></a></li>
                 </ul>
         	</div>
 	        <div id="middle"></div>

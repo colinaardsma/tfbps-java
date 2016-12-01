@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+	<head th:replace="template :: head"></head>
+	<body>
+		<div class="container">
+			<div id="top" th:include="template :: masthead(${currentUser})"></div>
+			<div id="middle">
+				<div>
+					<p>Link to Yahoo! Account</p>
+					<form action="/yahoolinkaccount">
+						<button>Link Yahoo Account</button>
+					</form>
+				</div>
+				<br/>
+				<div>
+					<p>Add League</p>
+					<form action="/addleague">
+						<button>Link Yahoo Account</button>
+						<p>Also link previous 
+						<span><select name="prevyears">
+							<option value="0">1</option>
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+						</select></span> years:</p>
+					</form>
+				</div>
+				<br/>
+				<div>
+					<p>Calculate SGP</p>
+	        		<p th:text="'Date of last pull: ' + ${#dates.format(lastPullDate, 'MM.dd.yy')}"></p>
+	        		<p>League List</p>
+	        		<p>Date of last SGP Calculation: ___</p>
+				</div>
+			</div>
+			<div th:replace="template :: footer(${currentUser})"></div>
+		</div>
+	</body>
+</html>

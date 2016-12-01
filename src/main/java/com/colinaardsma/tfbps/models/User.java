@@ -111,7 +111,6 @@ public class User extends AbstractEntity {
         this.yahooOAuthAccessToken = yahooOAuthAccessToken;
     }
 
-    // this doesn't initialize correctly for some reason
     @Column(name = "yahooGUID")
     public String getYahooGUID() {
         return yahooGUID;
