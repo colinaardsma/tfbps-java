@@ -22,6 +22,7 @@ public class User extends AbstractEntity {
     private String email;
     private String yahooOAuthAccessToken;
     private String yahooOAuthSessionHandle;
+    private String yahooOAuthTokenSecret;
     private String yahooGUID;
     
 	private List<Post> posts;
@@ -109,6 +110,15 @@ public class User extends AbstractEntity {
 
     public void setYahooOAuthAccessToken(String yahooOAuthAccessToken) {
         this.yahooOAuthAccessToken = yahooOAuthAccessToken;
+    }
+    
+    @Column(name = "yahooOAuthTokenSecret")
+    public String getYahooOAuthTokenSecret() {
+    	return yahooOAuthTokenSecret;
+    }
+    
+    public void setYahooOAuthTokenSecret(String yahooOAuthTokenSecret) {
+    	this.yahooOAuthTokenSecret = yahooOAuthTokenSecret;
     }
 
     @Column(name = "yahooGUID")

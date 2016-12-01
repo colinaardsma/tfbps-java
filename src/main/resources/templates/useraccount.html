@@ -8,14 +8,22 @@
 				<div>
 					<p>Link to Yahoo! Account</p>
 					<form action="/yahoolinkaccount">
-						<button>Link Yahoo Account</button>
+						<input type="submit" value="Link Yahoo! Account" />
+					</form>
+					<!-- <p th:text="${yahooGUID}"></p> -->
+				</div>
+				<div>
+				<hr/>
+					<p>Refresh Yahoo! Access Token</p>
+					<form action="/yahoorefreshaccesstoken">
+						<input type="submit" value="Refresh Yahoo! Access Token" />
 					</form>
 				</div>
-				<br/>
+				<hr/>
 				<div>
 					<p>Add League</p>
 					<form action="/addleague">
-						<button>Link Yahoo Account</button>
+						<input type="submit" value="Link Yahoo! Account"/>
 						<p>Also link previous 
 						<span><select name="prevyears">
 							<option value="0">1</option>
@@ -27,7 +35,7 @@
 						</select></span> years:</p>
 					</form>
 				</div>
-				<br/>
+				<hr/>
 				<div>
 					<p>Calculate SGP</p>
 	        		<p th:text="'Date of last pull: ' + ${#dates.format(lastPullDate, 'MM.dd.yy')}"></p>

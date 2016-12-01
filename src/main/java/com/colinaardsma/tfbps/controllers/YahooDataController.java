@@ -282,7 +282,6 @@ public class YahooDataController extends AbstractController {
 
 		// non-oauth variables
 		String query = request.getQueryString();
-		String yahooUsername = request.getParameter("yahooUsername");
 		String error = new String();
 		
 		// when page is first loaded
@@ -316,9 +315,73 @@ public class YahooDataController extends AbstractController {
 		}
 		
 		// when redirected back to page after yahoo authorization
-		if (oauth_verifier != null) {
+		try {
+			String access_token = YahooOAuth.getAccessToken(oauth_verifier, oauth_token, oauth_token_secret);
+
+			// parse oauth token values from string returned
+			int index = access_token.indexOf("oauth_token=") + "oauth_token=".length();
+			oauth_access_token = access_token.substring(index, access_token.indexOf("&",index));
+			index = access_token.indexOf("oauth_token_secret=") + "oauth_token_secret=".length();
+			oauth_access_token_secret = access_token.substring(index, access_token.indexOf("&",index));
+			index = access_token.indexOf("oauth_expires_in=") + "oauth_expires_in=".length();
+			oauth_expires_in = access_token.substring(index, access_token.indexOf("&",index));
+			index = access_token.indexOf("oauth_session_handle=") + "oauth_session_handle=".length();
+			oauth_session_handle = access_token.substring(index, access_token.indexOf("&",index));
+			index = access_token.indexOf("oauth_authorization_expires_in=") + "oauth_authorization_expires_in=".length();
+			oauth_authorization_expires_in = access_token.substring(index, access_token.indexOf("&",index));
+			index = access_token.indexOf("xoauth_yahoo_guid=") + "xoauth_yahoo_guid=".length();
+			xoauth_yahoo_guid = access_token.substring(index, access_token.length());
+
+			// print values to log
+			System.out.println("oauth_token=" + oauth_access_token);
+			System.out.println("oauth_token_secret=" + oauth_access_token_secret);
+			System.out.println("oauth_expires_in=" + oauth_expires_in);
+			System.out.println("oauth_session_handle=" + oauth_session_handle);
+			System.out.println("oauth_authorization_expires_in=" + oauth_authorization_expires_in);
+			System.out.println("xoauth_yahoo_guid=" + xoauth_yahoo_guid);
+
+			User yahooUser = userDao.findByUserName(currentUser);
+			if (yahooUser.getYahooGUID() == null) {
+				yahooUser.setYahooGUID(xoauth_yahoo_guid);
+			}
+			yahooUser.setYahooOAuthAccessToken(oauth_access_token);
+			yahooUser.setYahooOAuthSessionHandle(oauth_session_handle);
+			yahooUser.setYahooOAuthTokenSecret(oauth_access_token_secret);
+			userDao.save(yahooUser);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		model.addAttribute("yahooGUID", xoauth_yahoo_guid);
+		model.addAttribute("error", error);
+			
+		return "yahoolinkaccount";
+	}
+	
+	@RequestMapping(value = "/yahoorefreshaccesstoken")
+	public String yahooRefreshAccessToken(Model model, HttpServletRequest request, HttpServletResponse response) {
+
+		// check for user in session
+		String currentUser = this.getUsernameFromSession(request);
+		
+		// oauth access token variables
+		String oauth_access_token = null;
+		String oauth_access_token_secret = null;
+		String oauth_session_handle = request.getParameter("oauth_session_handle");
+		String oauth_authorization_expires_in = null;
+		String xoauth_yahoo_guid = null;
+		String oauth_expires_in = null;
+		
+		// get expired access token and session handle from user object
+		User yahooUser = userDao.findByUserName(currentUser);
+		oauth_access_token = yahooUser.getYahooOAuthAccessToken();
+		oauth_session_handle = yahooUser.getYahooOAuthSessionHandle();
+
+		// refresh access token
+		if (oauth_session_handle != null) {
 			try {
-				String access_token = YahooOAuth.getAccessToken(oauth_verifier, oauth_token, oauth_token_secret);
+				String access_token = YahooOAuth.refreshAccessToken(oauth_access_token, oauth_session_handle);
 
 				// parse oauth token values from string returned
 				int index = access_token.indexOf("oauth_token=") + "oauth_token=".length();
@@ -341,63 +404,30 @@ public class YahooDataController extends AbstractController {
 				System.out.println("oauth_session_handle=" + oauth_session_handle);
 				System.out.println("oauth_authorization_expires_in=" + oauth_authorization_expires_in);
 				System.out.println("xoauth_yahoo_guid=" + xoauth_yahoo_guid);
-				
-				User yahooUser = userDao.findByUserName(currentUser);
-				if (yahooUser.getYahooGUID() == null) {
-					yahooUser.setYahooGUID(xoauth_yahoo_guid);
-				}
+
+				yahooUser = userDao.findByUserName(currentUser);
 				yahooUser.setYahooOAuthAccessToken(oauth_access_token);
 				yahooUser.setYahooOAuthSessionHandle(oauth_session_handle);
 				userDao.save(yahooUser);
 
-		} catch (IOException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			String redirect = "http://localhost:8080/yahoolinkaccount?oauth_token=" + oauth_access_token + "&oauth_session_handle=" + oauth_session_handle;
-			return "redirect:" + redirect;
 		}
-
-		oauth_access_token = request.getParameter("oauth_token");
-		oauth_session_handle = request.getParameter("oauth_session_handle");
-
-//		// when refreshing access token
-//		// add guid, access token, and session handle to user model and combine with try block above
-//		if (oauth_session_handle != null) {
-//			try {
-//				String access_token = OAuthPost.refreshAccessToken(oauth_access_token, oauth_session_handle);
-//
-//				// parse oauth token values from string returned
-//				int index = access_token.indexOf("oauth_token=") + "oauth_token=".length();
-//				oauth_access_token = access_token.substring(index, access_token.indexOf("&",index));
-//				index = access_token.indexOf("oauth_token_secret=") + "oauth_token_secret=".length();
-//				oauth_access_token_secret = access_token.substring(index, access_token.indexOf("&",index));
-//				index = access_token.indexOf("oauth_expires_in=") + "oauth_expires_in=".length();
-//				oauth_expires_in = access_token.substring(index, access_token.indexOf("&",index));
-//				index = access_token.indexOf("oauth_session_handle=") + "oauth_session_handle=".length();
-//				oauth_session_handle = access_token.substring(index, access_token.indexOf("&",index));
-//				index = access_token.indexOf("oauth_authorization_expires_in=") + "oauth_authorization_expires_in=".length();
-//				oauth_authorization_expires_in = access_token.substring(index, access_token.indexOf("&",index));
-//				index = access_token.indexOf("xoauth_yahoo_guid=") + "xoauth_yahoo_guid=".length();
-//				xoauth_yahoo_guid = access_token.substring(index, access_token.length());
-//
-//				// print values to log
-//				System.out.println("oauth_token=" + oauth_access_token);
-//				System.out.println("oauth_token_secret=" + oauth_access_token_secret);
-//				System.out.println("oauth_expires_in=" + oauth_expires_in);
-//				System.out.println("oauth_session_handle=" + oauth_session_handle);
-//				System.out.println("oauth_authorization_expires_in=" + oauth_authorization_expires_in);
-//				System.out.println("xoauth_yahoo_guid=" + xoauth_yahoo_guid);
-//				
-//				User yahooUser = userDao.findByUserName(currentUser);
-//				yahooUser.setYahooOAuthAccessToken(oauth_access_token);
-//				yahooUser.setYahooOAuthSessionHandle(oauth_session_handle);
-//
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-
 		
+		return "redirect: /useraccount";
+	}
+	
+//	@RequestMapping(value = "/yahoousername")
+//	public String yahooUsername(Model model, HttpServletRequest request, HttpServletResponse response) {
+//
+//		// check for user in session
+//		String currentUser = this.getUsernameFromSession(request);
+//		
+//		String yahooUsername =  request.getParameter("yahooUsername");
+//		String yahooGUID = null;
+//		String error = null;
+//
 //		try {
 //			if (yahooUsername != null) {
 //
@@ -406,7 +436,7 @@ public class YahooDataController extends AbstractController {
 //				String query = "select * from yahoo.identity where yid='" + yahooUsername + "'";
 //
 //				// set xml data string
-//				String xmlData = OAuthPost.postLoginConnection(url, query);
+//				String xmlData = YahooOAuth.postConnection(url, query);
 //
 //				// parse xml data
 //				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -423,12 +453,14 @@ public class YahooDataController extends AbstractController {
 //		} catch (Exception e2) {
 //			e2.printStackTrace();
 //		}
-		
-		model.addAttribute("yahooGUID", xoauth_yahoo_guid);
-		model.addAttribute("error", error);
-			
-		return "yahoolinkaccount";
-	}
-
+//		
+//		model.addAttribute("currentUser", currentUser);
+//		model.addAttribute("yahooUsername", yahooUsername);
+//		model.addAttribute("error", error);
+//		model.addAttribute("yahooGUID", yahooGUID);
+//		
+//		return "yahoousername";
+//
+//	}
 	
 }
