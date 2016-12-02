@@ -364,5 +364,81 @@ public class YahooOAuth {
 		return access_token;
 
 	}
+	
+	public static String getLeagueData(String oauth_access_token, String oauth_session_handle, String oauth_access_token_secret, String yqlURL) throws IOException {
+		
+		// generate nonce (number to be used once)
+		String uuid_string = UUID.randomUUID().toString();
+		uuid_string = uuid_string.replaceAll("-", "");		
+		String nonce = uuid_string; // any relatively random alphanumeric string will work here
+		
+		String timestamp = System.currentTimeMillis()/1000L +"";
+		String method = "GET";
+		String signature_method = "HMAC-SHA1";
+		String version = "1.0";
+		
+		// build map of parameters for oauth normalization
+		Map<String,String> paramMap = new HashMap<String,String>();
+		paramMap.put("oauth_consumer_key", consumer_key);
+		paramMap.put("oauth_nonce", nonce);
+		paramMap.put("oauth_session_handle", oauth_session_handle);
+		paramMap.put("oauth_signature_method", signature_method);
+		paramMap.put("oauth_timestamp", timestamp);
+		paramMap.put("oauth_token", OAuth.percentDecode(oauth_access_token));
+		paramMap.put("oauth_version", version);
+		
+		String oauth_signature = null;
+		
+		// calculate HMAC-SHA1 hex value for oauth_signature
+		try {
+			String key = OAuth.percentEncode(consumer_secret) + "&" + OAuth.percentEncode(oauth_access_token_secret);
+			String base_string = OAuthUtil.getSignatureBaseString(yqlURL, method, paramMap);
+
+			System.out.println(key);
+			System.out.println(base_string);
+			
+		    byte[] keyBytes = key.getBytes();
+		    SecretKey secretKey = new SecretKeySpec(keyBytes, "HmacSHA1");
+
+		    Mac mac = Mac.getInstance("HmacSHA1");
+
+		    mac.init(secretKey);
+
+		    byte[] text = base_string.getBytes();
+
+			oauth_signature = new String(Base64.encodeBase64(mac.doFinal(text))).trim();
+			System.out.println(oauth_signature);
+			oauth_signature = OAuth.percentEncode(oauth_signature);
+			System.out.println(oauth_signature);
+			
+		} catch (OAuthException | NoSuchAlgorithmException | InvalidKeyException e) {
+			e.printStackTrace();
+		}
+
+		String params = "oauth_consumer_key=" + consumer_key + "&oauth_nonce=" + nonce + "&oauth_session_handle=" + oauth_session_handle + "&oauth_signature_method=" + signature_method + "&oauth_timestamp=" + timestamp + "&oauth_token=" + oauth_access_token + "&oauth_version=" + version + "&oauth_signature=" + oauth_signature;
+
+		
+		// create an HttpsURLConnection and add some headers
+		URL url = new URL(yqlURL + "?" + params);
+		HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();		
+
+		// send the request and read the output
+		String access_token = new String();
+		try {
+			System.out.println("Connecting to: " + url.toString());
+			System.out.println("Response: " + urlConnection.getResponseCode() + " " + urlConnection.getResponseMessage());
+			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+			Scanner scanner = new Scanner(in,"UTF-8");
+			access_token = scanner.useDelimiter("\\A").next();;
+			scanner.close();
+			System.out.println(access_token);
+		}
+		finally {
+			urlConnection.disconnect();
+		}
+		
+		return access_token;
+
+	}
 
 }

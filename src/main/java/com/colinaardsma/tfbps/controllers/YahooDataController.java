@@ -44,8 +44,8 @@ public class YahooDataController extends AbstractController {
 	@RequestMapping(value = "/oauthtest", method = RequestMethod.POST)
     public String oauthtest(Model model, HttpServletRequest request) {
 		
-//		// check for user in session
-//		String currentUser = this.getUsernameFromSession(request);
+		// check for user in session
+		String currentUser = this.getUsernameFromSession(request);
 
 		
 		BasicConfigurator.configure();
@@ -66,10 +66,23 @@ public class YahooDataController extends AbstractController {
 		String leagueURL = null;
 		String leagueScoringType = null;
 		
+		// get expired access token and session handle from user object
+		User yahooUser = userDao.findByUserName(currentUser);
+		String oauth_access_token = yahooUser.getYahooOAuthAccessToken();
+		String oauth_session_handle = yahooUser.getYahooOAuthSessionHandle();
+		String oauth_access_token_secret = yahooUser.getYahooOAuthTokenSecret();
+		
+		try {
+			xmlData = YahooOAuth.getLeagueData(oauth_access_token, oauth_session_handle, oauth_access_token_secret, url);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
+		
 		try {
 			// access yahoo api via oauth and return data based on url above
-			SignPostTest signPostTest = new SignPostTest();
-			xmlData = signPostTest.returnHttpData(url);
+//			SignPostTest signPostTest = new SignPostTest();
+//			xmlData = signPostTest.returnHttpData(url);
 			
 			// parse xml data
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -154,8 +167,7 @@ public class YahooDataController extends AbstractController {
 		model.addAttribute("leagueURL", leagueURL);
 		model.addAttribute("leagueScoringType", leagueScoringType);
 		model.addAttribute("prevYearKey", prevYearKey);
-
-//    	model.addAttribute("currentUser", currentUser);
+    	model.addAttribute("currentUser", currentUser);
 
         return "yahooleaguelookup";
     }

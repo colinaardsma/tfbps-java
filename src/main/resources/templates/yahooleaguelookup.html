@@ -3,7 +3,7 @@
 	<head th:replace="template :: head"></head>
 	<body>
 		<div class="container">
-			<div id="top" th:include="template :: masthead"></div>
+			<div id="top" th:include="template :: masthead(${currentUser})"></div>
 			<div id="middle">
 				<p>OAuth Test!</p>
 				<form style="width:80%; margin:auto" method="post">
