@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -19,7 +18,6 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.digest.HmacUtils;
 
 import com.google.gdata.client.authn.oauth.OAuthException;
 import com.google.gdata.client.authn.oauth.OAuthUtil;
@@ -159,7 +157,7 @@ public class YahooOAuth {
 		
 		// calculate HMAC-SHA1 hex value for oauth_signature
 		try {
-			String key = consumer_secret + "&";
+			String key = OAuth.percentEncode(consumer_secret) + "&";
 			String base_string = OAuthUtil.getSignatureBaseString(requestURL, method, paramMap);
 
 			System.out.println(key);
@@ -175,14 +173,14 @@ public class YahooOAuth {
 		    byte[] text = base_string.getBytes();
 
 			oauth_signature = new String(Base64.encodeBase64(mac.doFinal(text))).trim();
-			oauth_signature = URLEncoder.encode(oauth_signature, "UTF-8");
+			oauth_signature = OAuth.percentEncode(oauth_signature);
 			System.out.println(oauth_signature);
 			
 		} catch (OAuthException | NoSuchAlgorithmException | InvalidKeyException e) {
 			e.printStackTrace();
 		}
 
-		callback = URLEncoder.encode(callback, "UTF-8"); // encode callback url for inclusion in query string
+		callback = OAuth.percentEncode(callback); // encode callback url for inclusion in query string
 		String params = "oauth_callback=" + callback + "&oauth_consumer_key=" + consumer_key + "&oauth_nonce=" + nonce + "&oauth_signature_method=" + signature_method + "&oauth_timestamp=" + timestamp + "&oauth_version=" + version + "&xoauth_lang_pref=" + lang_pref + "&oauth_signature=" + oauth_signature;
 				
 		// create an HttpsURLConnection and add some headers
@@ -225,7 +223,6 @@ public class YahooOAuth {
 		String method = "GET";
 		String signature_method = "HMAC-SHA1";
 		String version = "1.0";
-		String lang_pref = "en-us";
 		
 		// build map of parameters for oauth normalization
 		Map<String,String> paramMap = new HashMap<String,String>();
@@ -236,13 +233,12 @@ public class YahooOAuth {
 		paramMap.put("oauth_token", oauth_token);
 		paramMap.put("oauth_verifier", oauth_verifier);
 		paramMap.put("oauth_version", version);
-		paramMap.put("xoauth_lang_pref", lang_pref);
 		
 		String oauth_signature = null;
 		
 		// calculate HMAC-SHA1 hex value for oauth_signature
 		try {
-			String key = consumer_secret + "&" + oauth_token_secret;
+			String key = OAuth.percentEncode(consumer_secret) + "&" + OAuth.percentEncode(oauth_token_secret);
 			String base_string = OAuthUtil.getSignatureBaseString(tokenURL, method, paramMap);
 
 			System.out.println(key);
@@ -259,14 +255,14 @@ public class YahooOAuth {
 
 			oauth_signature = new String(Base64.encodeBase64(mac.doFinal(text))).trim();
 			System.out.println(oauth_signature);
-			oauth_signature = URLEncoder.encode(oauth_signature, "UTF-8");
+			oauth_signature = OAuth.percentEncode(oauth_signature);
 			System.out.println(oauth_signature);
 			
 		} catch (OAuthException | NoSuchAlgorithmException | InvalidKeyException e) {
 			e.printStackTrace();
 		}
-	
-		String params = "oauth_consumer_key=" + consumer_key + "&oauth_nonce=" + nonce + "&oauth_signature_method=" + signature_method + "&oauth_timestamp=" + timestamp + "&oauth_token=" + oauth_token + "&oauth_verifier=" + oauth_verifier + "&oauth_version=" + version + "&xoauth_lang_pref=" + lang_pref + "&oauth_signature=" + oauth_signature;
+
+		String params = "oauth_consumer_key=" + consumer_key + "&oauth_nonce=" + nonce + "&oauth_signature_method=" + signature_method + "&oauth_timestamp=" + timestamp + "&oauth_token=" + oauth_token + "&oauth_verifier=" + oauth_verifier + "&oauth_version=" + version + "&oauth_signature=" + oauth_signature;
 
 		// create an HttpsURLConnection and add some headers
 		URL url = new URL(tokenURL + "?" + params);
@@ -304,16 +300,48 @@ public class YahooOAuth {
 		String method = "GET";
 		String signature_method = "HMAC-SHA1";
 		String version = "1.0";
-//		String lang_pref = "en-us";
-					
-		String params = "oauth_consumer_key=" + consumer_key + "&oauth_signature_method=" + signature_method + "&oauth_version=" + version + "&oauth_session_handle=" + oauth_session_handle + "&oauth_token=" + oauth_access_token + "&oauth_timestamp=" + timestamp + "&oauth_nonce=" + nonce;
 		
-		String key = consumer_secret + "&" + oauth_access_token_secret;
-		String base_string = method + "&" + URLEncoder.encode(tokenURL, "UTF-8") + "&" + URLEncoder.encode(params, "UTF-8");
-    	String oauth_signature = HmacUtils.hmacSha1Hex(key, base_string);
+		// build map of parameters for oauth normalization
+		Map<String,String> paramMap = new HashMap<String,String>();
+		paramMap.put("oauth_consumer_key", consumer_key);
+		paramMap.put("oauth_nonce", nonce);
+		paramMap.put("oauth_session_handle", oauth_session_handle);
+		paramMap.put("oauth_signature_method", signature_method);
+		paramMap.put("oauth_timestamp", timestamp);
+		paramMap.put("oauth_token", OAuth.percentDecode(oauth_access_token));
+		paramMap.put("oauth_version", version);
+		
+		String oauth_signature = null;
+		
+		// calculate HMAC-SHA1 hex value for oauth_signature
+		try {
+			String key = OAuth.percentEncode(consumer_secret) + "&" + OAuth.percentEncode(oauth_access_token_secret);
+			String base_string = OAuthUtil.getSignatureBaseString(tokenURL, method, paramMap);
 
-		params += "&oauth_signature=" + oauth_signature;
+			System.out.println(key);
+			System.out.println(base_string);
+			
+		    byte[] keyBytes = key.getBytes();
+		    SecretKey secretKey = new SecretKeySpec(keyBytes, "HmacSHA1");
 
+		    Mac mac = Mac.getInstance("HmacSHA1");
+
+		    mac.init(secretKey);
+
+		    byte[] text = base_string.getBytes();
+
+			oauth_signature = new String(Base64.encodeBase64(mac.doFinal(text))).trim();
+			System.out.println(oauth_signature);
+			oauth_signature = OAuth.percentEncode(oauth_signature);
+			System.out.println(oauth_signature);
+			
+		} catch (OAuthException | NoSuchAlgorithmException | InvalidKeyException e) {
+			e.printStackTrace();
+		}
+
+		String params = "oauth_consumer_key=" + consumer_key + "&oauth_nonce=" + nonce + "&oauth_session_handle=" + oauth_session_handle + "&oauth_signature_method=" + signature_method + "&oauth_timestamp=" + timestamp + "&oauth_token=" + oauth_access_token + "&oauth_version=" + version + "&oauth_signature=" + oauth_signature;
+
+		
 		// create an HttpsURLConnection and add some headers
 		URL url = new URL(tokenURL + "?" + params);
 		HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();		
