@@ -89,7 +89,7 @@ public class YahooOAuthController extends AbstractController {
 		    InputSource is = new InputSource(new StringReader(xmlData));
 		    Document document = builder.parse(is);
 			
-			//Iterating through the nodes and extracting the data.	    
+			// iterate through the nodes and extract the data.	    
 		    NodeList leagueList = document.getElementsByTagName("league");
 		    for (int i = 0; i < leagueList.getLength(); i++) {
 		    	Node leagueNode = leagueList.item(i);

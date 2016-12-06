@@ -1,17 +1,27 @@
 package com.colinaardsma.tfbps.controllers;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.swing.plaf.synth.SynthSeparatorUI;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import com.colinaardsma.tfbps.models.FPProjBatter;
 import com.colinaardsma.tfbps.models.User;
@@ -46,19 +56,63 @@ public class YahooDataController extends AbstractController {
 //		String yahooGUID = "POC4MNFOIBH3MFVDI6TBJJFGLE";
 //		String yahooGUID = "QRCBPZJIL2KBT7OLD6X2DXUD2Y";
 
-		Document doc;
-		try {
+
+		
+//		try {
 //			String profileURL = "https://fantasysports.yahooapis.com/fantasy/v2/user/" + yahooGUID + "/profile";
 //			String profileURL = "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/games;game_keys=mlb/teams";
-//			String profileURL = "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/games/teams";
-			String profileURL = "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/games/leagues";
+			String teamsURL = "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/games/teams";
+			String leaguesURL = "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/games/leagues";
 //			String profileURL = "https://profiles.sports.yahoo.com/user/" + yahooGUID;
-			String userLeagues = YahooOAuth.oauthGetRequest(profileURL, yahooUser);
-			String userTeams = YahooOAuth.oauthGetRequest(profileURL, yahooUser);
+			String leagueURL = null;
+			String leagueKey = null;
+			String leagueName = null;
+			String leaugeKey = null;
+			String teamName = null;
+			String year = null;
+			ArrayList<String> leagues = new ArrayList<String>();
+			String userLeagues = null;
+			String userTeams = null;
+			
+			try {
+			userLeagues = YahooOAuth.oauthGetRequest(leaguesURL, yahooUser);
+			userTeams = YahooOAuth.oauthGetRequest(teamsURL, yahooUser);
 //			String profileURL = "https://profiles.sports.yahoo.com/user/PP5K6WYOIYQL4ZWJAYTN2ZQ5CU";
+			System.out.println("Leagues:\n\n" + userLeagues);
+			System.out.println("Teams:\n\n" + userTeams);
 
-			// use XML DOM here
-			Document doc = 
+			// parse xml data
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+//			Document document = builder.parse(xmlData);
+		    InputSource is = new InputSource(new StringReader(userLeagues));
+		    Document document = builder.parse(is);
+			
+			// iterate through the nodes and extract the data.	    
+		    NodeList leagueList = document.getElementsByTagName("league");
+		    for (int i = 0; i < leagueList.getLength(); i++) {
+		    	Node leagueNode = leagueList.item(i);
+		    	if (leagueNode.getNodeType() == Node.ELEMENT_NODE) {
+				    Element leagueElement = (Element) leagueNode;
+				    if (leagueElement.getElementsByTagName("game_code").item(0).getTextContent().equals("mlb")) {
+						leagueName = leagueElement.getElementsByTagName("name").item(0).getTextContent();
+						leagueURL = leagueElement.getElementsByTagName("url").item(0).getTextContent();
+						leagueKey = leagueElement.getElementsByTagName("league_key").item(0).getTextContent();
+//						teamName = leagueElement.getElementsByTagName("scoring_type").item(0).getTextContent();
+						year = leagueElement.getElementsByTagName("season").item(0).getTextContent();
+						System.out.println("League Name: " + leagueName);
+						System.out.println("League URL: " + leagueURL);
+						System.out.println("League Ley: " + leagueKey);
+						System.out.println("Year: " + year);
+				    }
+		    	}
+			    	
+		    }
+			} catch (ParserConfigurationException | SAXException | IOException e) {
+				e.printStackTrace();
+			}
+
+			
 			
 			
 //			// parse xml data from string returned
