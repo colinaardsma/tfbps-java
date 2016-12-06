@@ -127,21 +127,21 @@ public class TfbpsJavaApplicationTests {
 		
     }
 	
-	@Test
-	public void OAuthTest() {
-
-		BasicConfigurator.configure();
-
-		try {
-
-			SignPostTest signPostTest = new SignPostTest();
-
-			signPostTest.returnHttpData();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
+//	@Test
+//	public void OAuthTest() {
+//
+//		BasicConfigurator.configure();
+//
+//		try {
+//
+//			SignPostTest signPostTest = new SignPostTest();
+//
+//			signPostTest.returnHttpData();
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//	}
 
 }

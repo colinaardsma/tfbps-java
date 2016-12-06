@@ -66,12 +66,12 @@ public class YahooOAuthController extends AbstractController {
 		
 		// get expired access token and session handle from user object
 		User yahooUser = userDao.findByUserName(currentUser);
-		String oauth_access_token = yahooUser.getYahooOAuthAccessToken();
-		String oauth_session_handle = yahooUser.getYahooOAuthSessionHandle();
-		String oauth_access_token_secret = yahooUser.getYahooOAuthTokenSecret();
+//		String oauth_access_token = yahooUser.getYahooOAuthAccessToken();
+//		String oauth_session_handle = yahooUser.getYahooOAuthSessionHandle();
+//		String oauth_access_token_secret = yahooUser.getYahooOAuthTokenSecret();
 		
 		try {
-			xmlData = YahooOAuth.getLeagueData(oauth_access_token, oauth_session_handle, oauth_access_token_secret, url);
+			xmlData = YahooOAuth.oauthGetRequest(url, yahooUser);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			error = "Not authorized to view league or league does not exist.";

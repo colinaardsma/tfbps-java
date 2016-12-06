@@ -19,6 +19,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.commons.codec.binary.Base64;
 
+import com.colinaardsma.tfbps.models.User;
 import com.google.gdata.client.authn.oauth.OAuthException;
 import com.google.gdata.client.authn.oauth.OAuthUtil;
 
@@ -365,7 +366,7 @@ public class YahooOAuth {
 
 	}
 	
-	public static String getLeagueData(String oauth_access_token, String oauth_session_handle, String oauth_access_token_secret, String yqlURL) throws IOException {
+	public static String oauthGetRequest(String requestURL, User user) throws IOException {
 		
 		// generate nonce (number to be used once)
 		String uuid_string = UUID.randomUUID().toString();
@@ -376,6 +377,9 @@ public class YahooOAuth {
 		String method = "GET";
 		String signature_method = "HMAC-SHA1";
 		String version = "1.0";
+		String oauth_access_token = user.getYahooOAuthAccessToken();
+		String oauth_session_handle = user.getYahooOAuthSessionHandle();
+		String oauth_access_token_secret = user.getYahooOAuthTokenSecret();
 		
 		// build map of parameters for oauth normalization
 		Map<String,String> paramMap = new HashMap<String,String>();
@@ -392,7 +396,7 @@ public class YahooOAuth {
 		// calculate HMAC-SHA1 hex value for oauth_signature
 		try {
 			String key = OAuth.percentEncode(consumer_secret) + "&" + OAuth.percentEncode(oauth_access_token_secret);
-			String base_string = OAuthUtil.getSignatureBaseString(yqlURL, method, paramMap);
+			String base_string = OAuthUtil.getSignatureBaseString(requestURL, method, paramMap);
 
 			System.out.println(key);
 			System.out.println(base_string);
@@ -419,25 +423,25 @@ public class YahooOAuth {
 
 		
 		// create an HttpsURLConnection and add some headers
-		URL url = new URL(yqlURL + "?" + params);
+		URL url = new URL(requestURL + "?" + params);
 		HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();		
 
 		// send the request and read the output
-		String access_token = new String();
+		String html = new String();
 		try {
 			System.out.println("Connecting to: " + url.toString());
 			System.out.println("Response: " + urlConnection.getResponseCode() + " " + urlConnection.getResponseMessage());
 			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 			Scanner scanner = new Scanner(in,"UTF-8");
-			access_token = scanner.useDelimiter("\\A").next();;
+			html = scanner.useDelimiter("\\A").next();;
 			scanner.close();
-			System.out.println(access_token);
+			System.out.println(html);
 		}
 		finally {
 			urlConnection.disconnect();
 		}
 		
-		return access_token;
+		return html;
 
 	}
 
