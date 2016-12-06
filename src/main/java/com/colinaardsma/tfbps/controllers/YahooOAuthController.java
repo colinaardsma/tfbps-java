@@ -81,32 +81,31 @@ public class YahooOAuthController extends AbstractController {
 			return "yahooleaguelookup";
 		}
 
-			// parse xml data
-			try {
+		// parse xml data
+		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
-//			Document document = builder.parse(xmlData);
-		    InputSource is = new InputSource(new StringReader(xmlData));
-		    Document document = builder.parse(is);
-			
+			//			Document document = builder.parse(xmlData);
+			InputSource is = new InputSource(new StringReader(xmlData));
+			Document document = builder.parse(is);
+
 			// iterate through the nodes and extract the data.	    
-		    NodeList leagueList = document.getElementsByTagName("league");
-		    for (int i = 0; i < leagueList.getLength(); i++) {
-		    	Node leagueNode = leagueList.item(i);
-		    	if (leagueNode.getNodeType() == Node.ELEMENT_NODE) {
-				    Element leagueElement = (Element) leagueNode;
+			NodeList leagueList = document.getElementsByTagName("league");
+			for (int i = 0; i < leagueList.getLength(); i++) {
+				Node leagueNode = leagueList.item(i);
+				if (leagueNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element leagueElement = (Element) leagueNode;
 					leagueName = leagueElement.getElementsByTagName("name").item(0).getTextContent();
 					leagueURL = leagueElement.getElementsByTagName("url").item(0).getTextContent();
 					leagueScoringType = leagueElement.getElementsByTagName("scoring_type").item(0).getTextContent();
 					prevYearKey = leagueElement.getElementsByTagName("renew").item(0).getTextContent();
+				}
 
-		    	}
-			    	
-		    }
-			} catch (ParserConfigurationException | SAXException | IOException e) {
-				e.printStackTrace();
 			}
-		    
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			e.printStackTrace();
+		}
+
 		    
 //		    NodeList nodeList = document.getDocumentElement().getChildNodes();
 //

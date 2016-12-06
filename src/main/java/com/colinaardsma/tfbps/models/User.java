@@ -2,14 +2,22 @@ package com.colinaardsma.tfbps.models;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import com.colinaardsma.tfbps.models.util.PasswordHash;
+
+
+// https://alextretyakov.blogspot.com/2013/07/jpa-many-to-many-mappings.html
+// https://www.mkyong.com/hibernate/hibernate-many-to-many-relationship-example-annotation/
+// https://docs.jboss.org/hibernate/stable/annotations/reference/en/html/entity.html
 
 
 @Entity
@@ -26,6 +34,8 @@ public class User extends AbstractEntity {
     private String yahooGUID;
     
 	private List<Post> posts;
+	
+	private List<YahooRotoLeague> yahooRotoLeagues;
 
 
 //    private Map<String, StockHolding> portfolio; // turn this into custom spreadsheets
@@ -129,7 +139,16 @@ public class User extends AbstractEntity {
     public void setYahooGUID(String yahooGUID) {
         this.yahooGUID = yahooGUID;
     }
-
+    
+    @ManyToMany(targetEntity = YahooRotoLeague.class, cascade = CascadeType.ALL)
+    @JoinTable(name = "users_yahoorotoleague", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "uid"), inverseJoinColumns = @JoinColumn(name = "yahoorotoleague_id", referencedColumnName = "uid"))
+    public List<YahooRotoLeague> getYahooRotoLeague() {
+    	return yahooRotoLeagues;
+    }
+    
+    public void setYahooRotoLeague(List<YahooRotoLeague> yahooRotoLeagues) {
+    	this.yahooRotoLeagues = yahooRotoLeagues;
+    }
     
 	// custom spreadsheet methods
 //    // turn this into custom spreadsheets

@@ -5,39 +5,40 @@
 		<div class="container">
 			<div id="top" th:include="template :: masthead(${currentUser})"></div>
 			<div id="middle">
-				<p>OAuth Test!</p>
+				<p>Add Yahoo! Leagues</p>
 				<form style="width:80%; margin:auto" method="post">
-				    <label style="width:80%; text-align:left">Yahoo League Key<br/>
-			    	    <input style="width:20em" type="text" name="league_key" th:value="${league_key}"></input>
-	    			</label>
-	    			<br/>
-	    			<select name="leagueYear" style="text-align:left">
-						<option value="357" th:selected="(${leagueYear} == '357')">2016</option>
-						<option value="346" th:selected="(${leagueYear} == '346')">2015</option>
-						<option value="328" th:selected="(${leagueYear} == '328')">2014</option>
-						<option value="308" th:selected="(${leagueYear} == '308')">2013</option>
-						<option value="268" th:selected="(${leagueYear} == '268')">2012</option>
-						<option value="253" th:selected="(${leagueYear} == '253')">2011</option>
-						<option value="238" th:selected="(${leagueYear} == '238')">2010</option>
-						<option value="215" th:selected="(${leagueYear} == '215')">2009</option>
-						<option value="195" th:selected="(${leagueYear} == '195')">2008</option>
-						<option value="171" th:selected="(${leagueYear} == '171')">2007</option>
-						<option value="147" th:selected="(${leagueYear} == '147')">2006</option>
-						<option value="113" th:selected="(${leagueYear} == '113')">2005</option>
-						<option value="98" th:selected="(${leagueYear} == '98')">2004</option>
-						<option value="74" th:selected="(${leagueYear} == '74')">2003</option>
-						<option value="39" th:selected="(${leagueYear} == '39')">2002</option>
-						<option value="12" th:selected="(${leagueYear} == '12')">2001</option>
+	    			<select name="league" style="text-align:left">
+						<option th:each="league : ${leagues}" th:value="${league[3]}" th:text="${league[0]} + ' - ' + ${league[1]}"></option>
 					</select>
+					<br/>
+					<label>
+						<input type="checkbox" name="leagueHistory" value="true" checked="checked" />
+						Link Previous Years
+					</label>
+					<br/>
+					<label>Years to Link 
+						<select name="prevyears">
+							<option value="0">0</option>
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+						</select>
+					</label>
 	    			<div class="error" th:text="${error}"></div>
 	    			<label style="width:80%; text-align:left">
-	    				<button type="submit">Lookup</button>
+	    				<input type="submit" />
 	    			</label>
 				</form>
 				<br/>
-				<a th:href="${leagueURL}" th:text="${leagueName}" target="_blank"></a>
-				<p th:text="(${leagueScoringType} ? 'Scoring Type: ' + ${leagueScoringType} : '')"></p>
-				<p th:text="(${prevYearKey} ? 'Previous Year Key: ' + ${prevYearKey} : '')"></p>
+				<div th:each="linkedLeague : ${linkedLeagues}">
+					<a th:href="${linkedLeague.leagueURL}" th:text="${linkedLeague.leagueName}" target="_blank"></a>
+					<!-- <p th:text="(${leagueScoringType} ? 'Scoring Type: ' + ${leagueScoringType} : '')"></p> -->
+					<p th:text="(${linkedLeague.leagueKey} ? 'League Key: ' + ${linkedLeague.leagueKey} : '')"></p>
+					<p th:text="(${linkedLeague.previousYearKey} ? 'Previous Year Key: ' + ${linkedLeague.previousYearKey} : '')"></p>
+					<br/>
+				</div>
 			</div>
 		</div>
 	</body>
