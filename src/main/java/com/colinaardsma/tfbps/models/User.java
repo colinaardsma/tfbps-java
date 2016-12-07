@@ -33,10 +33,10 @@ public class User extends AbstractEntity {
     private Date yahooOAuthTokenExpiration;
     private String yahooGUID;
     
+    // join variables
 	private List<Post> posts;
-	
 	private List<YahooRotoLeague> yahooRotoLeagues;
-
+	private List<YahooRotoTeam> yahooRotoTeams;
 
 //    private Map<String, StockHolding> portfolio; // turn this into custom spreadsheets
         
@@ -159,6 +159,16 @@ public class User extends AbstractEntity {
     @SuppressWarnings("unused")
 	private void setYahooRotoLeagues(List<YahooRotoLeague> yahooRotoLeagues) {
     	this.yahooRotoLeagues = yahooRotoLeagues;
+    }
+    
+    @OneToMany
+    public List<YahooRotoTeam> yahooRotoTeams() {
+    	return yahooRotoTeams;
+    }
+    
+    @SuppressWarnings("unused")
+    private void setYahooRotoTeams(List<YahooRotoTeam> yahooRotoTeams) {
+    	this.yahooRotoTeams = yahooRotoTeams;
     }
 
     void addYahooRotoLeague (YahooRotoLeague league) throws IllegalArgumentException {

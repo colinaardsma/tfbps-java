@@ -19,8 +19,10 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.colinaardsma.tfbps.models.User;
+import com.colinaardsma.tfbps.models.dao.UserDao;
 import com.google.gdata.client.authn.oauth.OAuthException;
 import com.google.gdata.client.authn.oauth.OAuthUtil;
 
@@ -38,95 +40,8 @@ public class YahooOAuth {
 	private static final String consumer_key = "dj0yJmk9YWE1SnlhV0lUbndoJmQ9WVdrOU9FUmhUelV6TkdVbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD1lMQ--";
 	private static final String consumer_secret = "55d6606ea0bec9a1468d3ea01bbf1c9991dbf93f";
 
-	public static String postConnection (String site, String query) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException {
-
-		final String requestURL = "https://api.login.yahoo.com/oauth/v2/get_request_token";
-		
-		// generate nonce (number to be used once)
-		String uuid_string = UUID.randomUUID().toString();
-		uuid_string = uuid_string.replaceAll("-", "");		
-		String nonce = uuid_string; // any relatively random alphanumeric string will work here
-		
-		String timestamp = System.currentTimeMillis()/1000L +"";
-		String method = "POST";
-		String signature_method = "HMAC-SHA1";
-		String version = "1.0";
-		String lang_pref = "en-us";
-		String callback = "http://localhost:8080/yahoolinkaccount";
-		
-		//Build the list of parameters
-		HttpParameters params =  new HttpParameters();
-		params.put("oauth_callback", callback);
-		params.put("oauth_consumer_key", consumer_key);
-		params.put("oauth_nonce", nonce);
-		params.put("oauth_signature_method", signature_method);
-		params.put("oauth_timestamp", timestamp);
-		params.put("oauth_version", version);
-		params.put("xoauth_lang_pref", lang_pref);
-		
-		//Create an HttpURLConnection and add some headers
-		URL url = new URL(site + "?" + params.toString());
-		HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
-		urlConnection.setRequestProperty("Accept", "application/xml");
-		urlConnection.setRequestMethod("POST");
-		urlConnection.setDoOutput(true);
-		
-		//Sign the request
-		//The key to signing the POST fields is to add them as additional parameters, but already percent-encoded; and also to add the realm header.
-		OAuthConsumer dealabsConsumer = new DefaultOAuthConsumer(consumer_key, consumer_secret);
-		HttpParameters doubleEncodedParams =  new HttpParameters();
-		Iterator<String> iter = params.keySet().iterator();
-		while (iter.hasNext()) {
-			String key = iter.next();
-			doubleEncodedParams.put(key, OAuth.percentEncode(params.getFirst(key)));
-		}
-		doubleEncodedParams.put("realm", site);
-		dealabsConsumer.setAdditionalParameters(doubleEncodedParams);
-		dealabsConsumer.sign(urlConnection);
-
-		//Create the POST payload
-		StringBuilder sb = new StringBuilder();
-		iter = params.keySet().iterator();
-		for (int i = 0; iter.hasNext(); i++) {
-			String param = iter.next();
-			if (i > 0) {
-				sb.append("&");
-			}
-			sb.append(param);
-			sb.append("=");
-			sb.append(OAuth.percentEncode(params.getFirst(param)));
-		}
-
-		//Send the payload to the connection
-		String formEncoded = sb.toString();
-		OutputStreamWriter outputStreamWriter = null;
-		try {
-			outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream(), "UTF-8");
-			outputStreamWriter.write(formEncoded);
-		} finally {
-			if (outputStreamWriter != null) {
-				outputStreamWriter.close();
-			}
-		}
-
-		//Send the request and read the output
-		String xmlData = new String();
-		try {
-			System.out.println("Connecting to: " + site + "?" + sb);
-			System.out.println("Response: " + urlConnection.getResponseCode() + " " + urlConnection.getResponseMessage());
-			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-			Scanner scanner = new Scanner(in,"UTF-8");
-			xmlData = scanner.useDelimiter("\\A").next();;
-			scanner.close();
-			System.out.println(xmlData);
-		}
-		finally {
-			urlConnection.disconnect();
-		}
-		
-		return xmlData;
-
-	}
+	@Autowired
+	UserDao userDao;
 
 	public static String getRequestToken () throws IOException {
 
@@ -381,6 +296,9 @@ public class YahooOAuth {
 		String oauth_access_token = user.getYahooOAuthAccessToken();
 		String oauth_session_handle = user.getYahooOAuthSessionHandle();
 		String oauth_access_token_secret = user.getYahooOAuthTokenSecret();
+		String oauth_expires_in = null;
+		String oauth_authorization_expires_in = null;
+		String xoauth_yahoo_guid;
 		
 		// build map of parameters for oauth normalization
 		Map<String,String> paramMap = new HashMap<String,String>();
@@ -397,7 +315,42 @@ public class YahooOAuth {
 		// check to see if oauth token is still valid
 		Date now = new Date(System.currentTimeMillis());
 		if (user.getYahooOAuthTokenExpiration().after(now)) {
-			refreshAccessToken(oauth_access_token, oauth_session_handle, oauth_access_token_secret);
+			try {
+				String access_token = YahooOAuth.refreshAccessToken(oauth_access_token, oauth_session_handle, oauth_access_token_secret);
+
+				// parse oauth token values from string returned
+				int index = access_token.indexOf("oauth_token=") + "oauth_token=".length();
+				oauth_access_token = access_token.substring(index, access_token.indexOf("&",index));
+				index = access_token.indexOf("oauth_token_secret=") + "oauth_token_secret=".length();
+				oauth_access_token_secret = access_token.substring(index, access_token.indexOf("&",index));
+				index = access_token.indexOf("oauth_expires_in=") + "oauth_expires_in=".length();
+				oauth_expires_in = access_token.substring(index, access_token.indexOf("&",index));
+				index = access_token.indexOf("oauth_session_handle=") + "oauth_session_handle=".length();
+				oauth_session_handle = access_token.substring(index, access_token.indexOf("&",index));
+				index = access_token.indexOf("oauth_authorization_expires_in=") + "oauth_authorization_expires_in=".length();
+				oauth_authorization_expires_in = access_token.substring(index, access_token.indexOf("&",index));
+				index = access_token.indexOf("xoauth_yahoo_guid=") + "xoauth_yahoo_guid=".length();
+				xoauth_yahoo_guid = access_token.substring(index, access_token.length());
+
+				// print values to log
+				System.out.println("oauth_token=" + oauth_access_token);
+				System.out.println("oauth_token_secret=" + oauth_access_token_secret);
+				System.out.println("oauth_expires_in=" + oauth_expires_in);
+				System.out.println("oauth_session_handle=" + oauth_session_handle);
+				System.out.println("oauth_authorization_expires_in=" + oauth_authorization_expires_in);
+				System.out.println("xoauth_yahoo_guid=" + xoauth_yahoo_guid);
+
+				user.setYahooOAuthAccessToken(oauth_access_token);
+				user.setYahooOAuthSessionHandle(oauth_session_handle);
+				user.setYahooOAuthTokenSecret(oauth_access_token_secret);
+		    	Date expiration = new Date(System.currentTimeMillis() + (Long.parseLong(oauth_expires_in) * 1000));
+		    	user.setYahooOAuthTokenExpiration(expiration);
+				userDao.save(user);
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 		}
 		
 		// calculate HMAC-SHA1 hex value for oauth_signature

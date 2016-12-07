@@ -48,6 +48,7 @@ public class YahooOAuthController extends AbstractController {
 		
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
+		User yahooUser = userDao.findByUserName(currentUser);
 
 		BasicConfigurator.configure();
 		String league_key = request.getParameter("league_key");
@@ -64,13 +65,7 @@ public class YahooOAuthController extends AbstractController {
 		String leagueURL = null;
 		String leagueScoringType = null;
 		String error = null;
-		
-		// get expired access token and session handle from user object
-		User yahooUser = userDao.findByUserName(currentUser);
-//		String oauth_access_token = yahooUser.getYahooOAuthAccessToken();
-//		String oauth_session_handle = yahooUser.getYahooOAuthSessionHandle();
-//		String oauth_access_token_secret = yahooUser.getYahooOAuthTokenSecret();
-		
+
 		try {
 			xmlData = YahooOAuth.oauthGetRequest(url, yahooUser);
 		} catch (IOException e1) {
@@ -107,60 +102,6 @@ public class YahooOAuthController extends AbstractController {
 			e.printStackTrace();
 		}
 
-		    
-//		    NodeList nodeList = document.getDocumentElement().getChildNodes();
-//
-////		    for (int i = 0; i < nodeList.getLength(); i++) {
-////
-////		    	//We have encountered an <employee> tag.
-////		    	Node qNode = nodeList.item(i);
-////		    	//			      if (node instanceof Element) {
-////		    	//			        Employee emp = new Employee(); // object
-////		    	//			        emp.id = node.getAttributes().
-////		    	//			            getNamedItem("id").getNodeValue();
-////		    	if (qNode.getNodeName() == "query") {
-////		    		NodeList qChildNodes = qNode.getChildNodes();
-//		    		for (int j = 0; j < nodeList.getLength(); j++) {
-//		    			Node rNode = nodeList.item(j);
-//		    			if (rNode.getNodeName() == "results") {
-//		    				NodeList rChildNodes = rNode.getChildNodes();
-//		    				for (int k = 0; k < rChildNodes.getLength(); k++) {
-//		    					Node lNode = rChildNodes.item(k);
-//		    					if (lNode.getNodeName() == "league") {			      
-//		    						NodeList lChildNodes = lNode.getChildNodes();
-//		    						for (int l = 0; l < lChildNodes.getLength(); l++) {
-//		    							Node nNode = lChildNodes.item(j);
-//		    							if (nNode.getNodeName() == "name") {
-//		    								leagueName = nNode.getLastChild().getTextContent().trim();
-//		    							}
-//		    						}
-//		    					}
-//		    				}
-//		    			}
-//		    		}
-////		    	}
-////		    }
-			          
-//			          //Identifying the child tag of employee encountered. 
-//			          if (lcNode instanceof Element) {
-//			            String content = lcNode.getLastChild().
-//			                getTextContent().trim();
-//			            switch (lcNode.getNodeName()) {
-//			              case "firstName":
-//			                emp.firstName = content;
-//			                break;
-//			              case "lastName":
-//			                emp.lastName = content;
-//			                break;
-//			              case "location":
-//			                emp.location = content;
-//			                break;
-//			            }		        
-//			        empList.add(emp);
-		    			
-
-			
-
 		model.addAttribute("leagueName", leagueName);
 		model.addAttribute("leagueURL", leagueURL);
 		model.addAttribute("leagueScoringType", leagueScoringType);
@@ -169,104 +110,6 @@ public class YahooOAuthController extends AbstractController {
 
         return "yahooleaguelookup";
     }
-
-//	@RequestMapping(value = "/oauthtest")
-//	public String oauthtest(Model model, HttpServletRequest request) {
-//		// this version (POST) is preferred to the GET version (above), but need to figure out how to allow individual user login via yahoo
-////		String league_key = request.getParameter("league_key");		
-//		String league_key = "357.l.3091";
-//		String leagueName = new String();
-//		String leagueURL = new String();
-//		String leagueScoringType = new String();
-//		String error = new String();
-//		
-//		try {
-//			if (league_key != null) {
-//
-//				// yahoo query variables
-////				https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20fantasysports.leagues.standings%20where%20league_key%3D'238.l.627060'&diagnostics=true
-//				String url = "https://query.yahooapis.com/v1/yql";
-//				String query = "select * from fantasysports.leagues.standings where league_key='357.l.3091'";
-//
-//				// set xml data string
-//				String xmlData = OAuthPost.postConnection(url, query);
-//
-//				// parse xml data
-//				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//				DocumentBuilder builder = factory.newDocumentBuilder();
-//				InputSource is = new InputSource(new StringReader(xmlData));
-//				Document document = builder.parse(is);
-//
-//				// extract relevant data
-//				// iterate through the nodes and extract the data.	    
-//			    NodeList leagueList = document.getElementsByTagName("league");
-//			    for (int i = 0; i < leagueList.getLength(); i++) {
-//			    	Node leagueNode = leagueList.item(i);
-//			    	if (leagueNode.getNodeType() == Node.ELEMENT_NODE) {
-//					    Element leagueElement = (Element) leagueNode;
-//						leagueName = leagueElement.getElementsByTagName("name").item(0).getTextContent();
-//						leagueURL = leagueElement.getElementsByTagName("url").item(0).getTextContent();
-//						leagueScoringType = leagueElement.getElementsByTagName("scoring_type").item(0).getTextContent();
-//
-//			    	}	
-//			    }
-//			}
-//		} catch (NullPointerException e) {
-//			e.printStackTrace();
-//			error = "Yahoo! league key not found.";
-//		} catch (IOException e2) {
-//			e2.printStackTrace();
-//			error = "Yahoo! league key not found.";
-//		} catch (Exception e3) {
-//			e3.printStackTrace();
-//		}
-//		
-//		model.addAttribute("leagueName", leagueName);
-//		model.addAttribute("leagueURL", leagueURL);
-//		model.addAttribute("leagueScoringType", leagueScoringType);
-//		model.addAttribute("error", error);
-//			
-//		return "oauthtest";
-//	}
-	
-//	@RequestMapping(value = "/yahoouserlookup")
-//	public String yahoouserlookup(Model model, HttpServletRequest request) {
-//
-//		String yahooUsername = request.getParameter("yahooUsername");
-//		String yahooGUID = new String();
-//		String error = new String();
-//		
-//		try {
-//			if (yahooUsername != null) {
-//
-//				// yahoo query variables
-//				String url = "http://query.yahooapis.com/v1/yql";
-//				String query = "select * from yahoo.identity where yid='" + yahooUsername + "'";
-//
-//				// set xml data string
-//				String xmlData = OAuthPost.postConnection(url, query);
-//
-//				// parse xml data
-//				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//				DocumentBuilder builder = factory.newDocumentBuilder();
-//				InputSource is = new InputSource(new StringReader(xmlData));
-//				Document document = builder.parse(is);
-//
-//				// extract relevant data
-//				yahooGUID = document.getElementsByTagName("guid").item(0).getTextContent();
-//			}
-//		} catch (NullPointerException e) {
-//			e.printStackTrace();
-//			error = "Yahoo! username not found.";
-//		} catch (Exception e2) {
-//			e2.printStackTrace();
-//		}
-//		
-//		model.addAttribute("yahooGUID", yahooGUID);
-//		model.addAttribute("error", error);
-//			
-//		return "yahoouserlookup";
-//	}
 
 	@RequestMapping(value = "/yahoolinkaccount")
 	public String yahoolinkaccount(Model model, HttpServletRequest request, HttpServletResponse response) {
@@ -417,8 +260,8 @@ public class YahooOAuthController extends AbstractController {
 				yahooUser.setYahooOAuthAccessToken(oauth_access_token);
 				yahooUser.setYahooOAuthSessionHandle(oauth_session_handle);
 				yahooUser.setYahooOAuthTokenSecret(oauth_access_token_secret);
-		    	Date now = new Date(System.currentTimeMillis() + (Long.parseLong(oauth_expires_in) * 1000));
-				yahooUser.setYahooOAuthTokenExpiration(now);
+		    	Date expiration = new Date(System.currentTimeMillis() + (Long.parseLong(oauth_expires_in) * 1000));
+				yahooUser.setYahooOAuthTokenExpiration(expiration);
 				userDao.save(yahooUser);
 
 			} catch (IOException e) {
@@ -428,51 +271,5 @@ public class YahooOAuthController extends AbstractController {
 		
 		return "redirect:/useraccount";
 	}
-
-	
-//	@RequestMapping(value = "/yahoousername")
-//	public String yahooUsername(Model model, HttpServletRequest request, HttpServletResponse response) {
-//
-//		// check for user in session
-//		String currentUser = this.getUsernameFromSession(request);
-//		
-//		String yahooUsername =  request.getParameter("yahooUsername");
-//		String yahooGUID = null;
-//		String error = null;
-//
-//		try {
-//			if (yahooUsername != null) {
-//
-//				// yahoo query variables
-//				String url = "http://query.yahooapis.com/v1/yql";
-//				String query = "select * from yahoo.identity where yid='" + yahooUsername + "'";
-//
-//				// set xml data string
-//				String xmlData = YahooOAuth.postConnection(url, query);
-//
-//				// parse xml data
-//				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//				DocumentBuilder builder = factory.newDocumentBuilder();
-//				InputSource is = new InputSource(new StringReader(xmlData));
-//				Document document = builder.parse(is);
-//
-//				// extract relevant data
-//				yahooGUID = document.getElementsByTagName("guid").item(0).getTextContent();
-//			}
-//		} catch (NullPointerException e) {
-//			e.printStackTrace();
-//			error = "Yahoo! username not found.";
-//		} catch (Exception e2) {
-//			e2.printStackTrace();
-//		}
-//		
-//		model.addAttribute("currentUser", currentUser);
-//		model.addAttribute("yahooUsername", yahooUsername);
-//		model.addAttribute("error", error);
-//		model.addAttribute("yahooGUID", yahooGUID);
-//		
-//		return "yahoousername";
-//
-//	}
 
 }

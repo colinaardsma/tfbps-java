@@ -39,11 +39,6 @@ public class YahooDataController extends AbstractController {
 	@Autowired
 	YahooRotoLeagueDao yahooRotoLeagueDao;
 
-	//	@RequestMapping(value = "/useryahooleagues", method = RequestMethod.GET)
-	//	public String useryahooleaguesform() {
-	//		return "yahooleaguelookup";
-	//	}
-
 	// https://developer.yahoo.com/fantasysports/guide/ResourcesAndCollections.html
 
 	@RequestMapping(value = "/useryahooleagues", method = RequestMethod.GET)
@@ -244,13 +239,6 @@ public class YahooDataController extends AbstractController {
 			leagueKey = prevYearKey;
 			prevYears -= 1;
 		} while (prevYears >= 0);
-
-
-		
-		
-		
-		
-		
 
 		model.addAttribute("linkedLeagues", linkedLeagues);
 //		model.addAttribute("leagueName", leagueName);
