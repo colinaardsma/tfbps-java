@@ -3,6 +3,7 @@ package com.colinaardsma.tfbps.controllers;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URLDecoder;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -355,6 +356,8 @@ public class YahooOAuthController extends AbstractController {
 			yahooUser.setYahooOAuthAccessToken(oauth_access_token);
 			yahooUser.setYahooOAuthSessionHandle(oauth_session_handle);
 			yahooUser.setYahooOAuthTokenSecret(oauth_access_token_secret);
+	    	Date now = new Date(System.currentTimeMillis() + (Long.parseLong(oauth_expires_in) * 1000));
+			yahooUser.setYahooOAuthTokenExpiration(now);
 			userDao.save(yahooUser);
 
 		} catch (IOException e) {
@@ -414,6 +417,8 @@ public class YahooOAuthController extends AbstractController {
 				yahooUser.setYahooOAuthAccessToken(oauth_access_token);
 				yahooUser.setYahooOAuthSessionHandle(oauth_session_handle);
 				yahooUser.setYahooOAuthTokenSecret(oauth_access_token_secret);
+		    	Date now = new Date(System.currentTimeMillis() + (Long.parseLong(oauth_expires_in) * 1000));
+				yahooUser.setYahooOAuthTokenExpiration(now);
 				userDao.save(yahooUser);
 
 			} catch (IOException e) {

@@ -1,5 +1,6 @@
 package com.colinaardsma.tfbps.models;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -29,6 +30,7 @@ public class User extends AbstractEntity {
     private String yahooOAuthAccessToken;
     private String yahooOAuthSessionHandle;
     private String yahooOAuthTokenSecret;
+    private Date yahooOAuthTokenExpiration;
     private String yahooGUID;
     
 	private List<Post> posts;
@@ -43,6 +45,8 @@ public class User extends AbstractEntity {
         this.userName = userName;
 //        this.portfolio = new HashMap<String, StockHolding>();  // turn this into custom spreadsheets
         this.userGroup = "basic"; // start as a basic user
+        this.yahooOAuthTokenExpiration = new Date(System.currentTimeMillis());
+
     }
 
     // empty constructor so Hibernate can do its magic
@@ -129,6 +133,15 @@ public class User extends AbstractEntity {
     	this.yahooOAuthTokenSecret = yahooOAuthTokenSecret;
     }
 
+    @Column(name = "yahooOAuthTokenExpiration")
+    public Date getYahooOAuthTokenExpiration() {
+    	return yahooOAuthTokenExpiration;
+    }
+    
+    public void setYahooOAuthTokenExpiration(Date yahooOAuthTokenExpiration) {
+    	this.yahooOAuthTokenExpiration = yahooOAuthTokenExpiration;
+    }
+    
     @Column(name = "yahooGUID")
     public String getYahooGUID() {
         return yahooGUID;
@@ -138,19 +151,6 @@ public class User extends AbstractEntity {
         this.yahooGUID = yahooGUID;
     }
     
-//    @Column(name = "yahooRotoLeagueKeys")
-//    public List<String> getYahooRotoLeagueKeys() {
-//    	return yahooRotoLeagueKeys;
-//    }
-//    
-//    public void setYahooRotoLeagueKeys(List<String> yahooRotoLeagueKeys) {
-//    	this.yahooRotoLeagueKeys = yahooRotoLeagueKeys;
-//    }
-    
-	// custom spreadsheet methods
-    // turn this into custom spreadsheets
-//    @ManyToMany(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "owner_id")
 	@ManyToMany(mappedBy="users")
     public List<YahooRotoLeague> getYahooRotoLeagues() {
         return yahooRotoLeagues;

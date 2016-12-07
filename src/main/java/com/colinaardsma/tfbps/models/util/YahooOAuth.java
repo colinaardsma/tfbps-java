@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -392,6 +393,12 @@ public class YahooOAuth {
 		paramMap.put("oauth_version", version);
 		
 		String oauth_signature = null;
+		
+		// check to see if oauth token is still valid
+		Date now = new Date(System.currentTimeMillis());
+		if (user.getYahooOAuthTokenExpiration().after(now)) {
+			refreshAccessToken(oauth_access_token, oauth_session_handle, oauth_access_token_secret);
+		}
 		
 		// calculate HMAC-SHA1 hex value for oauth_signature
 		try {

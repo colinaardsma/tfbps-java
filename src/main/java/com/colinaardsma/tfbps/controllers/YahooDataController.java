@@ -138,13 +138,13 @@ public class YahooDataController extends AbstractController {
 		
 		List<YahooRotoLeague> linkedLeagues = new ArrayList<YahooRotoLeague>();
 		
+		leagueHistory = (leagueHistory == null) ? "false" : "true";
+		
 		if (leagueHistory.equals("true")) {
 			String py = request.getParameter("prevyears");
-			System.out.println("Previous Years String: " + py);
+//			System.out.println("Previous Years String: " + py);
 			prevYears = Integer.parseInt(py);
-			System.out.println("Previous Years int: " + prevYears);
-
-//			model.addAttribute("prevYearKey", prevYearKey);
+//			System.out.println("Previous Years int: " + prevYears);
 		}
 
 		do {
