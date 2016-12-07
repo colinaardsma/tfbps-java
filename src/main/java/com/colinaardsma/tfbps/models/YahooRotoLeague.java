@@ -2,9 +2,9 @@ package com.colinaardsma.tfbps.models;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -53,6 +53,10 @@ public class YahooRotoLeague extends AbstractEntity {
 	private int team13Rank;
 	private int team14UID; // join to YahooRotoTeam model
 	private int team14Rank;
+	
+//	private List<String> yahooGUIDs;
+	
+//	private YahooRotoLeagueMembership yahoorotoleaguememberships;
 	
 	private List<User> users;
 	
@@ -386,7 +390,26 @@ public class YahooRotoLeague extends AbstractEntity {
 		this.team14Rank = team14Rank;
 	}
 	
-	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "yahooRotoLeagues", targetEntity = User.class)
+//    @Column(name = "yahooGUIDs")
+//	public List<String> getYahooGUIDs() {
+//		return yahooGUIDs;
+//	}
+//	
+//	public void setYahooGUIDs(List<String> yahooGUIDs) {
+//		this.yahooGUIDs = yahooGUIDs;
+//	}
+//	
+//	@ManyToOne
+//	public YahooRotoLeagueMembership getYahoorotoleaguememberships() {
+//		return yahoorotoleaguememberships;
+//	}
+//	
+//	public void setYahoorotoleaguememberships(YahooRotoLeagueMembership yahoorotoleaguememberships) {
+//		this.yahoorotoleaguememberships = yahoorotoleaguememberships;
+//	}
+	
+    @ManyToMany
+    @JoinTable(name="USER_YAHOOROTOLEAGUES")
 	public List<User> getUsers() {
 		return users;
 	}
@@ -394,6 +417,5 @@ public class YahooRotoLeague extends AbstractEntity {
 	public void setUsers(List<User> users) {
 		this.users = users;
 	}
-	
 	
 }

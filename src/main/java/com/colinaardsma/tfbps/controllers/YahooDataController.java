@@ -176,33 +176,58 @@ public class YahooDataController extends AbstractController {
 
 						season = Integer.parseInt(leagueElement.getElementsByTagName("season").item(0).getTextContent());
 
-						if (yahooRotoLeagueDao.findByLeagueKey(leagueKey) == null) { // if league does not already exist create it
+						// if league does not already exist create it
+						if (yahooRotoLeagueDao.findByLeagueKey(leagueKey) == null) {
 							YahooRotoLeague newLeague = new YahooRotoLeague(leagueKey, leagueName, leagueURL, teamCount, season);
+							
+							// add current user to list of league managers
+							List<User> managers = new ArrayList<User>();
+							managers.add(yahooUser);
+							newLeague.setUsers(managers);
 
 							// link to previous year only if user requested
-							if (prevYears > 0) {
+							if (prevYears >= 0) {
 								newLeague.setPreviousYearKey(prevYearKey);
-							}
-							if (yahooRotoLeagueDao.findByLeagueKey(prevYearKey) != null) {
-								newLeague.setPreviousYearUID(yahooRotoLeagueDao.findByLeagueKey(prevYearKey).getUid());
-							} else if (yahooRotoLeagueDao.findByLeagueKey(nextYearKey) != null) {
-								YahooRotoLeague nextYearLeague = yahooRotoLeagueDao.findByLeagueKey(nextYearKey);
-								nextYearLeague.setPreviousYearKey(leagueKey);
-								yahooRotoLeagueDao.save(nextYearLeague);
+								if (yahooRotoLeagueDao.findByLeagueKey(prevYearKey) != null) {
+									newLeague.setPreviousYearUID(yahooRotoLeagueDao.findByLeagueKey(prevYearKey).getUid());
+								}
+
+								yahooRotoLeagueDao.save(newLeague);
+
+								if (yahooRotoLeagueDao.findByLeagueKey(nextYearKey) != null) {
+									YahooRotoLeague nextYearLeague = yahooRotoLeagueDao.findByLeagueKey(nextYearKey);
+									nextYearLeague.setPreviousYearKey(leagueKey);
+									nextYearLeague.setPreviousYearUID(yahooRotoLeagueDao.findByLeagueKey(leagueKey).getUid());
+									yahooRotoLeagueDao.save(nextYearLeague);
+								}
+							} else {
+								yahooRotoLeagueDao.save(newLeague);
 							}
 
-							yahooRotoLeagueDao.save(newLeague);
 							
 							linkedLeagues.add(newLeague);
 							
-						} else { // if league exists add previous year key as required
+						// if league exists add previous year key as required
+						} else {
 							YahooRotoLeague existingLeague = yahooRotoLeagueDao.findByLeagueKey(leagueKey);
+							
+							// add current user to list of league managers
+							List<User> managers = existingLeague.getUsers();
+							if (!managers.contains(yahooUser)) {
+								managers.add(yahooUser);
+								existingLeague.setUsers(managers);
+							}
+					
 							// link to previous year only if user requested
-							if (prevYears > 0) {
+							if (prevYears >= 0) {
 								existingLeague.setPreviousYearKey(prevYearKey);
 							}
 							if (yahooRotoLeagueDao.findByLeagueKey(prevYearKey) != null) {
 								existingLeague.setPreviousYearUID(yahooRotoLeagueDao.findByLeagueKey(prevYearKey).getUid());
+							} else if (yahooRotoLeagueDao.findByLeagueKey(nextYearKey) != null) {
+								YahooRotoLeague nextYearLeague = yahooRotoLeagueDao.findByLeagueKey(nextYearKey);
+								nextYearLeague.setPreviousYearKey(leagueKey);
+								yahooRotoLeagueDao.save(nextYearLeague);
 							}
 
 							yahooRotoLeagueDao.save(existingLeague);
@@ -218,7 +243,7 @@ public class YahooDataController extends AbstractController {
 			}
 			leagueKey = prevYearKey;
 			prevYears -= 1;
-		} while (prevYears > 0);
+		} while (prevYears >= 0);
 
 
 		

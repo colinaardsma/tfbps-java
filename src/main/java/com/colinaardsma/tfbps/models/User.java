@@ -2,11 +2,9 @@ package com.colinaardsma.tfbps.models;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -140,38 +138,37 @@ public class User extends AbstractEntity {
         this.yahooGUID = yahooGUID;
     }
     
-    @ManyToMany(targetEntity = YahooRotoLeague.class, cascade = CascadeType.ALL)
-    @JoinTable(name = "users_yahoorotoleague", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "uid"), inverseJoinColumns = @JoinColumn(name = "yahoorotoleague_id", referencedColumnName = "uid"))
-    public List<YahooRotoLeague> getYahooRotoLeague() {
-    	return yahooRotoLeagues;
-    }
-    
-    public void setYahooRotoLeague(List<YahooRotoLeague> yahooRotoLeagues) {
-    	this.yahooRotoLeagues = yahooRotoLeagues;
-    }
+//    @Column(name = "yahooRotoLeagueKeys")
+//    public List<String> getYahooRotoLeagueKeys() {
+//    	return yahooRotoLeagueKeys;
+//    }
+//    
+//    public void setYahooRotoLeagueKeys(List<String> yahooRotoLeagueKeys) {
+//    	this.yahooRotoLeagueKeys = yahooRotoLeagueKeys;
+//    }
     
 	// custom spreadsheet methods
-//    // turn this into custom spreadsheets
-//    @OneToMany(cascade = CascadeType.ALL)
+    // turn this into custom spreadsheets
+//    @ManyToMany(cascade = CascadeType.ALL)
 //    @JoinColumn(name = "owner_id")
-//    public Map<String, StockHolding> getPortfolio() {
-//        return portfolio;
-//    }
-//
-//    @SuppressWarnings("unused")
-//	private void setPortfolio(Map<String, StockHolding> portfolio) {
-//        this.portfolio = portfolio;
-//    }
-//
-//    void addHolding (StockHolding holding) throws IllegalArgumentException {
-//
-//        // Ensure a holding for the symbol doesn't already exist
-//        if (portfolio.containsKey(holding.getSymbol())) {
-//            throw new IllegalArgumentException("A holding for symbol " + holding.getSymbol()
-//                    + " already exits for user " + getUid());
-//        }
-//
-//        portfolio.put(holding.getSymbol(), holding);
-//    }
+	@ManyToMany(mappedBy="users")
+    public List<YahooRotoLeague> getYahooRotoLeagues() {
+        return yahooRotoLeagues;
+    }
+
+    @SuppressWarnings("unused")
+	private void setYahooRotoLeagues(List<YahooRotoLeague> yahooRotoLeagues) {
+    	this.yahooRotoLeagues = yahooRotoLeagues;
+    }
+
+    void addYahooRotoLeague (YahooRotoLeague league) throws IllegalArgumentException {
+
+        // Ensure a holding for the symbol doesn't already exist
+        if (yahooRotoLeagues.contains(league)) {
+            throw new IllegalArgumentException("League already exits for user " + getUserName());
+        }
+
+        yahooRotoLeagues.add(league);
+    }
 
 }
