@@ -2,13 +2,10 @@ package com.colinaardsma.tfbps.models.util;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
@@ -19,29 +16,18 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.colinaardsma.tfbps.models.User;
-import com.colinaardsma.tfbps.models.dao.UserDao;
 import com.google.gdata.client.authn.oauth.OAuthException;
 import com.google.gdata.client.authn.oauth.OAuthUtil;
 
 import oauth.signpost.OAuth;
-import oauth.signpost.OAuthConsumer;
-import oauth.signpost.basic.DefaultOAuthConsumer;
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
-import oauth.signpost.http.HttpParameters;
 
 public class YahooOAuth {
 	
 	// declare oauth variables
 	private static final String consumer_key = "dj0yJmk9YWE1SnlhV0lUbndoJmQ9WVdrOU9FUmhUelV6TkdVbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD1lMQ--";
 	private static final String consumer_secret = "55d6606ea0bec9a1468d3ea01bbf1c9991dbf93f";
-
-	@Autowired
-	UserDao userDao;
 
 	public static String getRequestToken () throws IOException {
 
@@ -296,9 +282,6 @@ public class YahooOAuth {
 		String oauth_access_token = user.getYahooOAuthAccessToken();
 		String oauth_session_handle = user.getYahooOAuthSessionHandle();
 		String oauth_access_token_secret = user.getYahooOAuthTokenSecret();
-		String oauth_expires_in = null;
-		String oauth_authorization_expires_in = null;
-		String xoauth_yahoo_guid;
 		
 		// build map of parameters for oauth normalization
 		Map<String,String> paramMap = new HashMap<String,String>();
@@ -312,54 +295,13 @@ public class YahooOAuth {
 		
 		String oauth_signature = null;
 		
-		// check to see if oauth token is still valid
-		Date now = new Date(System.currentTimeMillis());
-		if (user.getYahooOAuthTokenExpiration().after(now)) {
-			try {
-				String access_token = YahooOAuth.refreshAccessToken(oauth_access_token, oauth_session_handle, oauth_access_token_secret);
-
-				// parse oauth token values from string returned
-				int index = access_token.indexOf("oauth_token=") + "oauth_token=".length();
-				oauth_access_token = access_token.substring(index, access_token.indexOf("&",index));
-				index = access_token.indexOf("oauth_token_secret=") + "oauth_token_secret=".length();
-				oauth_access_token_secret = access_token.substring(index, access_token.indexOf("&",index));
-				index = access_token.indexOf("oauth_expires_in=") + "oauth_expires_in=".length();
-				oauth_expires_in = access_token.substring(index, access_token.indexOf("&",index));
-				index = access_token.indexOf("oauth_session_handle=") + "oauth_session_handle=".length();
-				oauth_session_handle = access_token.substring(index, access_token.indexOf("&",index));
-				index = access_token.indexOf("oauth_authorization_expires_in=") + "oauth_authorization_expires_in=".length();
-				oauth_authorization_expires_in = access_token.substring(index, access_token.indexOf("&",index));
-				index = access_token.indexOf("xoauth_yahoo_guid=") + "xoauth_yahoo_guid=".length();
-				xoauth_yahoo_guid = access_token.substring(index, access_token.length());
-
-				// print values to log
-				System.out.println("oauth_token=" + oauth_access_token);
-				System.out.println("oauth_token_secret=" + oauth_access_token_secret);
-				System.out.println("oauth_expires_in=" + oauth_expires_in);
-				System.out.println("oauth_session_handle=" + oauth_session_handle);
-				System.out.println("oauth_authorization_expires_in=" + oauth_authorization_expires_in);
-				System.out.println("xoauth_yahoo_guid=" + xoauth_yahoo_guid);
-
-				user.setYahooOAuthAccessToken(oauth_access_token);
-				user.setYahooOAuthSessionHandle(oauth_session_handle);
-				user.setYahooOAuthTokenSecret(oauth_access_token_secret);
-		    	Date expiration = new Date(System.currentTimeMillis() + (Long.parseLong(oauth_expires_in) * 1000));
-		    	user.setYahooOAuthTokenExpiration(expiration);
-				userDao.save(user);
-
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-		}
-		
 		// calculate HMAC-SHA1 hex value for oauth_signature
 		try {
 			String key = OAuth.percentEncode(consumer_secret) + "&" + OAuth.percentEncode(oauth_access_token_secret);
 			String base_string = OAuthUtil.getSignatureBaseString(requestURL, method, paramMap);
 
-			System.out.println(key);
-			System.out.println(base_string);
+//			System.out.println(key);
+//			System.out.println(base_string);
 			
 		    byte[] keyBytes = key.getBytes();
 		    SecretKey secretKey = new SecretKeySpec(keyBytes, "HmacSHA1");
@@ -395,7 +337,7 @@ public class YahooOAuth {
 			Scanner scanner = new Scanner(in,"UTF-8");
 			html = scanner.useDelimiter("\\A").next();;
 			scanner.close();
-			System.out.println(html);
+//			System.out.println(html);
 		}
 		finally {
 			urlConnection.disconnect();
