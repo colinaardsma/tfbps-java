@@ -34,7 +34,7 @@ public class YahooRotoTeam extends AbstractEntity {
 	private int sbStats; // stat_id = 16
 	private double avgStats; // stat_id = 3
 	private double opsStats; // stat_id = 55
-	private int ipStats; // stat_id = 50
+	private double ipStats; // stat_id = 50
 	private int wStats; // stat_id = 28
 	private int svStats; // stat_id = 32
 	private int kStats; // stat_id = 42
@@ -78,7 +78,7 @@ public class YahooRotoTeam extends AbstractEntity {
 	
 	public YahooRotoTeam(String teamKey, String teamName, String teamURL, int teamFAABBalance, int teamMoves, int teamTrades, 
 			String teamGUID, String teamManagerName,	String leagueKey, double habStats, int rStats, int hrStats, int rbiStats, 
-			int sbStats, double avgStats, double opsStats, int ipStats, int wStats, int svStats, int kStats, double eraStats, 
+			int sbStats, double avgStats, double opsStats, double ipStats, int wStats, int svStats, int kStats, double eraStats, 
 			double whipStats, double habPoints, double rPoints, double hrPoints, double rbiPoints, double sbPoints,	double avgPoints, 
 			double opsPoints, double ipPoints, double wPoints, double svPoints, double kPoints, double eraPoints, double whipPoints, 
 			int rank, double totalPoints) {
@@ -317,11 +317,11 @@ public class YahooRotoTeam extends AbstractEntity {
 	}
 
     @Column(name = "ipStats")
-	public int getIpStats() {
+	public double getIpStats() {
 		return ipStats;
 	}
 
-	public void setIpStats(int ipStats) {
+	public void setIpStats(double ipStats) {
 		this.ipStats = ipStats;
 	}
 

@@ -27,8 +27,10 @@ import org.xml.sax.SAXException;
 
 import com.colinaardsma.tfbps.models.User;
 import com.colinaardsma.tfbps.models.YahooRotoLeague;
+import com.colinaardsma.tfbps.models.YahooRotoTeam;
 import com.colinaardsma.tfbps.models.dao.UserDao;
 import com.colinaardsma.tfbps.models.dao.YahooRotoLeagueDao;
+import com.colinaardsma.tfbps.models.dao.YahooRotoTeamDao;
 import com.colinaardsma.tfbps.models.util.YahooOAuth;
 
 @Controller
@@ -39,6 +41,9 @@ public class YahooDataController extends AbstractController {
 
 	@Autowired
 	YahooRotoLeagueDao yahooRotoLeagueDao;
+	
+	@Autowired
+	YahooRotoTeamDao yahooRotoTeamDao;
 
 	// https://developer.yahoo.com/fantasysports/guide/ResourcesAndCollections.html
 
@@ -120,67 +125,67 @@ public class YahooDataController extends AbstractController {
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
 		User yahooUser = userDao.findByUserName(currentUser);
-		
+
 		// league variables
 		String leagueKey = request.getParameter("league");
 		String leagueHistory = request.getParameter("leagueHistory");
 		String xmlData = null;
 		String leagueName = null;
 		String leagueURL = null;
-		String leagueScoringType = null;
+		//		String leagueScoringType = null;
 		String prevYearKey = null;
 		String nextYearKey = null;
 		int prevYears = 0;
 		int season = 0;
 		int teamCount = 0;
-		
+
 		// team variables
-		String teamKey;
-		String teamName;
-		String teamURL;
-		int teamFAABBalance;
-		int teamMoves;
-		int teamTrades;
-		String teamGUID;
-		String teamManagerName;
-		int rank;
-		double totalPoints;
-		double habStats; // stat_id = 60
-		int rStats; // stat_id = 7
-		int hrStats; // stat_id = 12
-		int rbiStats; // stat_id = 13
-		int sbStats; // stat_id = 16
-		double avgStats; // stat_id = 3
-		double opsStats; // stat_id = 55
-		int ipStats; // stat_id = 50
-		int wStats; // stat_id = 28
-		int svStats; // stat_id = 32
-		int kStats; // stat_id = 42
-		double eraStats; // stat_id = 26
-		double whipStats; // stat_id = 27
-		double habPoints; // stat_id = 60
-		double rPoints; // stat_id = 7
-		double hrPoints; // stat_id = 12
-		double rbiPoints; // stat_id = 13
-		double sbPoints; // stat_id = 16
-		double avgPoints; // stat_id = 3
-		double opsPoints; // stat_id = 55
-		double ipPoints; // stat_id = 50
-		double wPoints; // stat_id = 28
-		double svPoints; // stat_id = 32
-		double kPoints; // stat_id = 42
-		double eraPoints; // stat_id = 26
-		double whipPoints; // stat_id = 27
-		
+		String teamKey = null;
+		String teamName = null;
+		String teamURL = null;
+		int teamFAABBalance = 0;
+		int teamMoves = 0;
+		int teamTrades = 0;
+		String teamGUID = null;
+		String teamManagerName = null;
+		int rank = 0;
+		double totalPoints = 0.0;
+		double habStats = 0.0; // stat_id = 60
+		int rStats = 0; // stat_id = 7
+		int hrStats = 0; // stat_id = 12
+		int rbiStats = 0; // stat_id = 13
+		int sbStats = 0; // stat_id = 16
+		double avgStats = 0.0; // stat_id = 3
+		double opsStats = 0.0; // stat_id = 55
+		double ipStats = 0; // stat_id = 50
+		int wStats = 0; // stat_id = 28
+		int svStats = 0; // stat_id = 32
+		int kStats = 0; // stat_id = 42
+		double eraStats = 0.0; // stat_id = 26
+		double whipStats = 0.0; // stat_id = 27
+		double habPoints = 0.0; // stat_id = 60
+		double rPoints = 0.0; // stat_id = 7
+		double hrPoints = 0.0; // stat_id = 12
+		double rbiPoints = 0.0; // stat_id = 13
+		double sbPoints = 0.0; // stat_id = 16
+		double avgPoints = 0.0; // stat_id = 3
+		double opsPoints = 0.0; // stat_id = 55
+		double ipPoints = 0.0; // stat_id = 50
+		double wPoints = 0.0; // stat_id = 28
+		double svPoints = 0.0; // stat_id = 32
+		double kPoints = 0.0; // stat_id = 42
+		double eraPoints = 0.0; // stat_id = 26
+		double whipPoints = 0.0; // stat_id = 27
+
 		List<YahooRotoLeague> linkedLeagues = new ArrayList<YahooRotoLeague>();
-		
+
 		leagueHistory = (leagueHistory == null) ? "false" : "true";
-		
+
 		if (leagueHistory.equals("true")) {
 			String py = request.getParameter("prevyears");
-//			System.out.println("Previous Years String: " + py);
+			//			System.out.println("Previous Years String: " + py);
 			prevYears = Integer.parseInt(py);
-//			System.out.println("Previous Years int: " + prevYears);
+			//			System.out.println("Previous Years int: " + prevYears);
 		}
 
 		do {
@@ -189,7 +194,7 @@ public class YahooDataController extends AbstractController {
 			try {
 				checkOAuthExpiration(yahooUser); // make sure authorization is still valid, if not renew
 				xmlData = YahooOAuth.oauthGetRequest(url, yahooUser);
-				System.out.println(xmlData);
+//				System.out.println(xmlData);
 
 				// parse xml data
 				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -207,7 +212,7 @@ public class YahooDataController extends AbstractController {
 						leagueName = leagueElement.getElementsByTagName("name").item(0).getTextContent();
 						leagueURL = leagueElement.getElementsByTagName("url").item(0).getTextContent();
 						teamCount = Integer.parseInt(leagueElement.getElementsByTagName("num_teams").item(0).getTextContent());
-						leagueScoringType = leagueElement.getElementsByTagName("scoring_type").item(0).getTextContent();
+//						leagueScoringType = leagueElement.getElementsByTagName("scoring_type").item(0).getTextContent();
 						prevYearKey = leagueElement.getElementsByTagName("renew").item(0).getTextContent().replace("_", ".l.");
 //						System.out.println("Previous Year Key: " + prevYearKey);
 						nextYearKey = leagueElement.getElementsByTagName("renewed").item(0).getTextContent().replace("_", ".l.");
@@ -292,175 +297,153 @@ public class YahooDataController extends AbstractController {
 						teamTrades = Integer.parseInt(teamElement.getElementsByTagName("number_of_trades").item(0).getTextContent());
 						teamGUID = teamElement.getElementsByTagName("guid").item(0).getTextContent();
 						teamManagerName = teamElement.getElementsByTagName("nickname").item(0).getTextContent().replace("_", ".l.");
-						
+						System.out.println("GOT TEAM DATA");
+
+						// check to see if this user exists, if so skip to next
+						if (yahooRotoTeamDao.findByTeamKey(teamKey) != null) {
+							continue;
+						}
+
 						// stat values
 						Node teamStatNode = teamElement.getElementsByTagName("team_stats").item(0);
-						if (teamStatNode.getNodeType() == Node.ELEMENT_NODE) {
-							Element teamStatElement = (Element) teamStatNode;
-							NodeList statList = teamStatElement.getElementsByTagName("stat");
-							for (int j = 0; j < statList.getLength(); j++) {
-								Node statNode = statList.item(j);
-								if (statNode.getNodeType() == Node.ELEMENT_NODE) {
-									Element statElement = (Element) statNode;
-//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("60")) {
-//										habStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
-//									}
-									
-									String statCategory = statElement.getElementsByTagName("stat_id").item(j).getTextContent();
-									
-									switch (statCategory) {
-//										// hab
-//										case "60" : habStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
-//											break;
-										// r
-										case "7" : rStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
-										break;
-										// hr
-										case "12" : hrStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-										break;
-										// rbi
-										case "13" : rbiStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-										break;
-										// sb
-										case "16" : sbStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-										break;
-//										// avg
-//										case "3" : avgStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
-//										break;
-										// ops
-										case "55" : opsStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
-										break;
-										// ip
-										case "50" : ipStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-										break;
-										// w
-										case "28" : wStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-										break;
-										// sv
-										case "32" : svStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-										break;
-										// k
-										case "42" : kStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-										break;
-										// era
-										case "26" : eraStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
-										break;
-										// whip
-										case "27" : whipStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
-										break;
-										
-										default : break;
-									}
-									
-									
-//									// change to switch case?
-//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent() == "7") {
-//										rStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
-//									}
-//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("12")) {
-//										hrStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-//									}
-//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("13")) {
-//										rbiStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-//									}
-//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("16")) {
-//										sbStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-//									}
-////									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("3")) {
-////										avgStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
-////									}
-//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("55")) {
-//										opsStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
-//									}
-////									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("50")) {
-////										ipStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-////									}
-//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("28")) {
-//										wStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-//									}
-//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("32")) {
-//										svStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-//									}
-//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("42")) {
-//										kStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-//									}
-//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("26")) {
-//										eraStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
-//									}
-//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("27")) {
-//										whipStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
-//									}
-								}
+						Element teamStatElement = (Element) teamStatNode;
+						Node statsNode = teamStatElement.getElementsByTagName("stats").item(0);
+						Element statsElement = (Element) statsNode;
+						NodeList statList = statsElement.getElementsByTagName("stat");
+						for(int j = 0; j < statList.getLength(); j++) {
+							Node statNode = statList.item(j);
+							Element statElement = (Element) statNode;
+
+							int statCategory = Integer.parseInt(statElement.getElementsByTagName("stat_id").item(0).getTextContent());
+
+							switch (statCategory) {
+//								// hab
+//								case 60 : habStats = Double.parseDouble(statElement.getElementsByTagName("value").item(0).getTextContent());
+//								break;
+								// r
+								case 7 : rStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
+								System.out.println("****RUNS: " + rStats);
+								break;
+								// hr
+								case 12 : hrStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+								// rbi
+								case 13 : rbiStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+								// sb
+								case 16 : sbStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+//								// avg
+//								case 3 : avgStats = Double.parseDouble(statElement.getElementsByTagName("value").item(0).getTextContent());
+//								break;
+								// ops
+								case 55 : opsStats = Double.parseDouble(statElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+								// ip
+								case 50 : ipStats = Double.parseDouble(statElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+								// w
+								case 28 : wStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+								// sv
+								case 32 : svStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+								// k
+								case 42 : kStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+								// era
+								case 26 : eraStats = Double.parseDouble(statElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+								// whip
+								case 27 : whipStats = Double.parseDouble(statElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+
+								default : break;
 							}
 						}
 						
 						// stat points
 						Node teamPointNode = teamElement.getElementsByTagName("team_points").item(0);
-						if (teamPointNode.getNodeType() == Node.ELEMENT_NODE) {
-							Element teamPointElement = (Element) teamPointNode;
-							NodeList pointList = teamPointElement.getElementsByTagName("stat");
-							for (int k = 0; k < pointList.getLength(); k++) {
-								Node pointNode = pointList.item(k);
-								if (pointNode.getNodeType() == Node.ELEMENT_NODE) {
-									Element pointElement = (Element) pointNode;
-//									if (pointElement.getElementsByTagName("stat_id").item(k).getTextContent().equals("60")) {
-//										habPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(k).getTextContent());
-//									}
-									if (pointElement.getElementsByTagName("stat_id").item(k).getTextContent().equals("7")) {
-										rPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(k).getTextContent());
-									}
-									if (pointElement.getElementsByTagName("stat_id").item(k).getTextContent().equals("12")) {
-										hrPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(k).getTextContent());
-									}
-									if (pointElement.getElementsByTagName("stat_id").item(k).getTextContent().equals("13")) {
-										rbiPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(k).getTextContent());
-									}
-									if (pointElement.getElementsByTagName("stat_id").item(k).getTextContent().equals("16")) {
-										sbPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(k).getTextContent());
-									}
-//									if (pointElement.getElementsByTagName("stat_id").item(k).getTextContent().equals("3")) {
-//										avgPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(k).getTextContent());
-//									}
-									if (pointElement.getElementsByTagName("stat_id").item(k).getTextContent().equals("55")) {
-										opsPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(k).getTextContent());
-									}
-//									if (pointElement.getElementsByTagName("stat_id").item(k).getTextContent().equals("50")) {
-//										ipPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(k).getTextContent());
-//									}
-									if (pointElement.getElementsByTagName("stat_id").item(k).getTextContent().equals("28")) {
-										wPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(k).getTextContent());
-									}
-									if (pointElement.getElementsByTagName("stat_id").item(k).getTextContent().equals("32")) {
-										svPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(k).getTextContent());
-									}
-									if (pointElement.getElementsByTagName("stat_id").item(k).getTextContent().equals("42")) {
-										kPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(k).getTextContent());
-									}
-									if (pointElement.getElementsByTagName("stat_id").item(k).getTextContent().equals("26")) {
-										eraPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(k).getTextContent());
-									}
-									if (pointElement.getElementsByTagName("stat_id").item(k).getTextContent().equals("27")) {
-										whipPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(k).getTextContent());
-									}
-								}
+						Element teamPointElement = (Element) teamPointNode;
+						Node pointsNode = teamPointElement.getElementsByTagName("stats").item(0);
+						Element pointsElement = (Element) pointsNode;
+						NodeList pointList = pointsElement.getElementsByTagName("stat");
+						for(int k = 0; k < pointList.getLength(); k++) {
+							Node pointNode = pointList.item(k);
+							Element pointElement = (Element) pointNode;
+
+							int pointCategory = Integer.parseInt(pointElement.getElementsByTagName("stat_id").item(0).getTextContent());
+
+							switch (pointCategory) {
+//								// hab
+//								case 60 : habPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+//								break;
+								// r
+								case 7 : rPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+								// hr
+								case 12 : hrPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+								// rbi
+								case 13 : rbiPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+								// sb
+								case 16 : sbPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+//								// avg
+//								case 3 : avgPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+//								break;
+								// ops
+								case 55 : opsPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+//								// ip
+//								case 50 : ipPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+//								break;
+								// w
+								case 28 : wPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+								// sv
+								case 32 : svPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+								// k
+								case 42 : kPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+								// era
+								case 26 : eraPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+								// whip
+								case 27 : whipPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+								break;
+
+								default : break;
 							}
 						}
 
-						// rank and total points
-						Node teamStandingNode = teamElement.getElementsByTagName("team_standings").item(0);
-						if (teamStandingNode.getNodeType() == Node.ELEMENT_NODE) {
-							Element teamStandingElement = (Element) teamStandingNode;
-							rank = Integer.parseInt(teamStandingElement.getElementsByTagName("rank").item(0).getTextContent());
-							totalPoints = Integer.parseInt(teamStandingElement.getElementsByTagName("points_for").item(0).getTextContent());
+						// stat points
+						NodeList teamStandingList = teamElement.getElementsByTagName("team_standings");
+						for(int l = 0; l < teamStandingList.getLength(); l++) {
+							Node teamStandingNode = teamStandingList.item(l);
+							if (teamStandingNode.getNodeType() == Node.ELEMENT_NODE) {
+								Element teamStandingElement = (Element) teamStandingNode;
+								rank = Integer.parseInt(teamStandingElement.getElementsByTagName("rank").item(0).getTextContent());
+								totalPoints = Double.parseDouble(teamStandingElement.getElementsByTagName("points_for").item(0).getTextContent());
+							}
 						}
 					}
+
+					YahooRotoTeam newTeam = new YahooRotoTeam(teamKey, teamName, teamURL, teamFAABBalance, teamMoves, teamTrades, teamGUID, teamManagerName, leagueKey, habStats, 
+							rStats, hrStats, rbiStats, sbStats, avgStats, opsStats, ipStats, wStats, svStats, kStats, eraStats, whipStats, habPoints, rPoints, hrPoints, rbiPoints, 
+							sbPoints, avgPoints, opsPoints, ipPoints, wPoints, svPoints, kPoints, eraPoints, whipPoints, rank, totalPoints);
+					yahooRotoTeamDao.save(newTeam);
 				}
 
 			} catch (ParserConfigurationException | SAXException | IOException e) {
 				e.printStackTrace();
 			}
+			
 			leagueKey = prevYearKey;
 			prevYears -= 1;
+			
 		} while (prevYears >= 0);
 
 		model.addAttribute("linkedLeagues", linkedLeagues);
