@@ -306,43 +306,90 @@ public class YahooDataController extends AbstractController {
 //										habStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
 //									}
 									
-									// change to switch case?
-									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent() == "7") {
-										rStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
+									String statCategory = statElement.getElementsByTagName("stat_id").item(j).getTextContent();
+									
+									switch (statCategory) {
+//										// hab
+//										case "60" : habStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
+//											break;
+										// r
+										case "7" : rStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
+										break;
+										// hr
+										case "12" : hrStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
+										break;
+										// rbi
+										case "13" : rbiStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
+										break;
+										// sb
+										case "16" : sbStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
+										break;
+//										// avg
+//										case "3" : avgStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
+//										break;
+										// ops
+										case "55" : opsStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
+										break;
+										// ip
+										case "50" : ipStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
+										break;
+										// w
+										case "28" : wStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
+										break;
+										// sv
+										case "32" : svStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
+										break;
+										// k
+										case "42" : kStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
+										break;
+										// era
+										case "26" : eraStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
+										break;
+										// whip
+										case "27" : whipStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
+										break;
+										
+										default : break;
 									}
-									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("12")) {
-										hrStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-									}
-									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("13")) {
-										rbiStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-									}
-									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("16")) {
-										sbStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-									}
-//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("3")) {
-//										avgStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
+									
+									
+//									// change to switch case?
+//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent() == "7") {
+//										rStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
 //									}
-									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("55")) {
-										opsStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
-									}
-//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("50")) {
-//										ipStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
+//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("12")) {
+//										hrStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
 //									}
-									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("28")) {
-										wStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-									}
-									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("32")) {
-										svStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-									}
-									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("42")) {
-										kStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
-									}
-									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("26")) {
-										eraStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
-									}
-									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("27")) {
-										whipStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
-									}
+//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("13")) {
+//										rbiStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
+//									}
+//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("16")) {
+//										sbStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
+//									}
+////									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("3")) {
+////										avgStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
+////									}
+//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("55")) {
+//										opsStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
+//									}
+////									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("50")) {
+////										ipStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
+////									}
+//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("28")) {
+//										wStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
+//									}
+//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("32")) {
+//										svStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
+//									}
+//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("42")) {
+//										kStats = Integer.parseInt(statElement.getElementsByTagName("value").item(j).getTextContent());
+//									}
+//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("26")) {
+//										eraStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
+//									}
+//									if (statElement.getElementsByTagName("stat_id").item(j).getTextContent().equals("27")) {
+//										whipStats = Double.parseDouble(statElement.getElementsByTagName("value").item(j).getTextContent());
+//									}
 								}
 							}
 						}

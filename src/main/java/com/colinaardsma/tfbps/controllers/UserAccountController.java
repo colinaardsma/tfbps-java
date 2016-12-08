@@ -37,7 +37,7 @@ public class UserAccountController extends AbstractController {
 
 		FPProjBatter batter = fpProjBatterDao.findByUid(1);
 		FPProjPitcher pitcher = fpProjPitcherDao.findByUid(1);
-		if (batter.getCreated().compareTo(pitcher.getCreated()) >= 0) {
+		if (batter.getCreated().after(pitcher.getCreated())) {
 			lastPullDate = batter.getCreated();
 		} else {
 			lastPullDate = pitcher.getCreated();
