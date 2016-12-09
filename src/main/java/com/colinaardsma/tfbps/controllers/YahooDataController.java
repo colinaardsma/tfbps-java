@@ -31,6 +31,7 @@ import com.colinaardsma.tfbps.models.YahooRotoTeam;
 import com.colinaardsma.tfbps.models.dao.UserDao;
 import com.colinaardsma.tfbps.models.dao.YahooRotoLeagueDao;
 import com.colinaardsma.tfbps.models.dao.YahooRotoTeamDao;
+import com.colinaardsma.tfbps.models.util.SGPMultCalc;
 import com.colinaardsma.tfbps.models.util.YahooOAuth;
 
 @Controller
@@ -444,7 +445,24 @@ public class YahooDataController extends AbstractController {
 					newTeam.setYahooRotoLeague(yahooRotoLeagueDao.findByLeagueKey(leagueKey));
 					yahooRotoTeamDao.save(newTeam);
 				}
-
+				
+				// calculate league SGP and save to db
+				YahooRotoLeague league = yahooRotoLeagueDao.findByLeagueKey(leagueKey); // pull league to add and save data
+				List<YahooRotoTeam> teams = yahooRotoTeamDao.findByLeagueKey(leagueKey); // pull list of teams in leagye
+				// add data
+				league.setRSGPMult(SGPMultCalc.calcRSGPMult(teams));
+				league.setHrSGPMult(SGPMultCalc.calcHrSGPMult(teams));
+				league.setRbiSGPMult(SGPMultCalc.calcRbiSGPMult(teams));
+				league.setSbSGPMult(SGPMultCalc.calcSbSGPMult(teams));
+				league.setOpsSGPMult(SGPMultCalc.calcOpsSGPMult(teams));
+				league.setWSGPMult(SGPMultCalc.calcWSGPMult(teams));
+				league.setSvSGPMult(SGPMultCalc.calcSvSGPMult(teams));
+				league.setKSGPMult(SGPMultCalc.calcKSGPMult(teams));
+				league.setEraSGPMult(SGPMultCalc.calcEraSGPMult(teams));
+				league.setWhipSGPMult(SGPMultCalc.calcWhipSGPMult(teams));
+	
+				yahooRotoLeagueDao.save(league); // save
+				
 			} catch (ParserConfigurationException | SAXException | IOException e) {
 				e.printStackTrace();
 			}
@@ -453,6 +471,12 @@ public class YahooDataController extends AbstractController {
 			prevYears -= 1;
 			
 		} while (prevYears >= 0);
+		
+		for (int i = 0; i < linkedLeagues.size(); i++) {
+			YahooRotoLeague league = yahooRotoLeagueDao.findByLeagueKey(linkedLeagues.get(0).getLeagueKey());
+			league.calcHistSGPs(linkedLeagues); // calculate historical SGPs
+			yahooRotoLeagueDao.save(league); // save
+		}
 
 		model.addAttribute("linkedLeagues", linkedLeagues);
 //		model.addAttribute("leagueName", leagueName);

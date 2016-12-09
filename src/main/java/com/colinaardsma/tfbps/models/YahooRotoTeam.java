@@ -263,11 +263,11 @@ public class YahooRotoTeam extends AbstractEntity {
 	}
 
     @Column(name = "rStats")
-	public int getrStats() {
+	public int getRStats() {
 		return rStats;
 	}
 
-	public void setrStats(int rStats) {
+	public void setRStats(int rStats) {
 		this.rStats = rStats;
 	}
 
@@ -326,11 +326,11 @@ public class YahooRotoTeam extends AbstractEntity {
 	}
 
     @Column(name = "wStats")
-	public int getwStats() {
+	public int getWStats() {
 		return wStats;
 	}
 
-	public void setwStats(int wStats) {
+	public void setWStats(int wStats) {
 		this.wStats = wStats;
 	}
 
@@ -344,11 +344,11 @@ public class YahooRotoTeam extends AbstractEntity {
 	}
 
     @Column(name = "kStats")
-	public int getkStats() {
+	public int getKStats() {
 		return kStats;
 	}
 
-	public void setkStats(int kStats) {
+	public void setKStats(int kStats) {
 		this.kStats = kStats;
 	}
 
@@ -380,11 +380,11 @@ public class YahooRotoTeam extends AbstractEntity {
 	}
 
     @Column(name = "rPoints")
-	public double getrPoints() {
+	public double getRPoints() {
 		return rPoints;
 	}
 
-	public void setrPoints(double rPoints) {
+	public void setRPoints(double rPoints) {
 		this.rPoints = rPoints;
 	}
 
@@ -443,11 +443,11 @@ public class YahooRotoTeam extends AbstractEntity {
 	}
 
     @Column(name = "wPoints")
-	public double getwPoints() {
+	public double getWPoints() {
 		return wPoints;
 	}
 
-	public void setwPoints(double wPoints) {
+	public void setWPoints(double wPoints) {
 		this.wPoints = wPoints;
 	}
 
@@ -461,11 +461,11 @@ public class YahooRotoTeam extends AbstractEntity {
 	}
 
     @Column(name = "kPoints")
-	public double getkPoints() {
+	public double getKPoints() {
 		return kPoints;
 	}
 
-	public void setkPoints(double kPoints) {
+	public void setKPoints(double kPoints) {
 		this.kPoints = kPoints;
 	}
 
@@ -522,7 +522,5 @@ public class YahooRotoTeam extends AbstractEntity {
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
-	
 
 }
