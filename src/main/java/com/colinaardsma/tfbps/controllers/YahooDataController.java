@@ -292,15 +292,19 @@ public class YahooDataController extends AbstractController {
 						teamKey = teamElement.getElementsByTagName("team_key").item(0).getTextContent();
 						teamName = teamElement.getElementsByTagName("name").item(0).getTextContent();
 						teamURL = teamElement.getElementsByTagName("url").item(0).getTextContent();
-						teamFAABBalance = Integer.parseInt(teamElement.getElementsByTagName("faab_balance").item(0).getTextContent());
+						teamFAABBalance = teamElement.getElementsByTagName("faab_balance").item(0) != null ? Integer.parseInt(teamElement.getElementsByTagName("faab_balance").item(0).getTextContent()) : -1;
 						teamMoves = Integer.parseInt(teamElement.getElementsByTagName("number_of_moves").item(0).getTextContent());
 						teamTrades = Integer.parseInt(teamElement.getElementsByTagName("number_of_trades").item(0).getTextContent());
 						teamGUID = teamElement.getElementsByTagName("guid").item(0).getTextContent();
 						teamManagerName = teamElement.getElementsByTagName("nickname").item(0).getTextContent().replace("_", ".l.");
-						System.out.println("GOT TEAM DATA");
+//						System.out.println("GOT TEAM DATA");
 
 						// check to see if this user exists, if so skip to next
 						if (yahooRotoTeamDao.findByTeamKey(teamKey) != null) {
+							YahooRotoTeam existingTeam = yahooRotoTeamDao.findByTeamKey(teamKey);
+							if (existingTeam.getTeamGUID().equals(yahooUser.getYahooGUID())) {
+								existingTeam.setUser(yahooUser);
+							}
 							continue;
 						}
 
@@ -322,7 +326,6 @@ public class YahooDataController extends AbstractController {
 //								break;
 								// r
 								case 7 : rStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
-								System.out.println("****RUNS: " + rStats);
 								break;
 								// hr
 								case 12 : hrStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
@@ -434,6 +437,11 @@ public class YahooDataController extends AbstractController {
 					YahooRotoTeam newTeam = new YahooRotoTeam(teamKey, teamName, teamURL, teamFAABBalance, teamMoves, teamTrades, teamGUID, teamManagerName, leagueKey, habStats, 
 							rStats, hrStats, rbiStats, sbStats, avgStats, opsStats, ipStats, wStats, svStats, kStats, eraStats, whipStats, habPoints, rPoints, hrPoints, rbiPoints, 
 							sbPoints, avgPoints, opsPoints, ipPoints, wPoints, svPoints, kPoints, eraPoints, whipPoints, rank, totalPoints);
+					
+					if (newTeam.getTeamGUID().equals(yahooUser.getYahooGUID())) {
+						newTeam.setUser(yahooUser);
+					}
+					newTeam.setYahooRotoLeague(yahooRotoLeagueDao.findByLeagueKey(leagueKey));
 					yahooRotoTeamDao.save(newTeam);
 				}
 

@@ -1,5 +1,11 @@
 package com.colinaardsma.tfbps.models.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.colinaardsma.tfbps.models.YahooRotoLeague;
+import com.colinaardsma.tfbps.models.YahooRotoTeam;
+
 public class SGPMultCalc {
 	public static double sgpMultR() {
 		double sgpMultR = 24.6;
@@ -50,6 +56,19 @@ public class SGPMultCalc {
 	public static double sgpMultWHIP() {
 		double sgpMultWHIP = -0.015;
 		return sgpMultWHIP;
+	}
+	
+	public static double calcRSGP(YahooRotoLeague league) {
+		List<YahooRotoTeam> teams = league.getYahooRotoTeams();
+		List<Integer> runs = new ArrayList<Integer>();
+		
+		for (YahooRotoTeam team : teams) {
+			runs.add(team.getrStats());
+		}
+		// calculate difference between stat values of each rank
+		
+		double rSGP;
+		return rSGP;
 	}
 
 }
