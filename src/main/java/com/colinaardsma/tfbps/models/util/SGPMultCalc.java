@@ -348,8 +348,6 @@ public class SGPMultCalc {
 		for (int j = 0; j < diff.size(); j++) {
 			sum = sum.add(diff.get(j));
 		}
-		System.out.println("Sum: " + sum);
-		System.out.println("Size: " + diff.size());
 		BigDecimal avg = sum.divide(BigDecimal.valueOf(diff.size()), 4, RoundingMode.HALF_EVEN);
 		double whipSGP = Double.parseDouble(avg.toString());
 		

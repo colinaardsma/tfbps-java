@@ -338,33 +338,11 @@ public class YahooRotoLeague extends AbstractEntity {
 	public void setYahooRotoTeams(List<YahooRotoTeam> yahooRotoTeams) {
 		this.yahooRotoTeams = yahooRotoTeams;
 	}
-	
+
+	// calculates historical sgp for league (number of years is based on size of list provided)
 	public void calcHistSGPs(List<YahooRotoLeague> leagues) {
-//	public void calcHistSGPs(List<YahooRotoLeague> leagues, int yearsToCalc) {
-		// calculates 3 years worth of SGP avg (year provided and 2 years prior)
-//		YahooRotoLeague league = yahooRotoLeagueDao.findByLeagueKey(leagueKey);
-//		double prevYearR = 0.0;
-//		double prevYearRbi = 0.0;
-//		double prevYearHr = 0.0;
-//		double prevYearSb = 0.0;
-//		double prevYearOps = 0.0;
-//		double prevYearW = 0.0;
-//		double prevYearSv = 0.0;
-//		double prevYearK = 0.0;
-//		double prevYearEra = 0.0;
-//		double prevYearWhip = 0.0;
-//		double twoYearsPriorR = 0.0;
-//		double twoYearsPriorRbi = 0.0;
-//		double twoYearsPriorHr = 0.0;
-//		double twoYearsPriorSb = 0.0;
-//		double twoYearsPriorOps = 0.0;
-//		double twoYearsPriorW = 0.0;
-//		double twoYearsPriorSv = 0.0;
-//		double twoYearsPriorK = 0.0;
-//		double twoYearsPriorEra = 0.0;
-//		double twoYearsPriorWhip = 0.0;
 		
-		int years = 1;
+		// BigDecimal variables used since double is not accurate when dividing small decimals
 		BigDecimal rSum = new BigDecimal(0);
 		BigDecimal hrSum = new BigDecimal(0);
 		BigDecimal rbiSum = new BigDecimal(0);
@@ -376,7 +354,7 @@ public class YahooRotoLeague extends AbstractEntity {
 		BigDecimal eraSum = new BigDecimal(0);
 		BigDecimal whipSum = new BigDecimal(0);
 		
-		// TODO: need to define which leagues i really want in this calc
+		// loop through list and pull out relevant data
 		for (YahooRotoLeague league : leagues) {
 			rSum = rSum.add(BigDecimal.valueOf(league.getRSGPMult()));
 			hrSum = hrSum.add(BigDecimal.valueOf(league.getHrSGPMult()));
@@ -388,112 +366,30 @@ public class YahooRotoLeague extends AbstractEntity {
 			kSum = kSum.add(BigDecimal.valueOf(league.getKSGPMult()));
 			eraSum = eraSum.add(BigDecimal.valueOf(league.getEraSGPMult()));
 			whipSum = whipSum.add(BigDecimal.valueOf(league.getWhipSGPMult()));
-			years++;
 		}
 		
-		BigDecimal rAvg = rSum.divide(new BigDecimal(years), 4, RoundingMode.HALF_EVEN);
+		// calculate averages and set to respective variables
+		BigDecimal rAvg = rSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
 		this.rHistSGPMult = Double.parseDouble(rAvg.toString());	
-		BigDecimal hrAvg = hrSum.divide(new BigDecimal(years), 4, RoundingMode.HALF_EVEN);
+		BigDecimal hrAvg = hrSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
 		this.hrHistSGPMult = Double.parseDouble(hrAvg.toString());	
-		BigDecimal rbiAvg = rbiSum.divide(new BigDecimal(years), 4, RoundingMode.HALF_EVEN);
+		BigDecimal rbiAvg = rbiSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
 		this.rbiHistSGPMult = Double.parseDouble(rbiAvg.toString());	
-		BigDecimal sbAvg = sbSum.divide(new BigDecimal(years), 4, RoundingMode.HALF_EVEN);
+		BigDecimal sbAvg = sbSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
 		this.sbHistSGPMult = Double.parseDouble(sbAvg.toString());	
-		BigDecimal opsAvg = opsSum.divide(new BigDecimal(years), 4, RoundingMode.HALF_EVEN);
+		BigDecimal opsAvg = opsSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
 		this.opsHistSGPMult = Double.parseDouble(opsAvg.toString());	
-		BigDecimal wAvg = wSum.divide(new BigDecimal(years), 4, RoundingMode.HALF_EVEN);
+		BigDecimal wAvg = wSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
 		this.wHistSGPMult = Double.parseDouble(wAvg.toString());	
-		BigDecimal svAvg = svSum.divide(new BigDecimal(years), 4, RoundingMode.HALF_EVEN);
+		BigDecimal svAvg = svSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
 		this.svHistSGPMult = Double.parseDouble(svAvg.toString());	
-		BigDecimal kAvg = kSum.divide(new BigDecimal(years), 4, RoundingMode.HALF_EVEN);
+		BigDecimal kAvg = kSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
 		this.kHistSGPMult = Double.parseDouble(kAvg.toString());	
-		BigDecimal eraAvg = eraSum.divide(new BigDecimal(years), 4, RoundingMode.HALF_EVEN);
+		BigDecimal eraAvg = eraSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
 		this.eraHistSGPMult = Double.parseDouble(eraAvg.toString());	
-		BigDecimal whipAvg = whipSum.divide(new BigDecimal(years), 4, RoundingMode.HALF_EVEN);
+		BigDecimal whipAvg = whipSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
 		this.whipHistSGPMult = Double.parseDouble(whipAvg.toString());	
 		
-
-//		if (yahooRotoLeagueDao.findByLeagueKey(previousYearKey) != null) {
-//			YahooRotoLeague prevYearLeague = yahooRotoLeagueDao.findByLeagueKey(league.getPreviousYearKey());
-//			prevYearR = prevYearLeague.getRSGPMult();
-//			prevYearHr = prevYearLeague.getHrSGPMult();
-//			prevYearRbi = prevYearLeague.getRbiSGPMult();
-//			prevYearSb = prevYearLeague.getSbSGPMult();
-//			prevYearOps = prevYearLeague.getOpsSGPMult();
-//			prevYearW = prevYearLeague.getWSGPMult();
-//			prevYearSv = prevYearLeague.getSvSGPMult();
-//			prevYearK = prevYearLeague.getKSGPMult();
-//			prevYearEra = prevYearLeague.getEraSGPMult();
-//			prevYearWhip = prevYearLeague.getWhipSGPMult();
-//
-//			years++;
-//
-//			if (yahooRotoLeagueDao.findByLeagueKey(prevYearLeague.getPreviousYearKey()) != null) {
-//				YahooRotoLeague twoYearsPriorLeague = yahooRotoLeagueDao.findByLeagueKey(prevYearLeague.getPreviousYearKey());
-//				twoYearsPriorR = twoYearsPriorLeague.getRSGPMult();
-//				twoYearsPriorHr = twoYearsPriorLeague.getHrSGPMult();
-//				twoYearsPriorRbi = twoYearsPriorLeague.getRbiSGPMult();
-//				twoYearsPriorSb = twoYearsPriorLeague.getSbSGPMult();
-//				twoYearsPriorOps = twoYearsPriorLeague.getOpsSGPMult();
-//				twoYearsPriorW = twoYearsPriorLeague.getWSGPMult();
-//				twoYearsPriorSv = twoYearsPriorLeague.getSvSGPMult();
-//				twoYearsPriorK = twoYearsPriorLeague.getKSGPMult();
-//				twoYearsPriorEra = twoYearsPriorLeague.getEraSGPMult();
-//				twoYearsPriorWhip = twoYearsPriorLeague.getWhipSGPMult();
-//
-//				years++;
-//			}
-//		}
-//		
-//		// Avg R SGP
-//		BigDecimal rSum = BigDecimal.valueOf(league.getRSGPMult()).add(BigDecimal.valueOf(prevYearR).add(BigDecimal.valueOf(twoYearsPriorR)));
-//		BigDecimal rAvg = rSum.divide(new BigDecimal(years));
-//		this.rHistSGPMult = Double.parseDouble(rAvg.toString());
-//		
-//		// Avg HR SGP
-//		BigDecimal hrSum = BigDecimal.valueOf(league.getHrSGPMult()).add(BigDecimal.valueOf(prevYearHr).add(BigDecimal.valueOf(twoYearsPriorHr)));
-//		BigDecimal hrAvg = hrSum.divide(new BigDecimal(years));
-//		this.hrHistSGPMult = Double.parseDouble(hrAvg.toString());
-//		
-//		// Avg RBI SGP
-//		BigDecimal rbiSum = BigDecimal.valueOf(league.getRbiSGPMult()).add(BigDecimal.valueOf(prevYearRbi).add(BigDecimal.valueOf(twoYearsPriorRbi)));
-//		BigDecimal rbiAvg = rbiSum.divide(new BigDecimal(years));
-//		this.rbiHistSGPMult = Double.parseDouble(rbiAvg.toString());
-//		
-//		// Avg SB SGP
-//		BigDecimal sbSum = BigDecimal.valueOf(league.getSbSGPMult()).add(BigDecimal.valueOf(prevYearSb).add(BigDecimal.valueOf(twoYearsPriorSb)));
-//		BigDecimal sbAvg = sbSum.divide(new BigDecimal(years));
-//		this.sbHistSGPMult = Double.parseDouble(sbAvg.toString());
-//		
-//		// Avg OPS SGP
-//		BigDecimal opsSum = BigDecimal.valueOf(league.getOpsSGPMult()).add(BigDecimal.valueOf(prevYearOps).add(BigDecimal.valueOf(twoYearsPriorOps)));
-//		BigDecimal opsAvg = opsSum.divide(new BigDecimal(years));
-//		this.opsHistSGPMult = Double.parseDouble(opsAvg.toString());
-//		
-//		// Avg W SGP
-//		BigDecimal wSum = BigDecimal.valueOf(league.getWSGPMult()).add(BigDecimal.valueOf(prevYearW).add(BigDecimal.valueOf(twoYearsPriorW)));
-//		BigDecimal wAvg = wSum.divide(new BigDecimal(years));
-//		this.wHistSGPMult = Double.parseDouble(wAvg.toString());
-//		
-//		// Avg SV SGP
-//		BigDecimal svSum = BigDecimal.valueOf(league.getSvSGPMult()).add(BigDecimal.valueOf(prevYearSv).add(BigDecimal.valueOf(twoYearsPriorSv)));
-//		BigDecimal svAvg = svSum.divide(new BigDecimal(years));
-//		this.svHistSGPMult = Double.parseDouble(svAvg.toString());
-//		
-//		// Avg K SGP
-//		BigDecimal kSum = BigDecimal.valueOf(league.getKSGPMult()).add(BigDecimal.valueOf(prevYearK).add(BigDecimal.valueOf(twoYearsPriorK)));
-//		BigDecimal kAvg = kSum.divide(new BigDecimal(years));
-//		this.kHistSGPMult = Double.parseDouble(kAvg.toString());
-//		
-//		// Avg ERA SGP
-//		BigDecimal eraSum = BigDecimal.valueOf(league.getEraSGPMult()).add(BigDecimal.valueOf(prevYearEra).add(BigDecimal.valueOf(twoYearsPriorEra)));
-//		BigDecimal eraAvg = eraSum.divide(new BigDecimal(years));
-//		this.eraHistSGPMult = Double.parseDouble(eraAvg.toString());
-//		
-//		// Avg WHIP SGP
-//		BigDecimal whipSum = BigDecimal.valueOf(league.getWhipSGPMult()).add(BigDecimal.valueOf(prevYearWhip).add(BigDecimal.valueOf(twoYearsPriorWhip)));
-//		BigDecimal whipAvg = whipSum.divide(new BigDecimal(years));
-//		this.whipHistSGPMult = Double.parseDouble(whipAvg.toString());
 	}
 	
 }

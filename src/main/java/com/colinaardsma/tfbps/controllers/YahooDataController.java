@@ -472,9 +472,16 @@ public class YahooDataController extends AbstractController {
 			
 		} while (prevYears >= 0);
 		
+		// calculate historical sgp for each year (change value in years variable to change the number of years)
 		for (int i = 0; i < linkedLeagues.size(); i++) {
-			YahooRotoLeague league = yahooRotoLeagueDao.findByLeagueKey(linkedLeagues.get(0).getLeagueKey());
-			league.calcHistSGPs(linkedLeagues); // calculate historical SGPs
+			YahooRotoLeague league = yahooRotoLeagueDao.findByLeagueKey(linkedLeagues.get(i).getLeagueKey());
+			int years = 3;
+			List<YahooRotoLeague> leagueHist = new ArrayList<YahooRotoLeague>();
+			// add league plus 2 years prior to new leagueHist list (total of 3 years)
+			for (int j = i; ((j < i + years) && (j < linkedLeagues.size())); j++) {
+				leagueHist.add(linkedLeagues.get(j));
+			}
+			league.calcHistSGPs(leagueHist); // calculate historical SGPs
 			yahooRotoLeagueDao.save(league); // save
 		}
 
