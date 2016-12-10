@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
@@ -60,7 +61,6 @@ public class YahooRotoLeague extends AbstractEntity {
 	
 	private List<User> users;
 	private List<YahooRotoTeam> yahooRotoTeams;
-	
 	
 	public YahooRotoLeague(String leagueKey, String leagueName, String leagueURL, int teamCount, int season) {
 		this.leagueKey = leagueKey;
@@ -331,6 +331,7 @@ public class YahooRotoLeague extends AbstractEntity {
 	}
 	
     @OneToMany
+    @JoinColumn(name = "yahoo_roto_league_uid")
 	public List<YahooRotoTeam> getYahooRotoTeams() {
 		return yahooRotoTeams;
 	}

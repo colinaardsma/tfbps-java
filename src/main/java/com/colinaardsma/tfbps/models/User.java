@@ -82,21 +82,6 @@ public class User extends AbstractEntity {
         this.passHash = passHash;
     }
     
-    // blog post methods
-	protected void addPost(Post post) {
-		posts.add(post);
-	}
-	
-	@OneToMany
-    @JoinColumn(name = "author_uid")
-    public List<Post> getPosts() {
-        return posts;
-    }
-	
-	public void setPosts(List<Post> posts) {
-		this.posts = posts;
-	}
-	
     @Column(name = "yahooOAuthSessionHandle")
     public String getYahooOAuthSessionHandle() {
         return yahooOAuthSessionHandle;
@@ -151,6 +136,16 @@ public class User extends AbstractEntity {
         this.yahooGUID = yahooGUID;
     }
     
+	@OneToMany
+    @JoinColumn(name = "author_uid")
+    public List<Post> getPosts() {
+        return posts;
+    }
+	
+	public void setPosts(List<Post> posts) {
+		this.posts = posts;
+	}
+	
 	@ManyToMany(mappedBy="users")
     public List<YahooRotoLeague> getYahooRotoLeagues() {
         return yahooRotoLeagues;
@@ -162,6 +157,7 @@ public class User extends AbstractEntity {
     }
     
     @OneToMany
+    @JoinColumn(name = "manager_uid")
     public List<YahooRotoTeam> yahooRotoTeams() {
     	return yahooRotoTeams;
     }
@@ -171,6 +167,10 @@ public class User extends AbstractEntity {
     	this.yahooRotoTeams = yahooRotoTeams;
     }
 
+	protected void addPost(Post post) {
+		posts.add(post);
+	}
+	
     void addYahooRotoLeague (YahooRotoLeague league) throws IllegalArgumentException {
 
         // Ensure a holding for the symbol doesn't already exist
