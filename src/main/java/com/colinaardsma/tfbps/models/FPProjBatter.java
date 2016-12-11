@@ -3,9 +3,12 @@ package com.colinaardsma.tfbps.models;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -40,6 +43,8 @@ public class FPProjBatter extends AbstractEntity {
 	private double sgp;
 	private String category;
 	private Date created;
+	
+	private List<UserBatterSGP> userBatterSGP;
 
 	public FPProjBatter(String name, String team, String pos, int ab, int r, int hr, int rbi, int sb, double avg, double obp, int h, int dbl, int tpl, int bb, int k, double slg, double ops, String category) {
 		this.name = name;
@@ -73,7 +78,7 @@ public class FPProjBatter extends AbstractEntity {
 		return name;
 	}
 
-    protected void setName(String name) {
+    public void setName(String name) {
 		this.name = name;
 	}
 
@@ -83,7 +88,7 @@ public class FPProjBatter extends AbstractEntity {
 		return team;
 	}
 
-    protected void setTeam(String team) {
+    public void setTeam(String team) {
 		this.team = team;
 	}
 
@@ -93,7 +98,7 @@ public class FPProjBatter extends AbstractEntity {
 		return pos;
 	}
 
-    protected void setPos(String pos) {
+    public void setPos(String pos) {
 		this.pos = pos;
 	}
 
@@ -103,7 +108,7 @@ public class FPProjBatter extends AbstractEntity {
 		return ab;
 	}
 
-    protected void setAb(int ab) {
+    public void setAb(int ab) {
 		this.ab = ab;
 	}
 
@@ -113,7 +118,7 @@ public class FPProjBatter extends AbstractEntity {
 		return r;
 	}
 
-    protected void setR(int r) {
+    public void setR(int r) {
 		this.r = r;
 	}
 
@@ -123,7 +128,7 @@ public class FPProjBatter extends AbstractEntity {
 		return hr;
 	}
 
-    protected void setHr(int hr) {
+    public void setHr(int hr) {
 		this.hr = hr;
 	}
 
@@ -133,7 +138,7 @@ public class FPProjBatter extends AbstractEntity {
 		return rbi;
 	}
 
-    protected void setRbi(int rbi) {
+    public void setRbi(int rbi) {
 		this.rbi = rbi;
 	}
 
@@ -143,7 +148,7 @@ public class FPProjBatter extends AbstractEntity {
 		return sb;
 	}
 
-    protected void setSb(int sb) {
+    public void setSb(int sb) {
 		this.sb = sb;
 	}
 
@@ -153,7 +158,7 @@ public class FPProjBatter extends AbstractEntity {
 		return avg;
 	}
 
-    protected void setAvg(double avg) {
+    public void setAvg(double avg) {
 		this.avg = avg;
 	}
 
@@ -163,7 +168,7 @@ public class FPProjBatter extends AbstractEntity {
 		return obp;
 	}
 
-    protected void setObp(double obp) {
+    public void setObp(double obp) {
 		this.obp = obp;
 	}
 
@@ -173,7 +178,7 @@ public class FPProjBatter extends AbstractEntity {
 		return h;
 	}
 
-    protected void setH(int h) {
+    public void setH(int h) {
 		this.h = h;
 	}
 
@@ -183,7 +188,7 @@ public class FPProjBatter extends AbstractEntity {
 		return dbl;
 	}
 
-    protected void setDbl(int dbl) {
+    public void setDbl(int dbl) {
 		this.dbl = dbl;
 	}
 
@@ -193,7 +198,7 @@ public class FPProjBatter extends AbstractEntity {
 		return tpl;
 	}
 
-    protected void setTpl(int tpl) {
+    public void setTpl(int tpl) {
 		this.tpl = tpl;
 	}
 
@@ -203,7 +208,7 @@ public class FPProjBatter extends AbstractEntity {
 		return bb;
 	}
 
-    protected void setBb(int bb) {
+    public void setBb(int bb) {
 		this.bb = bb;
 	}
 
@@ -213,7 +218,7 @@ public class FPProjBatter extends AbstractEntity {
 		return k;
 	}
 
-    protected void setK(int k) {
+    public void setK(int k) {
 		this.k = k;
 	}
 
@@ -223,7 +228,7 @@ public class FPProjBatter extends AbstractEntity {
 		return slg;
 	}
 
-    protected void setSlg(double slg) {
+    public void setSlg(double slg) {
 		this.slg = slg;
 	}
 
@@ -233,7 +238,7 @@ public class FPProjBatter extends AbstractEntity {
 		return ops;
 	}
 
-    protected void setOps(double ops) {
+    public void setOps(double ops) {
 		this.ops = ops;
 	}
 
@@ -293,7 +298,7 @@ public class FPProjBatter extends AbstractEntity {
 		return sgp;
 	}
 
-    protected void setSgp(double sgp) {
+    public void setSgp(double sgp) {
     	this.sgp = sgp;
     }
 
@@ -303,7 +308,7 @@ public class FPProjBatter extends AbstractEntity {
 		return category;
 	}
 
-    protected void setCategory(String category) {
+    public void setCategory(String category) {
 		this.category = category;
 	}
 
@@ -318,6 +323,17 @@ public class FPProjBatter extends AbstractEntity {
 		this.created = created;
 	}
 	
+    @OneToMany
+    @JoinColumn(name = "fpprojb_uid")
+    public List<UserBatterSGP> getUserBatterSGP() {
+    	return userBatterSGP;
+    }
+    
+    @SuppressWarnings("unused")
+    private void setUserBatterSGP(List<UserBatterSGP> userBatterSGP) {
+    	this.userBatterSGP = userBatterSGP;
+    }
+    
     protected void calcSgp(double sgpMultR, double sgpMultHR, double sgpMultRBI, double sgpMultSB, double sgpMultOPS) {
     	BigDecimal r = new BigDecimal(this.r).divide(new BigDecimal(sgpMultR), 4, RoundingMode.HALF_EVEN);
     	this.rSGP = r.doubleValue();
@@ -343,25 +359,24 @@ public class FPProjBatter extends AbstractEntity {
     	this.sgp = r.add(hr.add(rbi.add(sb.add(ops)))).doubleValue();
 	}
     
-    public double caclLeagueHistSGP(double rHistSGPMult, double hrHistSGPMult, double rbiHistSGPMult, double sbHistSGPMult, double opsHistSGPMult) {
-    	BigDecimal r = new BigDecimal(this.r).divide(new BigDecimal(rHistSGPMult), 4, RoundingMode.HALF_EVEN);
-    	BigDecimal hr = new BigDecimal(this.hr).divide(new BigDecimal(hrHistSGPMult), 4, RoundingMode.HALF_EVEN);
-    	BigDecimal rbi = new BigDecimal(this.rbi).divide(new BigDecimal(rbiHistSGPMult), 4, RoundingMode.HALF_EVEN);
-    	BigDecimal sb = new BigDecimal(this.sb).divide(new BigDecimal(sbHistSGPMult), 4, RoundingMode.HALF_EVEN);
-    	
-    	// ops
-    	BigDecimal ab = new BigDecimal(this.ab).multiply(new BigDecimal(1.15));	
-    	BigDecimal obpNum = new BigDecimal(this.obp).multiply(ab).add(new BigDecimal(2178.8));
-    	BigDecimal obpDenom = ab.add(new BigDecimal(6682));
-    	BigDecimal obp = obpNum.divide(obpDenom, 4, RoundingMode.HALF_EVEN);
-    	BigDecimal slgNum = new BigDecimal(this.slg).multiply(new BigDecimal(this.ab)).add(new BigDecimal(2528.5));
-    	BigDecimal slgDenom = new BigDecimal(this.ab).add(new BigDecimal(5993));
-    	BigDecimal slg = slgNum.divide(slgDenom, 4, RoundingMode.HALF_EVEN);
-    	BigDecimal ops = obp.divide(slg, 2, RoundingMode.HALF_EVEN).subtract(new BigDecimal(0.748));
-    	ops = ops.divide(new BigDecimal(opsHistSGPMult), 4, RoundingMode.HALF_EVEN);
-    	this.opsSGP = ops.doubleValue();
-    			 	
-    	return r.add(hr.add(rbi.add(sb.add(ops)))).doubleValue();
-    }
-    
+//    public double caclLeagueHistSGP(double rHistSGPMult, double hrHistSGPMult, double rbiHistSGPMult, double sbHistSGPMult, double opsHistSGPMult) {
+//    	BigDecimal r = new BigDecimal(this.r).divide(new BigDecimal(rHistSGPMult), 4, RoundingMode.HALF_EVEN);
+//    	BigDecimal hr = new BigDecimal(this.hr).divide(new BigDecimal(hrHistSGPMult), 4, RoundingMode.HALF_EVEN);
+//    	BigDecimal rbi = new BigDecimal(this.rbi).divide(new BigDecimal(rbiHistSGPMult), 4, RoundingMode.HALF_EVEN);
+//    	BigDecimal sb = new BigDecimal(this.sb).divide(new BigDecimal(sbHistSGPMult), 4, RoundingMode.HALF_EVEN);
+//    	
+//    	// ops
+//    	BigDecimal ab = new BigDecimal(this.ab).multiply(new BigDecimal(1.15));	
+//    	BigDecimal obpNum = new BigDecimal(this.obp).multiply(ab).add(new BigDecimal(2178.8));
+//    	BigDecimal obpDenom = ab.add(new BigDecimal(6682));
+//    	BigDecimal obp = obpNum.divide(obpDenom, 4, RoundingMode.HALF_EVEN);
+//    	BigDecimal slgNum = new BigDecimal(this.slg).multiply(new BigDecimal(this.ab)).add(new BigDecimal(2528.5));
+//    	BigDecimal slgDenom = new BigDecimal(this.ab).add(new BigDecimal(5993));
+//    	BigDecimal slg = slgNum.divide(slgDenom, 4, RoundingMode.HALF_EVEN);
+//    	BigDecimal ops = obp.divide(slg, 2, RoundingMode.HALF_EVEN).subtract(new BigDecimal(0.748));
+//    	ops = ops.divide(new BigDecimal(opsHistSGPMult), 4, RoundingMode.HALF_EVEN);
+//    			 	
+//    	return r.add(hr.add(rbi.add(sb.add(ops)))).doubleValue();
+//    }
+//    
 }

@@ -61,6 +61,8 @@ public class YahooRotoLeague extends AbstractEntity {
 	
 	private List<User> users;
 	private List<YahooRotoTeam> yahooRotoTeams;
+	private List<UserBatterSGP> userBatterSGP;
+    private List<UserPitcherSGP> userPitcherSGP;
 	
 	public YahooRotoLeague(String leagueKey, String leagueName, String leagueURL, int teamCount, int season) {
 		this.leagueKey = leagueKey;
@@ -339,6 +341,28 @@ public class YahooRotoLeague extends AbstractEntity {
 	public void setYahooRotoTeams(List<YahooRotoTeam> yahooRotoTeams) {
 		this.yahooRotoTeams = yahooRotoTeams;
 	}
+
+    @OneToMany
+    @JoinColumn(name = "league_uid")
+    public List<UserBatterSGP> getUserBatterSGP() {
+    	return userBatterSGP;
+    }
+    
+    @SuppressWarnings("unused")
+   private void setUserBatterSGP(List<UserBatterSGP> userBatterSGP) {
+    	this.userBatterSGP = userBatterSGP;
+    }
+    
+    @OneToMany
+    @JoinColumn(name = "league_uid")
+    public List<UserPitcherSGP> getUserPitcherSGP() {
+    	return userPitcherSGP;
+    }
+    
+    @SuppressWarnings("unused")
+    private void setUserPitcherSGP(List<UserPitcherSGP> userPitcherSGP) {
+    	this.userPitcherSGP = userPitcherSGP;
+    }
 
 	// calculates historical sgp for league (number of years is based on size of list provided)
 	public void calcHistSGPs(List<YahooRotoLeague> leagues) {

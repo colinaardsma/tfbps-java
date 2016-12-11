@@ -37,6 +37,8 @@ public class User extends AbstractEntity {
 	private List<Post> posts;
 	private List<YahooRotoLeague> yahooRotoLeagues;
 	private List<YahooRotoTeam> yahooRotoTeams;
+	private List<UserBatterSGP> userBatterSGP;
+    private List<UserPitcherSGP> userPitcherSGP;
 
 //    private Map<String, StockHolding> portfolio; // turn this into custom spreadsheets
         
@@ -158,13 +160,35 @@ public class User extends AbstractEntity {
     
     @OneToMany
     @JoinColumn(name = "manager_uid")
-    public List<YahooRotoTeam> yahooRotoTeams() {
+    public List<YahooRotoTeam> getYahooRotoTeams() {
     	return yahooRotoTeams;
     }
     
     @SuppressWarnings("unused")
     private void setYahooRotoTeams(List<YahooRotoTeam> yahooRotoTeams) {
     	this.yahooRotoTeams = yahooRotoTeams;
+    }
+    
+    @OneToMany
+    @JoinColumn(name = "manager_uid")
+    public List<UserBatterSGP> getUserBatterSGP() {
+    	return userBatterSGP;
+    }
+    
+    @SuppressWarnings("unused")
+   private void setUserBatterSGP(List<UserBatterSGP> userBatterSGP) {
+    	this.userBatterSGP = userBatterSGP;
+    }
+    
+    @OneToMany
+    @JoinColumn(name = "manager_uid")
+    public List<UserPitcherSGP> getUserPitcherSGP() {
+    	return userPitcherSGP;
+    }
+    
+    @SuppressWarnings("unused")
+    private void setUserPitcherSGP(List<UserPitcherSGP> userPitcherSGP) {
+    	this.userPitcherSGP = userPitcherSGP;
     }
 
 	protected void addPost(Post post) {
