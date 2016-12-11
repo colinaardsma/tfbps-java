@@ -1,5 +1,7 @@
 package com.colinaardsma.tfbps.models;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -318,13 +320,53 @@ public class FPProjPitcher extends AbstractEntity {
 	}
 	
     protected void calcSgp(double sgpMultW, double sgpMultSV, double sgpMultK, double sgpMultERA, double sgpMultWHIP) {
-        this.wSGP = (double) this.w / sgpMultW;
-        this.svSGP = (double) this.sv / sgpMultSV;
-        this.kSGP = (double) this.k / sgpMultK;
-        this.eraSGP = ((475.0 + (double) this.er) * 9.0 / (1192.0 + (double) this.ip) - 3.59) / sgpMultERA;
-        this.whipSGP = ((1466.0 + (double) this.h + (double) this.bb) / (1192.0 + (double) this.ip) - 1.23) / sgpMultWHIP;
+    	BigDecimal w = new BigDecimal(this.w).divide(new BigDecimal(sgpMultW), 4, RoundingMode.HALF_EVEN);
+    	this.wSGP = w.doubleValue();
+    	BigDecimal sv = new BigDecimal(this.sv).divide(new BigDecimal(sgpMultSV), 4, RoundingMode.HALF_EVEN);
+    	this.svSGP = sv.doubleValue();
+    	BigDecimal k = new BigDecimal(this.k).divide(new BigDecimal(sgpMultK), 4, RoundingMode.HALF_EVEN);
+    	this.kSGP = k.doubleValue();
+    	
+    	// era
+        BigDecimal er = new BigDecimal(475).add(new BigDecimal(this.er));
+        BigDecimal eraNum = er.multiply(new BigDecimal(9));
+        BigDecimal ip = new BigDecimal(1192).add(new BigDecimal(this.ip));
+        BigDecimal eraDenom = ip;
+        BigDecimal era = eraNum.divide(eraDenom, 4, RoundingMode.HALF_EVEN).subtract(new BigDecimal(3.59)).divide(new BigDecimal(sgpMultERA), 4, RoundingMode.HALF_EVEN);;
+        this.eraSGP = era.doubleValue();
         
-    	this.sgp = this.wSGP + this.svSGP + this.kSGP + this.eraSGP + this.whipSGP;
+        // whip
+        BigDecimal whipNum = new BigDecimal(1466).add(new BigDecimal(this.h)).add(new BigDecimal(this.bb));
+        BigDecimal whipDenom = ip;
+        BigDecimal whip = whipNum.divide(whipDenom, 4, RoundingMode.HALF_EVEN).subtract(new BigDecimal(1.23)).divide(new BigDecimal(sgpMultWHIP), 4, RoundingMode.HALF_EVEN);;
+        this.whipSGP = whip.doubleValue();
+        
+    	this.sgp = w.add(sv.add(k.add(era.add(whip)))).doubleValue();
     }
     
+    public double calcLeagueHistSGP(double wHistSGPMult, double svHistSGPMult, double kHistSGPMult, double eraHistSGPMult, double whipHistSGPMult) {
+    	BigDecimal w = new BigDecimal(this.w).divide(new BigDecimal(wHistSGPMult), 4, RoundingMode.HALF_EVEN);
+    	this.wSGP = w.doubleValue();
+    	BigDecimal sv = new BigDecimal(this.sv).divide(new BigDecimal(svHistSGPMult), 4, RoundingMode.HALF_EVEN);
+    	this.svSGP = sv.doubleValue();
+    	BigDecimal k = new BigDecimal(this.k).divide(new BigDecimal(kHistSGPMult), 4, RoundingMode.HALF_EVEN);
+    	this.kSGP = k.doubleValue();
+    	
+    	// era
+        BigDecimal er = new BigDecimal(475).add(new BigDecimal(this.er));
+        BigDecimal eraNum = er.multiply(new BigDecimal(9));
+        BigDecimal ip = new BigDecimal(1192).add(new BigDecimal(this.ip));
+        BigDecimal eraDenom = ip;
+        BigDecimal era = eraNum.divide(eraDenom, 4, RoundingMode.HALF_EVEN).subtract(new BigDecimal(3.59)).divide(new BigDecimal(eraHistSGPMult), 4, RoundingMode.HALF_EVEN);
+        this.eraSGP = era.doubleValue();
+        
+        // whip
+        BigDecimal whipNum = new BigDecimal(1466).add(new BigDecimal(this.h)).add(new BigDecimal(this.bb));
+        BigDecimal whipDenom = ip;
+        BigDecimal whip = whipNum.divide(whipDenom, 4, RoundingMode.HALF_EVEN).subtract(new BigDecimal(1.23)).divide(new BigDecimal(whipHistSGPMult), 4, RoundingMode.HALF_EVEN);
+        this.whipSGP = whip.doubleValue();
+        
+    	return w.add(sv.add(k.add(era.add(whip)))).doubleValue();
+    }
+
 }

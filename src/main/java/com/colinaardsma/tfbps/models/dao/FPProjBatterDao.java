@@ -20,5 +20,5 @@ public interface FPProjBatterDao extends CrudRepository<FPProjBatter, Integer> {
 	FPProjBatter findByName(String name); // get object with name only
 	FPProjBatter findByNameAndTeam(String name, String team); // get player with name and team only
 	FPProjBatter findByUid(int uid); // get player with unique id only
-
+	
 }

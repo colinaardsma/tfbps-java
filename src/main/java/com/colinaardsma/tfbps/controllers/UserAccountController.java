@@ -1,6 +1,7 @@
 package com.colinaardsma.tfbps.controllers;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,8 +36,11 @@ public class UserAccountController extends AbstractController {
 		// get date of last data pull
 		Date lastPullDate = new Date();
 
-		FPProjBatter batter = fpProjBatterDao.findByUid(1);
-		FPProjPitcher pitcher = fpProjPitcherDao.findByUid(1);
+		List<FPProjBatter> batters = fpProjBatterDao.findByTeam("CHC");
+		FPProjBatter batter = batters.get(0);
+		List<FPProjPitcher> pitchers = fpProjPitcherDao.findByTeam("CHC");
+		FPProjPitcher pitcher = pitchers.get(0);
+		
 		if (batter.getCreated().after(pitcher.getCreated())) {
 			lastPullDate = batter.getCreated();
 		} else {

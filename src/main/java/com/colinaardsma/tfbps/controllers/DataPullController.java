@@ -29,7 +29,9 @@ public class DataPullController extends AbstractController {
 	
 	@RequestMapping(value = "/fpprojbdatapull")
     public String fpprojbdatapull(Model model, HttpServletRequest request){
-
+		
+		fpProjBatterDao.deleteAll();
+		
 		Document doc;
 		try {
 			doc = Jsoup.connect("https://www.fantasypros.com/mlb/projections/hitters.php").get();
@@ -89,6 +91,8 @@ public class DataPullController extends AbstractController {
 	
 	@RequestMapping(value = "/fpprojpdatapull")
     public String fpprojpdatapull(Model model, HttpServletRequest request){
+
+		fpProjPitcherDao.deleteAll();
 
 		Document doc;
 		try {

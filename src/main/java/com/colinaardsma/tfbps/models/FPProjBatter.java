@@ -1,5 +1,7 @@
 package com.colinaardsma.tfbps.models;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -8,7 +10,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import com.colinaardsma.tfbps.models.util.SGPMultCalc;
-
 
 @Entity
 @Table(name = "fpprojb")
@@ -318,13 +319,49 @@ public class FPProjBatter extends AbstractEntity {
 	}
 	
     protected void calcSgp(double sgpMultR, double sgpMultHR, double sgpMultRBI, double sgpMultSB, double sgpMultOPS) {
-    	this.rSGP = this.r / sgpMultR;
-    	this.hrSGP = this.hr / sgpMultHR;
-    	this.rbiSGP = this.rbi / sgpMultRBI;
-    	this.sbSGP = this.sb / sgpMultSB;
-    	this.opsSGP = ((((((this.obp * ((double) this.ab * 1.15)) + 2178.8) / (((double) this.ab * 1.15) + 6682.0)) + (((this.slg * this.ab) + 2528.5) / ((double) this.ab + 5993.0))) - 0.748) / sgpMultOPS);
-    			
-    	this.sgp = this.rSGP + this.hrSGP + this.rbiSGP + this.sbSGP + this.opsSGP;
+    	BigDecimal r = new BigDecimal(this.r).divide(new BigDecimal(sgpMultR), 4, RoundingMode.HALF_EVEN);
+    	this.rSGP = r.doubleValue();
+    	BigDecimal hr = new BigDecimal(this.hr).divide(new BigDecimal(sgpMultHR), 4, RoundingMode.HALF_EVEN);
+    	this.hrSGP = hr.doubleValue();
+    	BigDecimal rbi = new BigDecimal(this.rbi).divide(new BigDecimal(sgpMultRBI), 4, RoundingMode.HALF_EVEN);
+    	this.rbiSGP = rbi.doubleValue();
+    	BigDecimal sb = new BigDecimal(this.sb).divide(new BigDecimal(sgpMultSB), 4, RoundingMode.HALF_EVEN);
+    	this.sbSGP = sb.doubleValue();
+    	
+    	// ops
+    	BigDecimal ab = new BigDecimal(this.ab).multiply(new BigDecimal(1.15));	
+    	BigDecimal obpNum = new BigDecimal(this.obp).multiply(ab).add(new BigDecimal(2178.8));
+    	BigDecimal obpDenom = ab.add(new BigDecimal(6682));
+    	BigDecimal obp = obpNum.divide(obpDenom, 4, RoundingMode.HALF_EVEN);
+    	BigDecimal slgNum = new BigDecimal(this.slg).multiply(new BigDecimal(this.ab)).add(new BigDecimal(2528.5));
+    	BigDecimal slgDenom = new BigDecimal(this.ab).add(new BigDecimal(5993));
+    	BigDecimal slg = slgNum.divide(slgDenom, 4, RoundingMode.HALF_EVEN);
+    	BigDecimal ops = obp.divide(slg, 2, RoundingMode.HALF_EVEN).subtract(new BigDecimal(0.748));
+    	ops = ops.divide(new BigDecimal(sgpMultOPS), 4, RoundingMode.HALF_EVEN);
+    	this.opsSGP = ops.doubleValue();
+    			 	
+    	this.sgp = r.add(hr.add(rbi.add(sb.add(ops)))).doubleValue();
 	}
+    
+    public double caclLeagueHistSGP(double rHistSGPMult, double hrHistSGPMult, double rbiHistSGPMult, double sbHistSGPMult, double opsHistSGPMult) {
+    	BigDecimal r = new BigDecimal(this.r).divide(new BigDecimal(rHistSGPMult), 4, RoundingMode.HALF_EVEN);
+    	BigDecimal hr = new BigDecimal(this.hr).divide(new BigDecimal(hrHistSGPMult), 4, RoundingMode.HALF_EVEN);
+    	BigDecimal rbi = new BigDecimal(this.rbi).divide(new BigDecimal(rbiHistSGPMult), 4, RoundingMode.HALF_EVEN);
+    	BigDecimal sb = new BigDecimal(this.sb).divide(new BigDecimal(sbHistSGPMult), 4, RoundingMode.HALF_EVEN);
+    	
+    	// ops
+    	BigDecimal ab = new BigDecimal(this.ab).multiply(new BigDecimal(1.15));	
+    	BigDecimal obpNum = new BigDecimal(this.obp).multiply(ab).add(new BigDecimal(2178.8));
+    	BigDecimal obpDenom = ab.add(new BigDecimal(6682));
+    	BigDecimal obp = obpNum.divide(obpDenom, 4, RoundingMode.HALF_EVEN);
+    	BigDecimal slgNum = new BigDecimal(this.slg).multiply(new BigDecimal(this.ab)).add(new BigDecimal(2528.5));
+    	BigDecimal slgDenom = new BigDecimal(this.ab).add(new BigDecimal(5993));
+    	BigDecimal slg = slgNum.divide(slgDenom, 4, RoundingMode.HALF_EVEN);
+    	BigDecimal ops = obp.divide(slg, 2, RoundingMode.HALF_EVEN).subtract(new BigDecimal(0.748));
+    	ops = ops.divide(new BigDecimal(opsHistSGPMult), 4, RoundingMode.HALF_EVEN);
+    	this.opsSGP = ops.doubleValue();
+    			 	
+    	return r.add(hr.add(rbi.add(sb.add(ops)))).doubleValue();
+    }
     
 }

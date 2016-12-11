@@ -14,6 +14,7 @@ import com.colinaardsma.tfbps.models.YahooRotoLeague;
 public interface YahooRotoLeagueDao extends CrudRepository<YahooRotoLeague, Integer> {
 
 	List<YahooRotoLeague> findAll(); // get all leagues
+	List<YahooRotoLeague> findByUsers_uid(int uid); // get list of leagues per user
 	YahooRotoLeague findByLeagueKey(String leagueKey); // get league with league key only
 	YahooRotoLeague findByUid(int uid); // get league with unique id only
 
