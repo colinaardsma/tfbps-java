@@ -22,10 +22,8 @@ public class AdminController extends AbstractController {
     public String admin(String changeUsername, String authorization, HttpServletRequest request, Model model){
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		if (currentUser == null) {
-			return "index";
-		}
-	
+		User user = this.getUserFromSession(request);
+		
     	// change user group
     	List<User> users = userDao.findAll();
 
@@ -41,6 +39,7 @@ public class AdminController extends AbstractController {
 		}
 		
         model.addAttribute("users", users);
+        model.addAttribute("user", user);
     	model.addAttribute("currentUser", currentUser);
         
         return "admin";

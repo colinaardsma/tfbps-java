@@ -26,36 +26,31 @@ public class BlogController extends AbstractController {
 	
 	@RequestMapping(value = "/blog/bloggers")
 	public String bloggerList(HttpServletRequest request, Model model){
-		
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		if (currentUser == null) {
-			return "index";
-		}
+		User user = this.getUserFromSession(request);
 		
 		// fetch users with blog posts and pass to template
 		List<User> users = userDao.findAll();
 		List<User> bloggers = new ArrayList<User>();
-		for (User user : users) {
-			if (user.getPosts().size() > 0) {
-				bloggers.add(user);
+		for (User u : users) {
+			if (u.getPosts().size() > 0) {
+				bloggers.add(u);
 			}
 		}
 		
     	model.addAttribute("currentUser", currentUser);
 		model.addAttribute("bloggers", bloggers);
+        model.addAttribute("user", user);
 		
 		return "bloggers";
 	}
 	
 	@RequestMapping(value = "/blog")
 	public String blog(HttpServletRequest request, Model model) {
-		
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		if (currentUser == null) {
-			return "index";
-		}
+		User user = this.getUserFromSession(request);
 		
 		// fetch posts and pass to template
 		List<Post> posts = postDao.findAllByOrderByCreatedDesc();
@@ -64,24 +59,23 @@ public class BlogController extends AbstractController {
 		
     	model.addAttribute("currentUser", currentUser);
 		model.addAttribute("posts", posts);
+        model.addAttribute("user", user);
 		
 		return "blog";
 	}
 
 	@RequestMapping(value = "/blog/archive")
 	public String blogArchive(HttpServletRequest request, Model model) {
-		
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		if (currentUser == null) {
-			return "index";
-		}
+		User user = this.getUserFromSession(request);
 		
 		// fetch posts and pass to template
 		List<Post> posts = postDao.findAllByOrderByCreatedDesc();
 		
     	model.addAttribute("currentUser", currentUser);
 		model.addAttribute("posts", posts);
+        model.addAttribute("user", user);
 		
 		return "blog";
 	}

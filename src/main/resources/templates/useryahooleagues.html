@@ -5,7 +5,7 @@
 		<div class="container">
 			<div id="top" th:include="template :: masthead(${currentUser})"></div>
 			<div id="middle">
-				<p>Add Yahoo! Leagues</p>
+				<h4>Add Your Yahoo! Leagues</h4>
 				<form style="width:80%; margin:auto" method="post">
 	    			<select name="league" style="text-align:left">
 						<option th:each="league : ${leagues}" th:value="${league[3]}" th:text="${league[0]} + ' - ' + ${league[1]}"></option>
@@ -16,7 +16,7 @@
 						Link Previous Years
 					</label>
 					<br/>
-					<label>Years to Link 
+					<label>Years to Link: 
 						<select name="prevyears">
 							<option value="0">0</option>
 							<option value="1">1</option>
@@ -27,7 +27,8 @@
 						</select>
 					</label>
 	    			<div class="error" th:text="${error}"></div>
-	    			<label style="width:80%; text-align:left">
+	    			<br/>
+	    			<label style="width:80%">
 	    				<input type="submit" />
 	    			</label>
 				</form>
@@ -40,6 +41,7 @@
 					<br/>
 				</div>
 			</div>
+			<div th:replace="template :: footer"></div>
 		</div>
 	</body>
 </html>

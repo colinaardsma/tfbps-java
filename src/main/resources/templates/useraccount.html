@@ -5,52 +5,56 @@
 		<div class="container">
 			<div id="top" th:include="template :: masthead(${currentUser})"></div>
 			<div id="middle">
-				<div>
-					<p>Link to Yahoo! Account</p>
-					<ul class="nav nav-pills">
-						<li><a href="/yahoolinkaccount">Link Yahoo! Account</a></li>
-					</ul>
-					<!-- <p th:text="${yahooGUID}"></p> -->
-				</div>
-				<div>
-				<hr/>
-					<p>Refresh Yahoo! Access Token</p>
-					<ul class="nav nav-pills">
-						<li><a href="/yahoorefreshaccesstoken">Refresh Yahoo! Access Token</a></li>
-					</ul>
-				</div>
-				<div>
-				<hr/>
-					<p>Link Your Yahoo! Leagues</p>
-					<ul class="nav nav-pills">
-						<li><a href="/useryahooleagues">Link Your Yahoo! Leagues</a></li>
-					</ul>
-				</div>
+				<h3 th:text="${currentUser} + '\'s account'"></h3>
 				<hr/>
 				<div>
-					<p>Add League</p>
-					<form action="/addleague">
-						<input type="submit" value="Link Yahoo! Account"/>
-						<p>Also link previous 
-						<span><select name="prevyears">
-							<option value="0">1</option>
-							<option value="1">1</option>
-							<option value="2">2</option>
-							<option value="3">3</option>
-							<option value="4">4</option>
-							<option value="5">5</option>
-						</select></span> years:</p>
+					<h4 th:text="${currentUser} + '\'s Custom SGP'"></h4>
+					<form action="/user_fpprojb" method="post">
+						<table style="margin:auto">
+							<tr>
+								<td><select name="league">
+									<option th:each="league : ${batterLeagues}" th:value="${league.leagueKey}" th:text="${league.season} + ' - ' + ${league.leagueName}"></option>
+								</select></td>
+								<td><input type="submit" value="Show Custom Batter SGP" /></td>
+							</tr>
+						</table>
 					</form>
+					<br/>
+					<form action="/user_fpprojp" method="post">
+						<table style="margin:auto">
+							<tr>
+								<td><select name="league">
+									<option th:each="league : ${pitcherLeagues}" th:value="${league.leagueKey}" th:text="${league.season} + ' - ' + ${league.leagueName}"></option>
+								</select></td>
+								<td><input type="submit" value="Show Custom Pitcher SGP" /></td>
+							</tr>
+						</table>
+					</form>	
+				</div>
+				<br/>
+				<div>
+					<h4>Calculate new Custom SGPs</h4>
+					<ul class="nav nav-pills">
+						<li style="width:49.9%"><a href="/user_fpprojb">Calculate Batter SGP</a></li>
+						<li style="width:49.9%"><a href="/user_fpprojp">Calculate Pitcher SGP</a></li>
+					</ul>
 				</div>
 				<hr/>
 				<div>
-					<p>Calculate SGP</p>
-	        		<p th:text="'Date of last pull: ' + ${#dates.format(lastPullDate, 'MM.dd.yy')}"></p>
-	        		<p>League List</p>
-	        		<p>Date of last SGP Calculation: ___</p>
+					<h4>Link to Yahoo! Account</h4>
+					<ul class="nav nav-pills">
+						<li style="width:100%"><a onclick="javascript:popupWindow('/yahoolinkaccount')">Link Yahoo! Account</a></li>
+					</ul>
+				</div>
+				<br/>
+				<div>
+					<h4>Link Your Yahoo! Leagues</h4>
+					<ul class="nav nav-pills">
+						<li style="width:100%"><a href="/useryahooleagues">Link Your Yahoo! Leagues</a></li>
+					</ul>
 				</div>
 			</div>
-			<div th:replace="template :: footer(${currentUser})"></div>
+			<div th:replace="template :: footer"></div>
 		</div>
 	</body>
 </html>

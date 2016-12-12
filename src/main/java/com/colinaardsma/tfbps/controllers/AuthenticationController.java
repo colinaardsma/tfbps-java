@@ -14,6 +14,15 @@ public class AuthenticationController extends AbstractController {
 
     @RequestMapping(value = "/")
     public String index(HttpServletRequest request, Model model){
+		// check for user in session
+    	if (request.getSession().getAttribute(userKey) != null) {
+    		String currentUser = this.getUsernameFromSession(request);
+			User user = this.getUserFromSession(request);
+			
+			model.addAttribute("user", user);
+			model.addAttribute("currentUser", currentUser);
+    	}
+
         return "index";
     }
 
@@ -67,13 +76,15 @@ public class AuthenticationController extends AbstractController {
         request.getSession().setAttribute(userKey, user.getUid());
 
     	model.addAttribute("currentUser", userName);
-        return "index";
+    	model.addAttribute("user", user);
+    	
+        return "redirect:/";
     }
 
     @RequestMapping(value = "/logout")
     public String logout(HttpServletRequest request){
         request.getSession().invalidate();
-        return "index";
+        return "redirect:/";
     }
 
 }

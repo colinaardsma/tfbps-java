@@ -25,7 +25,7 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
     	
         // basic user page list
-        List<String> basicPages = Arrays.asList("/fpprojb", "/fpprojp", "/blog", "/welcome", "/yahoolinkaccount", "/useraccount");
+        List<String> basicPages = Arrays.asList("/fpprojb", "/fpprojp", "/blog", "/blog/bloggers", "/welcome", "/yahoolinkaccount", "/useraccount", "/user_fpprojb", "/user_fpprojp", "/yahooleaguelookup", "/yahoolinkaccount");
         // basic user group access list
         List<String> basicAuthList = Arrays.asList("admin", "power-user", "blogger", "commissioner", "basic");
       
@@ -34,8 +34,9 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
         // commish user group access list
         List<String> commishAuthList = Arrays.asList("admin", "power-user", "commissioner");
         
+        // TODO: add re for individual posts and user posts
         // blogger user page list
-        List<String> bloggerPages = Arrays.asList("/blog/new_post", "/blog/modify", "/blog/delete", "/blog/archive"); // add re for individual posts and user posts // confirm user group once this is populated with working pages
+        List<String> bloggerPages = Arrays.asList("/blog/new_post", "/blog/modify", "/blog/delete", "/blog/archive"); // confirm user group once this is populated with working pages
         // blogger user group access list
         List<String> bloggerAuthList = Arrays.asList("admin", "power-user", "blogger");
         

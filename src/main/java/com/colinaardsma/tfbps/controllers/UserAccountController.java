@@ -1,6 +1,6 @@
 package com.colinaardsma.tfbps.controllers;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,11 +10,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.colinaardsma.tfbps.models.FPProjBatter;
-import com.colinaardsma.tfbps.models.FPProjPitcher;
+import com.colinaardsma.tfbps.models.User;
+import com.colinaardsma.tfbps.models.UserBatterSGP;
+import com.colinaardsma.tfbps.models.UserPitcherSGP;
+import com.colinaardsma.tfbps.models.YahooRotoLeague;
 import com.colinaardsma.tfbps.models.dao.FPProjBatterDao;
 import com.colinaardsma.tfbps.models.dao.FPProjPitcherDao;
+import com.colinaardsma.tfbps.models.dao.UserBatterSGPDao;
 import com.colinaardsma.tfbps.models.dao.UserDao;
+import com.colinaardsma.tfbps.models.dao.UserPitcherSGPDao;
 
 @Controller
 public class UserAccountController extends AbstractController {
@@ -28,28 +32,45 @@ public class UserAccountController extends AbstractController {
 	@Autowired
 	FPProjPitcherDao fpProjPitcherDao;
 	
+	@Autowired
+	UserBatterSGPDao userBatterSGPDao;
+	
+	@Autowired
+	UserPitcherSGPDao userPitcherSGPDao;
+	
     @RequestMapping(value = "/useraccount")
     public String useraccount(HttpServletRequest request, Model model) {
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
+		User user = this.getUserFromSession(request);
 		
-		// get date of last data pull
-		Date lastPullDate = new Date();
-
-		List<FPProjBatter> batters = fpProjBatterDao.findByTeam("CHC");
-		FPProjBatter batter = batters.get(0);
-		List<FPProjPitcher> pitchers = fpProjPitcherDao.findByTeam("CHC");
-		FPProjPitcher pitcher = pitchers.get(0);
+		// create list of user's leagues that already have custom SGPs
+		// batter
+		List<UserBatterSGP> userBatterSGPPlayers = userBatterSGPDao.findByUser(user);
+		List<YahooRotoLeague> batterLeagues = new ArrayList<YahooRotoLeague>();
+		for (UserBatterSGP player : userBatterSGPPlayers) {
+			YahooRotoLeague league = player.getLeague();
+			if (!batterLeagues.contains(league)) {
+				batterLeagues.add(league);
+			}
+		}
 		
-		if (batter.getCreated().after(pitcher.getCreated())) {
-			lastPullDate = batter.getCreated();
-		} else {
-			lastPullDate = pitcher.getCreated();
+		// pitcher
+		List<UserPitcherSGP> userPitcherSGPPlayers = userPitcherSGPDao.findByUser(user);
+		List<YahooRotoLeague> pitcherLeagues = new ArrayList<YahooRotoLeague>();
+		for (UserPitcherSGP player : userPitcherSGPPlayers) {
+			YahooRotoLeague league = player.getLeague();
+			if (!pitcherLeagues.contains(league)) {
+				pitcherLeagues.add(league);
+			}
 		}
 
-        model.addAttribute("lastPullDate", lastPullDate);
+		
     	model.addAttribute("currentUser", currentUser);
-    	
+        model.addAttribute("user", user);
+        model.addAttribute("batterLeagues", batterLeagues);
+        model.addAttribute("pitcherLeagues", pitcherLeagues);
+   	
     	return "useraccount";
     }
 

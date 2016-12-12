@@ -11,7 +11,7 @@
 				<p style="text-align:left" th:text="${body}"></p>
 				<div th:replace="template :: writtenBy(${username},${created})"></div>
 			</div>
-			<div th:replace="template :: footer(${currentUser})"></div>
+			<div th:replace="template :: footer"></div>
 		</div>
 	</body>
 </html>

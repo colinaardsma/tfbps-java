@@ -39,6 +39,7 @@
 				<p th:text="(${leagueScoringType} ? 'Scoring Type: ' + ${leagueScoringType} : '')"></p>
 				<p th:text="(${prevYearKey} ? 'Previous Year Key: ' + ${prevYearKey} : '')"></p>
 			</div>
+			<div th:replace="template :: footer"></div>
 		</div>
 	</body>
 </html>

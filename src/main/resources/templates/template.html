@@ -10,6 +10,12 @@
     	<script th:src="@{/js/bootstrap.min.js}"></script>
     	<script th:src="@{/js/scripts.js}"></script>
 	    <style> td {text-align: left;}</style>
+	    
+	    <!-- Move into JS file -->
+	    <script>
+		function popupWindow(url) {
+ 		   popup = window.open(url, "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=560,height=400");
+		}</script>
 	</head>
 	<body>
     	<div class="container">
@@ -20,9 +26,9 @@
                 	<li><a href="/fpprojb">fantasy pros batter projections</a></li>
                 	<li><a href="/fpprojp">fantasy pros pitcher projections</a></li>
                 	<li><a href="/blog">blog</a></li>
-                	<li><a href="/admin">admin</a></li>
-                 	<li th:if="${currentUser}"><a href="/useraccount" th:text="${currentUser}"></a></li>
-                	<li><a th:href="(${currentUser} ? '/logout' : '/login')" th:text="(${currentUser} ? 'Log Out' : 'Log In')"></a></li>
+                	<li th:if="${user}"><a th:if="${user.userGroup} == 'admin'" href="/admin">admin</a></li>
+                 	<li><a th:href="(${currentUser} ? '/useraccount' : '/login')" th:text="(${currentUser} ? ${currentUser} : 'login')"></a></li>
+                	<li th:if="${currentUser}"><a href="/logout">logout</a></li>
                 </ul>
         	</div>
 	        <div id="middle"></div>
@@ -32,8 +38,10 @@
 	        <div id="bottom" th:fragment="pagination(prev_page, next_page, offset, limit, posts)">
 	        
 	        </div>
-	        <div id="bottom" th:fragment="footer(currentUser)">
-    	    	<a th:href="(${currentUser} ? '/logout' : '/login')" th:text="(${currentUser} ? 'Log Out' : 'Log In')"></a>
+	        <div id="bottom" th:fragment="footer">
+	        <br/>
+	        <hr/>
+    	    	<p>site design / logo © 2016 Colin Aardsma</p>
 			</div>
     	</div>
 	</body>

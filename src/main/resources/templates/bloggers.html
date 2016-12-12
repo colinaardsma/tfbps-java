@@ -10,7 +10,7 @@
 					<li th:each ="blogger : ${bloggers}"><a th:href="'/blog/' + ${blogger.userName}" th:text="${blogger.userName}"></a></li>
 				</ul>
 			</div>
-			<div th:replace="template :: footer(${currentUser})"></div>
+			<div th:replace="template :: footer"></div>
 		</div>
 	</body>
 </html>

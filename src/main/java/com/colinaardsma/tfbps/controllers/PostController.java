@@ -28,26 +28,21 @@ public class PostController extends AbstractController {
 	
 	@RequestMapping(value = "/blog/new_post", method = RequestMethod.GET)
 	public String newPostForm(HttpServletRequest request, Model model) {
-
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		if (currentUser == null) {
-			return "index";
-		}
+		User user = this.getUserFromSession(request);
 
 		model.addAttribute("currentUser", currentUser);
+        model.addAttribute("user", user);
 
 		return "newpost";
 	}
 	
 	@RequestMapping(value = "/blog/new_post", method = RequestMethod.POST)
 	public String newPost(HttpServletRequest request, Model model) {
-		
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		if (currentUser == null) {
-			return "index";
-		}
+		User user = this.getUserFromSession(request);
 
 		// get author (user) from session
         Integer userId = (Integer) request.getSession().getAttribute(AbstractController.userKey);
@@ -72,7 +67,8 @@ public class PostController extends AbstractController {
 		model.addAttribute("author", author);
 		model.addAttribute("title", title);
 		model.addAttribute("body", body);
-        
+        model.addAttribute("user", user);
+       
 		// route to permalink
         String username = author.getUserName();
         int uid = post.getUid();
@@ -82,30 +78,25 @@ public class PostController extends AbstractController {
 	
 	@RequestMapping(value = "/blog/modify")
 	public String modify(HttpServletRequest request, Model model) {
-		
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		if (currentUser == null) {
-			return "index";
-		}
+		User user = this.getUserFromSession(request);
 
 		// fetch posts and pass to template
 		List<Post> posts = postDao.findAllByOrderByCreatedDesc();
 		
     	model.addAttribute("currentUser", currentUser);
 		model.addAttribute("posts", posts);
+        model.addAttribute("user", user);
 		
 		return "modify";
 	}
 	
 	@RequestMapping(value = "/blog/{username}/{uid}/edit", method = RequestMethod.GET)
 	public String modifyPostGet(@PathVariable String username, @PathVariable int uid, HttpServletRequest request, Model model) {
-	
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		if (currentUser == null) {
-			return "index";
-		}
+		User user = this.getUserFromSession(request);
 
 		// retrieve single post based on uid in permalink
 		Post post = postDao.findByUid(uid);
@@ -118,18 +109,16 @@ public class PostController extends AbstractController {
 		model.addAttribute("title", title);
 		model.addAttribute("body", body);
     	model.addAttribute("currentUser", currentUser);
+        model.addAttribute("user", user);
 		
 		return "newpost";
 	}
 
 	@RequestMapping(value = "/blog/{username}/{uid}/edit", method = RequestMethod.POST)
 	public String modifyPostPost(@PathVariable String username, @PathVariable int uid, HttpServletRequest request, Model model) {
-	
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		if (currentUser == null) {
-			return "index";
-		}
+		User user = this.getUserFromSession(request);
 
 		// retrieve single post based on uid in permalink
 		Post post = postDao.findByUid(uid);
@@ -150,18 +139,16 @@ public class PostController extends AbstractController {
         postDao.save(post);
 		
     	model.addAttribute("currentUser", currentUser);
+        model.addAttribute("user", user);
 		
 		return "redirect:/blog/" + username + "/" + uid;	
 	}
 
 	@RequestMapping(value = "/blog/{username}/{uid}", method = RequestMethod.GET)
 	public String singlePost(@PathVariable String username, @PathVariable int uid, HttpServletRequest request, Model model) {
-		
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		if (currentUser == null) {
-			return "index";
-		}
+		User user = this.getUserFromSession(request);
 
 		// retrieve single post based on uid in permalink
 		Post post = postDao.findByUid(uid);
@@ -176,28 +163,27 @@ public class PostController extends AbstractController {
 		model.addAttribute("body", body);
 		model.addAttribute("created", created);
 		model.addAttribute("uid", uid);
+        model.addAttribute("user", user);
 		
 		return "post";
 	}
 	
 	@RequestMapping(value = "/blog/{username}", method = RequestMethod.GET)
 	public String userPosts(@PathVariable String username, HttpServletRequest request, Model model) {
-		
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		if (currentUser == null) {
-			return "index";
-		}
+		User user = this.getUserFromSession(request);
 
 		// get user uid
-		User user = userDao.findByUserName(username);
-		int uid = user.getUid();
+		User u = userDao.findByUserName(username);
+		int uid = u.getUid();
 		
 		// get user's posts
 		List<Post> posts = postDao.findByAuthor_uid(uid);
         
     	model.addAttribute("currentUser", currentUser);
 		model.addAttribute("posts", posts);
+        model.addAttribute("user", user);
 		
 		return "blog";
 	}

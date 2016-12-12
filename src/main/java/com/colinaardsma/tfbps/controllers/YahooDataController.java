@@ -48,12 +48,16 @@ public class YahooDataController extends AbstractController {
 
 	// https://developer.yahoo.com/fantasysports/guide/ResourcesAndCollections.html
 
+	@RequestMapping(value = "/closewindow")
+	public String closewindow() {
+		return "closewindow";
+	}
+	
 	@RequestMapping(value = "/useryahooleagues", method = RequestMethod.GET)
 	public String useryahooleaguesform(Model model, HttpServletRequest request) {
-
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		User yahooUser = userDao.findByUserName(currentUser);
+		User user = this.getUserFromSession(request);
 
 //		String teamsURL = "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/games/teams"; // use if/when team names need to be added
 		String leaguesURL = "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/games/leagues";
@@ -67,9 +71,9 @@ public class YahooDataController extends AbstractController {
 //		String userTeams = null; // use if/when team names need to be added
 
 		try {
-			checkOAuthExpiration(yahooUser); // make sure authorization is still valid, if not renew
-			userLeagues = YahooOAuth.oauthGetRequest(leaguesURL, yahooUser);
-//			userTeams = YahooOAuth.oauthGetRequest(teamsURL, yahooUser); // use if/when team names need to be added
+			checkOAuthExpiration(user); // make sure authorization is still valid, if not renew
+			userLeagues = YahooOAuth.oauthGetRequest(leaguesURL, user);
+//			userTeams = YahooOAuth.oauthGetRequest(teamsURL, user); // use if/when team names need to be added
 //			System.out.println("Leagues:\n\n" + userLeagues);
 //			System.out.println("Teams:\n\n" + userTeams); // use if/when team names need to be added
 
@@ -117,6 +121,8 @@ public class YahooDataController extends AbstractController {
         });
 
 		model.addAttribute("leagues", leagues);
+    	model.addAttribute("currentUser", currentUser);
+        model.addAttribute("user", user);
 		
 		return "useryahooleagues";
 	}
@@ -125,7 +131,7 @@ public class YahooDataController extends AbstractController {
 	public String useryahooleagues(Model model, HttpServletRequest request) {
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		User yahooUser = userDao.findByUserName(currentUser);
+		User user = this.getUserFromSession(request);
 
 		// league variables
 		String leagueKey = request.getParameter("league");
@@ -193,8 +199,8 @@ public class YahooDataController extends AbstractController {
 			String url = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=" + leagueKey + "/standings";
 
 			try {
-				checkOAuthExpiration(yahooUser); // make sure authorization is still valid, if not renew
-				xmlData = YahooOAuth.oauthGetRequest(url, yahooUser);
+				checkOAuthExpiration(user); // make sure authorization is still valid, if not renew
+				xmlData = YahooOAuth.oauthGetRequest(url, user);
 //				System.out.println(xmlData);
 
 				// parse xml data
@@ -225,7 +231,7 @@ public class YahooDataController extends AbstractController {
 
 							// add current user to list of league managers
 							List<User> managers = new ArrayList<User>();
-							managers.add(yahooUser);
+							managers.add(user);
 							newLeague.setUsers(managers);
 
 							// link to previous year only if user requested
@@ -256,8 +262,8 @@ public class YahooDataController extends AbstractController {
 
 							// add current user to list of league managers
 							List<User> managers = existingLeague.getUsers();
-							if (!managers.contains(yahooUser)) {
-								managers.add(yahooUser);
+							if (!managers.contains(user)) {
+								managers.add(user);
 								existingLeague.setUsers(managers);
 							}
 
@@ -303,8 +309,8 @@ public class YahooDataController extends AbstractController {
 						// check to see if this user exists, if so skip to next
 						if (yahooRotoTeamDao.findByTeamKey(teamKey) != null) {
 							YahooRotoTeam existingTeam = yahooRotoTeamDao.findByTeamKey(teamKey);
-							if (existingTeam.getTeamGUID().equals(yahooUser.getYahooGUID())) {
-								existingTeam.setUser(yahooUser);
+							if (existingTeam.getTeamGUID().equals(user.getYahooGUID())) {
+								existingTeam.setUser(user);
 							}
 							continue;
 						}
@@ -439,8 +445,8 @@ public class YahooDataController extends AbstractController {
 							rStats, hrStats, rbiStats, sbStats, avgStats, opsStats, ipStats, wStats, svStats, kStats, eraStats, whipStats, habPoints, rPoints, hrPoints, rbiPoints, 
 							sbPoints, avgPoints, opsPoints, ipPoints, wPoints, svPoints, kPoints, eraPoints, whipPoints, rank, totalPoints);
 					
-					if (newTeam.getTeamGUID().equals(yahooUser.getYahooGUID())) {
-						newTeam.setUser(yahooUser);
+					if (newTeam.getTeamGUID().equals(user.getYahooGUID())) {
+						newTeam.setUser(user);
 					}
 					newTeam.setYahooRotoLeague(yahooRotoLeagueDao.findByLeagueKey(leagueKey));
 					yahooRotoTeamDao.save(newTeam);
@@ -490,6 +496,7 @@ public class YahooDataController extends AbstractController {
 //		model.addAttribute("leagueURL", leagueURL);
 //		model.addAttribute("leagueScoringType", leagueScoringType);
 		model.addAttribute("currentUser", currentUser);
+        model.addAttribute("user", user);
 
 		return "useryahooleagues";
 	}

@@ -46,9 +46,9 @@ public class ProjectionController extends AbstractController {
 	
 	@RequestMapping(value = "/fpprojb")
     public String fpprojb(Model model, HttpServletRequest request){
-		
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
+		User user = this.getUserFromSession(request);
 		
 		// populate html table
 		List<FPProjBatter> players = fpProjBatterDao.findAllByOrderBySgpDesc();
@@ -62,15 +62,16 @@ public class ProjectionController extends AbstractController {
 		model.addAttribute("players", players);
 		model.addAttribute("lastPullDate", lastPullDate);
 		model.addAttribute("category", category);
+        model.addAttribute("user", user);
 
         return "projections";
     }
 
 	@RequestMapping(value = "/fpprojp")
     public String fpprojp(Model model, HttpServletRequest request){
-		
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
+		User user = this.getUserFromSession(request);
 		
 		// populate html table
 		List<FPProjPitcher> players = fpProjPitcherDao.findAllByOrderBySgpDesc();
@@ -84,16 +85,16 @@ public class ProjectionController extends AbstractController {
 		model.addAttribute("players", players);
 		model.addAttribute("lastPullDate", lastPullDate);
 		model.addAttribute("category", category);
+        model.addAttribute("user", user);
 
         return "projections";
     }
 
 	@RequestMapping(value = "/user_fpprojb", method = RequestMethod.GET)
 	public String userfpprojbform(Model model, HttpServletRequest request){
-		
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		User user = userDao.findByUserName(currentUser);
+		User user = this.getUserFromSession(request);
 		
 		// get list of user's leagues
 		List<YahooRotoLeague> leagues = yahooRotoLeagueDao.findByUsers_uid(user.getUid());
@@ -103,17 +104,16 @@ public class ProjectionController extends AbstractController {
     	model.addAttribute("currentUser", currentUser);
 		model.addAttribute("leagues", leagues);
 		model.addAttribute("category", category);
-
+        model.addAttribute("user", user);
 
         return "user_projection_selection";
 	}
 	
 	@RequestMapping(value = "/user_fpprojb", method = RequestMethod.POST)
     public String userfpprojb(Model model, HttpServletRequest request){
-		
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		User user = userDao.findByUserName(currentUser);
+		User user = this.getUserFromSession(request);
 		
 		// get league and leaguekey from user selection in get
 		String leagueKey = request.getParameter("league");
@@ -179,16 +179,16 @@ public class ProjectionController extends AbstractController {
 		model.addAttribute("players", sgpBatters);
 		model.addAttribute("lastPullDate", lastPullDate);
 		model.addAttribute("category", category);
+        model.addAttribute("user", user);
 
         return "user_projections";
     }
 
 	@RequestMapping(value = "/user_fpprojp", method = RequestMethod.GET)
 	public String userfpprojpform(Model model, HttpServletRequest request){
-		
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		User user = userDao.findByUserName(currentUser);
+		User user = this.getUserFromSession(request);
 		
 		// get list of user's leagues
 		List<YahooRotoLeague> leagues = yahooRotoLeagueDao.findByUsers_uid(user.getUid());
@@ -198,16 +198,16 @@ public class ProjectionController extends AbstractController {
     	model.addAttribute("currentUser", currentUser);
 		model.addAttribute("leagues", leagues);
 		model.addAttribute("category", category);
+        model.addAttribute("user", user);
 
         return "user_projection_selection";
 	}
 	
 	@RequestMapping(value = "/user_fpprojp", method = RequestMethod.POST)
     public String userfpprojp(Model model, HttpServletRequest request){
-		
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		User user = userDao.findByUserName(currentUser);
+		User user = this.getUserFromSession(request);
 		
 		// get league and leaguekey from user selection in get
 		String leagueKey = request.getParameter("league");
@@ -273,6 +273,7 @@ public class ProjectionController extends AbstractController {
 		model.addAttribute("players", sgpPitchers);
 		model.addAttribute("lastPullDate", lastPullDate);
 		model.addAttribute("category", category);
+        model.addAttribute("user", user);
 
         return "user_projections";
     }

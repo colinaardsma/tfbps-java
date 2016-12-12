@@ -45,10 +45,9 @@ public class YahooOAuthController extends AbstractController {
 	
 	@RequestMapping(value = "/yahooleaguelookup", method = RequestMethod.POST)
     public String yahooleaguelookup(Model model, HttpServletRequest request) {
-		
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
-		User yahooUser = userDao.findByUserName(currentUser);
+		User user = this.getUserFromSession(request);
 
 		BasicConfigurator.configure();
 		String league_key = request.getParameter("league_key");
@@ -67,7 +66,7 @@ public class YahooOAuthController extends AbstractController {
 		String error = null;
 
 		try {
-			xmlData = YahooOAuth.oauthGetRequest(url, yahooUser);
+			xmlData = YahooOAuth.oauthGetRequest(url, user);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			error = "Not authorized to view league or league does not exist.";
@@ -107,13 +106,13 @@ public class YahooOAuthController extends AbstractController {
 		model.addAttribute("leagueScoringType", leagueScoringType);
 		model.addAttribute("prevYearKey", prevYearKey);
     	model.addAttribute("currentUser", currentUser);
+        model.addAttribute("user", user);
 
         return "yahooleaguelookup";
     }
 
 	@RequestMapping(value = "/yahoolinkaccount")
 	public String yahoolinkaccount(Model model, HttpServletRequest request, HttpServletResponse response) {
-
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
 
@@ -206,15 +205,21 @@ public class YahooOAuthController extends AbstractController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		return "redirect:/useraccount";
+				
+		return "redirect:/closewindow";
 	}
 	
 	@RequestMapping(value = "/yahoorefreshaccesstoken")
 	public String yahooRefreshAccessToken(Model model, HttpServletRequest request, HttpServletResponse response) {
-
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
+
+		String refreshUser = null;
+		if (request.getParameter("refreshUsername") != null) {
+			refreshUser = request.getParameter("refreshUsername");
+		} else {
+			refreshUser = currentUser;
+		}
 		
 		// oauth access token variables
 		String oauth_access_token = null;
@@ -225,7 +230,7 @@ public class YahooOAuthController extends AbstractController {
 		String oauth_expires_in = null;
 		
 		// get expired access token and session handle from user object
-		User yahooUser = userDao.findByUserName(currentUser);
+		User yahooUser = userDao.findByUserName(refreshUser);
 		oauth_access_token = yahooUser.getYahooOAuthAccessToken();
 		oauth_session_handle = yahooUser.getYahooOAuthSessionHandle();
 		oauth_access_token_secret = yahooUser.getYahooOAuthTokenSecret();
@@ -269,7 +274,7 @@ public class YahooOAuthController extends AbstractController {
 			}
 		}
 		
-		return "redirect:/useraccount";
+		return "redirect:/closewindow";
 	}
 
 }
