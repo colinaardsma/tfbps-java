@@ -162,7 +162,16 @@ public class ProjectionController extends AbstractController {
 		
 		// populate html table
 		List<FPProjPitcher> players = fpProjPitcherDao.findAllByOrderBySgpDesc();
+		// this should be the right approach but im not making it into the for loop 
+		if (userPitcherSGPDao.findByUserAndLeague(user, league) == null) {
+			for (FPProjPitcher player : players) {
+				System.out.println("in player loop");
+				UserPitcherSGP userPitcherSGP = new UserPitcherSGP(player, league, user);
+				userPitcherSGPDao.save(userPitcherSGP);
+			}
+		}
 		List<UserPitcherSGP> userPitcherSGP = userPitcherSGPDao.findByUserAndLeague(user, league);
+
 		
 		// replace the standard sgp with user's custom sgp
 		for (FPProjPitcher player : players) {

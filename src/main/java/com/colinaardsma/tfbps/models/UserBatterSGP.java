@@ -11,7 +11,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "userbattergp")
+@Table(name = "userbattersgp")
 public class UserBatterSGP extends AbstractEntity {
 	
 	private double histSGP;
