@@ -5,7 +5,7 @@
 		<div class="container">
 			<div id="top" th:include="template :: masthead(${currentUser})"></div>
     		<div id="middle">
-    			<form style="width:80%; margin:auto" action="/user_fpprojp" method="post">
+    			<form style="width:80%; margin:auto" th:action="(${category} == 'batter' ? '/user_fpprojb' : '/user_fpprojp')" method="post">
 	    			<select name="league" style="text-align:left">
 						<option th:each="league : ${leagues}" th:value="${league.leagueKey}" th:text="${league.season} + ' - ' + ${league.leagueName}"></option>
 					</select>

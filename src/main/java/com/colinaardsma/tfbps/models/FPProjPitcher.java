@@ -325,7 +325,7 @@ public class FPProjPitcher extends AbstractEntity {
 	}
 	
     @OneToMany
-    @JoinColumn(name = "fpprojp_uid")
+    @JoinColumn(name = "pitcher_uid")
     public List<UserPitcherSGP> getUserPitcherSGP() {
     	return userPitcherSGP;
     }

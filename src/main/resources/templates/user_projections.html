@@ -23,7 +23,7 @@
         				<td style="padding-right: 2em" th:text="${player.name}"></td>
  			   	    	<td style="padding-right: 2em" th:text="${player.team}"></td>
        			 		<td style="padding-right: 2em" th:text="${player.pos}"></td>
-       		 			<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${userBatterSGP} : ${userBatterSGP})"></td>
+       		 			<td style="padding-right: 2em" th:text="${player.sgp}"></td>
         				<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.ab} : ${player.ip})"></td>
 		        		<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.r} : ${player.w})"></td>
       			  		<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.hr} : ${player.sv})"></td>

@@ -159,7 +159,7 @@ public class User extends AbstractEntity {
     }
     
     @OneToMany
-    @JoinColumn(name = "manager_uid")
+    @JoinColumn(name = "user_uid")
     public List<YahooRotoTeam> getYahooRotoTeams() {
     	return yahooRotoTeams;
     }
@@ -170,7 +170,7 @@ public class User extends AbstractEntity {
     }
     
     @OneToMany
-    @JoinColumn(name = "manager_uid")
+    @JoinColumn(name = "user_uid")
     public List<UserBatterSGP> getUserBatterSGP() {
     	return userBatterSGP;
     }
@@ -181,7 +181,7 @@ public class User extends AbstractEntity {
     }
     
     @OneToMany
-    @JoinColumn(name = "manager_uid")
+    @JoinColumn(name = "user_uid")
     public List<UserPitcherSGP> getUserPitcherSGP() {
     	return userPitcherSGP;
     }

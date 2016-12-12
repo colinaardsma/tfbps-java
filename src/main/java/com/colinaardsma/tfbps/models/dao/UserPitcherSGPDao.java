@@ -18,8 +18,9 @@ public interface UserPitcherSGPDao extends CrudRepository<UserPitcherSGP, Intege
 	
 	List<UserPitcherSGP> findAll(); // get all players
 	List<UserPitcherSGP> findAllByOrderByHistSGPDesc();
+//	List<UserPitcherSGP> findByUserAndLeagueByOrderByHistSGPDesc(User user, YahooRotoLeague league);
 	List<UserPitcherSGP> findByUserAndLeague(User user, YahooRotoLeague league);
-	UserPitcherSGP findByPitcher(FPProjPitcher pitcher);
+	UserPitcherSGP findByPitcherAndUserAndLeague(FPProjPitcher pitcher, User user, YahooRotoLeague league);
 	UserPitcherSGP findByPitcher_uid(int pitcher_uid);
 	
 //	List<UserPitcherSGP> findByTeam(String team); // get players on a team

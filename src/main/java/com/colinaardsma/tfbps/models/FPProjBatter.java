@@ -324,7 +324,7 @@ public class FPProjBatter extends AbstractEntity {
 	}
 	
     @OneToMany
-    @JoinColumn(name = "fpprojb_uid")
+    @JoinColumn(name = "batter_uid")
     public List<UserBatterSGP> getUserBatterSGP() {
     	return userBatterSGP;
     }
