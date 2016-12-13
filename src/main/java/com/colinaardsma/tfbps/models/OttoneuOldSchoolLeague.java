@@ -14,10 +14,11 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "yahoorotoleague")
-public class YahooRotoLeague extends AbstractEntity {
+@Table(name = "ottoneuleague")
+public class OttoneuOldSchoolLeague extends AbstractEntity {
 	
 	// league variables
+	private int leagueNumber;
 	private String leagueKey;
 	private String leagueName;
 	private String leagueURL;
@@ -49,23 +50,33 @@ public class YahooRotoLeague extends AbstractEntity {
 	private double whipHistSGPMult;
 	
 	// links to other leagues within this database
-	private String previousYearKey;
 	private int previousYearUID;
 	
 	private List<User> users;
-	private List<YahooRotoTeam> yahooRotoTeams;
+	private List<OttoneuTeam> ottoneuTeams;
 	private List<UserBatterSGP> userBatterSGP;
     private List<UserPitcherSGP> userPitcherSGP;
 	
-	public YahooRotoLeague(String leagueKey, String leagueName, String leagueURL, int teamCount, int season) {
-		this.leagueKey = leagueKey;
+	public OttoneuOldSchoolLeague(int leagueNumber, String leagueName, String leagueURL, int season) {
+		this.leagueNumber = leagueNumber;
+		this.leagueKey = leagueNumber + "." + season;
 		this.leagueName = leagueName;
 		this.leagueURL = leagueURL;
-		this.teamCount = teamCount;
+		this.teamCount = 12;
 		this.season = season;
 	}
 	
-	public YahooRotoLeague() {}
+	public OttoneuOldSchoolLeague() {}
+
+    @NotNull
+    @Column(name = "leaguenumber")
+	public int getLeagueNumber() {
+		return leagueNumber;
+	}
+
+	public void setLeagueNumber(int leagueNumber) {
+		this.leagueNumber = leagueNumber;
+	}
 
     @NotNull
     @Column(name = "leaguekey", unique = true)
@@ -297,15 +308,6 @@ public class YahooRotoLeague extends AbstractEntity {
 		this.whipHistSGPMult = whipHistSGPMult;
 	}
 
-	@Column(name = "prevyearkey")
-	public String getPreviousYearKey() {
-		return previousYearKey;
-	}
-
-	public void setPreviousYearKey(String previousYearKey) {
-		this.previousYearKey = previousYearKey;
-	}
-
     @Column(name = "prevyearUID")
 	public int getPreviousYearUID() {
 		return previousYearUID;
@@ -316,7 +318,7 @@ public class YahooRotoLeague extends AbstractEntity {
 	}
 
     @ManyToMany
-    @JoinTable(name="USER_YAHOOROTOLEAGUES")
+    @JoinTable(name="USER_OTTONEULEAGUE")
 	public List<User> getUsers() {
 		return users;
 	}
@@ -326,13 +328,13 @@ public class YahooRotoLeague extends AbstractEntity {
 	}
 	
     @OneToMany
-    @JoinColumn(name = "yahoo_roto_league_uid")
-	public List<YahooRotoTeam> getYahooRotoTeams() {
-		return yahooRotoTeams;
+    @JoinColumn(name = "ottoneu_old_school_league_uid")
+	public List<OttoneuTeam> getOttoneuTeams() {
+		return ottoneuTeams;
 	}
 	
-	public void setYahooRotoTeams(List<YahooRotoTeam> yahooRotoTeams) {
-		this.yahooRotoTeams = yahooRotoTeams;
+	public void setOttoneuTeams(List<OttoneuTeam> ottoneuTeams) {
+		this.ottoneuTeams = ottoneuTeams;
 	}
 
     @OneToMany
@@ -358,7 +360,7 @@ public class YahooRotoLeague extends AbstractEntity {
     }
 
 	// calculates historical sgp for league (number of years is based on size of list provided)
-	public void calcHistSGPs(List<YahooRotoLeague> leagues) {
+	public void calcHistSGPs(List<OttoneuOldSchoolLeague> leagues) {
 		
 		// BigDecimal variables used since double is not accurate when dividing small decimals
 		BigDecimal rSum = new BigDecimal(0);
@@ -373,7 +375,7 @@ public class YahooRotoLeague extends AbstractEntity {
 		BigDecimal whipSum = new BigDecimal(0);
 		
 		// loop through list and pull out relevant data
-		for (YahooRotoLeague league : leagues) {
+		for (OttoneuOldSchoolLeague league : leagues) {
 			rSum = rSum.add(BigDecimal.valueOf(league.getRSGPMult()));
 			hrSum = hrSum.add(BigDecimal.valueOf(league.getHrSGPMult()));
 			rbiSum = rbiSum.add(BigDecimal.valueOf(league.getRbiSGPMult()));

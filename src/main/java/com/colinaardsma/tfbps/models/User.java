@@ -37,6 +37,8 @@ public class User extends AbstractEntity {
 	private List<Post> posts;
 	private List<YahooRotoLeague> yahooRotoLeagues;
 	private List<YahooRotoTeam> yahooRotoTeams;
+	private List<OttoneuOldSchoolLeague> ottoneuOldSchoolLeagues;
+	private List<OttoneuTeam> ottoneuTeams;
 	private List<UserBatterSGP> userBatterSGP;
     private List<UserPitcherSGP> userPitcherSGP;
 
@@ -169,7 +171,28 @@ public class User extends AbstractEntity {
     	this.yahooRotoTeams = yahooRotoTeams;
     }
     
+	@ManyToMany(mappedBy="users")
+    public List<OttoneuOldSchoolLeague> getOttoneuOldSchoolLeagues() {
+        return ottoneuOldSchoolLeagues;
+    }
+
+    @SuppressWarnings("unused")
+	private void setOttoneuOldSchoolLeagues(List<OttoneuOldSchoolLeague> ottoneuOldSchoolLeagues) {
+    	this.ottoneuOldSchoolLeagues = ottoneuOldSchoolLeagues;
+    }
+    
     @OneToMany
+    @JoinColumn(name = "user_uid")
+    public List<OttoneuTeam> getOttoneuTeams() {
+    	return ottoneuTeams;
+    }
+    
+    @SuppressWarnings("unused")
+    private void setOttoneuTeams(List<OttoneuTeam> ottoneuTeams) {
+    	this.ottoneuTeams = ottoneuTeams;
+    }
+    
+   @OneToMany
     @JoinColumn(name = "user_uid")
     public List<UserBatterSGP> getUserBatterSGP() {
     	return userBatterSGP;

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+	<head th:replace="template :: head"></head>
+	<body>
+		<div class="container">
+			<div id="top" th:include="template :: masthead(${currentUser})"></div>
+			<div id="middle">
+				<p th:text="${notice}"></p>
+				<br/>
+				<a th:href="${leagueURL}" th:text="${leagueName}" target="_blank"></a>
+				<p th:text="(${leagueScoringStyle} ? 'Scoring Style ' + ${leagueScoringStyle} : '')"></p>
+				<br/>
+				<h4>Link Your Team</h4>
+				<form style="width:80%; margin:auto" action="/linkottoneuteam" method="post">
+	    			<select name="team" style="text-align:left">
+						<option th:each="team : ${teamList}" th:value="${team.uid}" th:text="${team.teamName}"></option>
+					</select>
+					<br/>
+	    			<label style="width:80%">
+	    				<input type="submit" />
+	    			</label>
+				</form>
+			</div>
+			<div th:replace="template :: footer"></div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+	<head th:replace="template :: head"></head>
+	<body>
+		<div class="container">
+			<div id="top" th:include="template :: masthead(${currentUser})"></div>
+			<div id="middle">
+				<form style="width:80%; margin:auto" method="post">
+				    <label style="width:80%; text-align:left">Ottoneu League Number<br/>
+			    	    <input style="width:20em" type="text" name="leagueNumber" th:value="${leagueNumber}"></input>
+	    			</label>
+	    			<br/>
+	    			<select name="season" style="text-align:left">
+						<option value="2016" th:selected="(${season} == '2016')">2016</option>
+						<option value="2015" th:selected="(${season} == '2015')">2015</option>
+						<option value="2014" th:selected="(${season} == '2014')">2014</option>
+						<option value="2013" th:selected="(${season} == '2013')">2013</option>
+						<option value="2012" th:selected="(${season} == '2012')">2012</option>
+						<option value="2011" th:selected="(${season} == '2011')">2011</option>
+						<option value="2010" th:selected="(${season} == '2010')">2010</option>
+					</select>
+	    			<div class="error" th:text="${error}"></div>
+	    			<label style="width:80%; text-align:left">
+	    				<button type="submit">Lookup</button>
+	    			</label>
+				</form>
+				<br/>
+				<a th:href="${leagueURL}" th:text="${leagueName}" target="_blank"></a>
+				<p th:text="(${leagueScoringStyle} ? 'Scoring Style ' + ${leagueScoringStyle} : '')"></p>
+				<!-- <p th:text="(${prevYearKey} ? 'Previous Year Key: ' + ${prevYearKey} : '')"></p> -->
+			</div>
+			<div th:replace="template :: footer"></div>
+		</div>
+	</body>
+</html>
