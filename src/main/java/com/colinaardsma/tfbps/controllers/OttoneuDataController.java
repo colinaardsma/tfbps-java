@@ -116,6 +116,8 @@ public class OttoneuDataController extends AbstractController {
 		leagueURL = baseUrl + "/" + leagueNumber + "/home";
 		String leagueOverviewUrl = baseUrl + "/" + leagueNumber + "/overview";
 		
+		System.out.println("Season: " + season + " / " + "League Key: " + leagueKey);
+		
 		// see if league already exists
 		if (ottoneuOldSchoolLeagueDao.findByLeagueNumberAndSeason(leagueNumber, season) != null) {
 			OttoneuOldSchoolLeague existingLeague = ottoneuOldSchoolLeagueDao.findByLeagueNumberAndSeason(leagueNumber, season);
@@ -133,7 +135,7 @@ public class OttoneuDataController extends AbstractController {
 			model.addAttribute("leagueScoringStyle", leagueScoringStyle);
 	    	model.addAttribute("currentUser", currentUser);
 	        model.addAttribute("user", user);
-
+	        
 	        return "ottoneuleagueentry";
 	        }
 				
@@ -197,7 +199,7 @@ public class OttoneuDataController extends AbstractController {
 							String href = tds.get(0).select("a").attr("href");
 							teamURL = baseUrl + href;
 							teamNumber = Integer.parseInt(href.substring(href.lastIndexOf("=") + 1));
-							
+
 							OttoneuTeam team = new OttoneuTeam(teamNumber, teamName, teamURL, leagueNumber, season, leagueKey);
 
 							// stats
@@ -358,14 +360,11 @@ public class OttoneuDataController extends AbstractController {
 		int leagueNumber = team.getLeagueNumber();
 		int season = team.getSeason();
 		System.out.println("leaguenumber: " + leagueNumber);
-		System.out.println("seasn: " + season);
+		System.out.println("season: " + season);
 		team.setUser(user);
 		ottoneuTeamDao.save(team);
 		
-
-		
 		OttoneuOldSchoolLeague existingLeague = ottoneuOldSchoolLeagueDao.findByLeagueNumberAndSeason(leagueNumber, season);
-		System.out.println("existing league: " + existingLeague);
 
 		List<User> userList = new ArrayList<User>();
 		if (existingLeague.getUsers() != null) {

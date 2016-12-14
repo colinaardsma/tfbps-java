@@ -112,6 +112,8 @@ public class OttoneuTeam extends AbstractEntity {
 		this.teamNumber = teamNumber;
 		this.teamName = teamName;
 		this.teamURL = teamURL;
+		this.leagueNumber = leagueNumber;
+		this.season = season;
 		this.leagueKey = leagueKey;
 
 	}
