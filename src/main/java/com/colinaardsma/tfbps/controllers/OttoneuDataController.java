@@ -110,7 +110,7 @@ public class OttoneuDataController extends AbstractController {
 		String notice = "League Created";
 		
 		// url variables
-		String baseUrl = "https://ottoneu.fangraphs.com";
+		String baseUrl = "http://ottoneu.fangraphs.com";
 		String currentStandingsUrl = baseUrl + "/" + leagueNumber + "/standings";
 		String seasonStandingsUrl = null;
 		leagueURL = baseUrl + "/" + leagueNumber + "/home";
@@ -126,7 +126,6 @@ public class OttoneuDataController extends AbstractController {
 			notice = "League Already Exists";
 			teamList = ottoneuTeamDao.findByOttoneuOldSchoolLeague(existingLeague);
 			
-			model.addAttribute("league", existingLeague.getUid());
 			model.addAttribute("teamList", teamList);
 			model.addAttribute("notice", notice);
 			model.addAttribute("leagueName", leagueName);
@@ -336,8 +335,6 @@ public class OttoneuDataController extends AbstractController {
 			e.printStackTrace();
 		}
 	
-		System.out.println("Team List: " + teamList);
-		model.addAttribute("league", newLeague.getUid());
 		model.addAttribute("teamList", teamList);
 		model.addAttribute("notice", notice);
 		model.addAttribute("leagueName", leagueName);
@@ -356,15 +353,32 @@ public class OttoneuDataController extends AbstractController {
 		User user = this.getUserFromSession(request);
 		int teamUid = Integer.parseInt(request.getParameter("team"));
 		OttoneuTeam team = ottoneuTeamDao.findByUid(teamUid);
+		
+		// not getting any values in leaguenumber or season
+		int leagueNumber = team.getLeagueNumber();
+		int season = team.getSeason();
+		System.out.println("leaguenumber: " + leagueNumber);
+		System.out.println("seasn: " + season);
 		team.setUser(user);
 		ottoneuTeamDao.save(team);
 		
-		int leagueUid = Integer.parseInt(request.getParameter("league"));
-		OttoneuOldSchoolLeague existingLeague = ottoneuOldSchoolLeagueDao.findByUid(leagueUid);
-		List<User> existingList = existingLeague.getUsers();
-		if (!existingList.contains(user)) {
-			existingList.add(user);
-			existingLeague.setUsers(existingList);
+
+		
+		OttoneuOldSchoolLeague existingLeague = ottoneuOldSchoolLeagueDao.findByLeagueNumberAndSeason(leagueNumber, season);
+		System.out.println("existing league: " + existingLeague);
+
+		List<User> userList = new ArrayList<User>();
+		if (existingLeague.getUsers() != null) {
+			userList = existingLeague.getUsers();
+			if (!userList.contains(user)) {
+				userList.add(user);
+				existingLeague.setUsers(userList);
+				ottoneuOldSchoolLeagueDao.save(existingLeague);
+			}
+		} else {
+			userList.add(user);
+			existingLeague.setUsers(userList);
+			ottoneuOldSchoolLeagueDao.save(existingLeague);
 		}
 
     	model.addAttribute("currentUser", currentUser);
