@@ -40,7 +40,9 @@ public class FPProjBatter extends AbstractEntity {
 	private double rbiSGP;
 	private double sbSGP;
 	private double opsSGP;
-	private double sgp;
+	private double avgSGP;
+	private double opsTotalSGP;
+	private double avgTotalSGP;
 	private String category;
 	private Date created;
 	
@@ -64,7 +66,8 @@ public class FPProjBatter extends AbstractEntity {
 		this.k = k;
 		this.slg = slg;
 		this.ops = ops;
-		calcSgp(SGPMultCalc.sgpMultR(), SGPMultCalc.sgpMultHR(), SGPMultCalc.sgpMultRBI(), SGPMultCalc.sgpMultSB(), SGPMultCalc.sgpMultOPS());
+		calcOpsSgp(SGPMultCalc.sgpMultR(), SGPMultCalc.sgpMultHR(), SGPMultCalc.sgpMultRBI(), SGPMultCalc.sgpMultSB(), SGPMultCalc.sgpMultOPS());
+		calcAvgSgp(SGPMultCalc.sgpMultR(), SGPMultCalc.sgpMultHR(), SGPMultCalc.sgpMultRBI(), SGPMultCalc.sgpMultSB(), SGPMultCalc.sgpMultAVG());
 
 		this.category = category;
 		this.created = new Date();		
@@ -292,17 +295,37 @@ public class FPProjBatter extends AbstractEntity {
 		this.opsSGP = opsSGP;
 	}
 
-    @NotNull
-    @Column(name = "sgp")
-	public double getSgp() {
-		return sgp;
+	@NotNull
+    @Column(name = "avgsgp")
+	public double getAvgSGP() {
+		return avgSGP;
 	}
 
-    public void setSgp(double sgp) {
-    	this.sgp = sgp;
+	public void setAvgSGP(double avgSGP) {
+		this.avgSGP = avgSGP;
+	}
+
+   @NotNull
+    @Column(name = "opssgptotal")
+	public double getOpsTotalSGP() {
+		return opsTotalSGP;
+	}
+
+    public void setOpsTotalSGP(double opsTotalSGP) {
+    	this.opsTotalSGP = opsTotalSGP;
     }
 
     @NotNull
+    @Column(name = "avgsgptotal")
+	public double getAvgTotalSGP() {
+		return avgTotalSGP;
+	}
+
+    public void setAvgTotalSGP(double avgTotalSGP) {
+    	this.avgTotalSGP = avgTotalSGP;
+    }
+
+   @NotNull
     @Column(name = "category")
 	public String getCategory() {
 		return category;
@@ -334,7 +357,7 @@ public class FPProjBatter extends AbstractEntity {
     	this.userBatterSGP = userBatterSGP;
     }
     
-    protected void calcSgp(double sgpMultR, double sgpMultHR, double sgpMultRBI, double sgpMultSB, double sgpMultOPS) {
+    protected void calcOpsSgp(double sgpMultR, double sgpMultHR, double sgpMultRBI, double sgpMultSB, double sgpMultOPS) {
     	BigDecimal r = new BigDecimal(this.r).divide(new BigDecimal(sgpMultR), 4, RoundingMode.HALF_EVEN);
     	this.rSGP = r.doubleValue();
     	BigDecimal hr = new BigDecimal(this.hr).divide(new BigDecimal(sgpMultHR), 4, RoundingMode.HALF_EVEN);
@@ -356,27 +379,27 @@ public class FPProjBatter extends AbstractEntity {
     	ops = ops.divide(new BigDecimal(sgpMultOPS), 4, RoundingMode.HALF_EVEN);
     	this.opsSGP = ops.doubleValue();
     			 	
-    	this.sgp = r.add(hr.add(rbi.add(sb.add(ops)))).doubleValue();
+    	this.opsTotalSGP = r.add(hr.add(rbi.add(sb.add(ops)))).doubleValue();
 	}
     
-//    public double caclLeagueHistSGP(double rHistSGPMult, double hrHistSGPMult, double rbiHistSGPMult, double sbHistSGPMult, double opsHistSGPMult) {
-//    	BigDecimal r = new BigDecimal(this.r).divide(new BigDecimal(rHistSGPMult), 4, RoundingMode.HALF_EVEN);
-//    	BigDecimal hr = new BigDecimal(this.hr).divide(new BigDecimal(hrHistSGPMult), 4, RoundingMode.HALF_EVEN);
-//    	BigDecimal rbi = new BigDecimal(this.rbi).divide(new BigDecimal(rbiHistSGPMult), 4, RoundingMode.HALF_EVEN);
-//    	BigDecimal sb = new BigDecimal(this.sb).divide(new BigDecimal(sbHistSGPMult), 4, RoundingMode.HALF_EVEN);
-//    	
-//    	// ops
-//    	BigDecimal ab = new BigDecimal(this.ab).multiply(new BigDecimal(1.15));	
-//    	BigDecimal obpNum = new BigDecimal(this.obp).multiply(ab).add(new BigDecimal(2178.8));
-//    	BigDecimal obpDenom = ab.add(new BigDecimal(6682));
-//    	BigDecimal obp = obpNum.divide(obpDenom, 4, RoundingMode.HALF_EVEN);
-//    	BigDecimal slgNum = new BigDecimal(this.slg).multiply(new BigDecimal(this.ab)).add(new BigDecimal(2528.5));
-//    	BigDecimal slgDenom = new BigDecimal(this.ab).add(new BigDecimal(5993));
-//    	BigDecimal slg = slgNum.divide(slgDenom, 4, RoundingMode.HALF_EVEN);
-//    	BigDecimal ops = obp.divide(slg, 2, RoundingMode.HALF_EVEN).subtract(new BigDecimal(0.748));
-//    	ops = ops.divide(new BigDecimal(opsHistSGPMult), 4, RoundingMode.HALF_EVEN);
-//    			 	
-//    	return r.add(hr.add(rbi.add(sb.add(ops)))).doubleValue();
-//    }
-//    
+    protected void calcAvgSgp(double sgpMultR, double sgpMultHR, double sgpMultRBI, double sgpMultSB, double sgpMultAVG) {
+    	BigDecimal r = new BigDecimal(this.r).divide(new BigDecimal(sgpMultR), 4, RoundingMode.HALF_EVEN);
+    	this.rSGP = r.doubleValue();
+    	BigDecimal hr = new BigDecimal(this.hr).divide(new BigDecimal(sgpMultHR), 4, RoundingMode.HALF_EVEN);
+    	this.hrSGP = hr.doubleValue();
+    	BigDecimal rbi = new BigDecimal(this.rbi).divide(new BigDecimal(sgpMultRBI), 4, RoundingMode.HALF_EVEN);
+    	this.rbiSGP = rbi.doubleValue();
+    	BigDecimal sb = new BigDecimal(this.sb).divide(new BigDecimal(sgpMultSB), 4, RoundingMode.HALF_EVEN);
+    	this.sbSGP = sb.doubleValue();
+    	
+    	// avg
+    	BigDecimal h = new BigDecimal(this.h).add(new BigDecimal(1768));	
+    	BigDecimal ab = new BigDecimal(this.ab).add(new BigDecimal(6617));
+    	BigDecimal avg = h.divide(ab, 4, RoundingMode.HALF_EVEN).subtract(new BigDecimal(0.267));
+    	avg = avg.divide(new BigDecimal(sgpMultAVG), 4, RoundingMode.HALF_EVEN);
+    	this.avgSGP = avg.doubleValue();
+    	
+    	this.avgTotalSGP = r.add(hr.add(rbi.add(sb.add(avg)))).doubleValue();
+	}
+    
 }

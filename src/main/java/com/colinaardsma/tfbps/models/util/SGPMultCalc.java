@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.colinaardsma.tfbps.models.YahooRotoTeam;
-
 public class SGPMultCalc {
 
 	// generic multipliers
@@ -36,6 +34,10 @@ public class SGPMultCalc {
 		return sgpMultOPS;
 	}
 	
+	public static double sgpMultAVG() {
+		double sgpMultAVG = 0.0024;
+		return sgpMultAVG;
+	}
 	
 	public static double sgpMultW() {
 		double sgpMultW = 3.03;
@@ -64,16 +66,9 @@ public class SGPMultCalc {
 	
 	// league specific multipliers	
 
-	public static double calcRSGPMult(List<YahooRotoTeam> teams) {
-		List<Integer> rs = new ArrayList<Integer>();
+	public static double calcRSGPMult(List<Integer> rs) {
 		List<BigDecimal> diff = new ArrayList<BigDecimal>();
 		BigDecimal sum = new BigDecimal(0);
-		
-		// pull run values from team
-		for (YahooRotoTeam team : teams) {
-			rs.add(team.getRStats());
-		}
-		Collections.sort(rs); // sort list from smallest to largest
 		
 		// calculate difference between stats at each rank
 		for (int i = 0; i < rs.size() - 1; i++) {
@@ -93,16 +88,9 @@ public class SGPMultCalc {
 		return rSGP;
 	}
 
-	public static double calcHrSGPMult(List<YahooRotoTeam> teams) {
-		List<Integer> hrs = new ArrayList<Integer>();
+	public static double calcHrSGPMult(List<Integer> hrs) {
 		List<BigDecimal> diff = new ArrayList<BigDecimal>();
 		BigDecimal sum = new BigDecimal(0);
-		
-		// pull run values from team
-		for (YahooRotoTeam team : teams) {
-			hrs.add(team.getHrStats());
-		}
-		Collections.sort(hrs); // sort list from smallest to largest
 		
 		// calculate difference between stats at each rank
 		for (int i = 0; i < hrs.size() - 1; i++) {
@@ -122,16 +110,9 @@ public class SGPMultCalc {
 		return hrSGP;
 	}
 
-	public static double calcRbiSGPMult(List<YahooRotoTeam> teams) {
-		List<Integer> rbis = new ArrayList<Integer>();
+	public static double calcRbiSGPMult(List<Integer> rbis) {
 		List<BigDecimal> diff = new ArrayList<BigDecimal>();
 		BigDecimal sum = new BigDecimal(0);
-		
-		// pull run values from team
-		for (YahooRotoTeam team : teams) {
-			rbis.add(team.getRbiStats());
-		}
-		Collections.sort(rbis); // sort list from smallest to largest
 		
 		// calculate difference between stats at each rank
 		for (int i = 0; i < rbis.size() - 1; i++) {
@@ -151,16 +132,9 @@ public class SGPMultCalc {
 		return rbiSGP;
 	}
 
-	public static double calcSbSGPMult(List<YahooRotoTeam> teams) {
-		List<Integer> sbs = new ArrayList<Integer>();
+	public static double calcSbSGPMult(List<Integer> sbs) {
 		List<BigDecimal> diff = new ArrayList<BigDecimal>();
 		BigDecimal sum = new BigDecimal(0);
-		
-		// pull run values from team
-		for (YahooRotoTeam team : teams) {
-			sbs.add(team.getSbStats());
-		}
-		Collections.sort(sbs); // sort list from smallest to largest
 		
 		// calculate difference between stats at each rank
 		for (int i = 0; i < sbs.size() - 1; i++) {
@@ -180,16 +154,9 @@ public class SGPMultCalc {
 		return sbSGP;
 	}
 
-	public static double calcOpsSGPMult(List<YahooRotoTeam> teams) {
-		List<Double> opss = new ArrayList<Double>();
+	public static double calcOpsSGPMult(List<Double> opss) {
 		List<BigDecimal> diff = new ArrayList<BigDecimal>();
 		BigDecimal sum = new BigDecimal(0);
-		
-		// pull run values from team
-		for (YahooRotoTeam team : teams) {
-			opss.add(team.getOpsStats());
-		}
-		Collections.sort(opss); // sort list from smallest to largest
 		
 		// calculate difference between stats at each rank
 		for (int i = 0; i < opss.size() - 1; i++) {
@@ -209,16 +176,31 @@ public class SGPMultCalc {
 		return opsSGP;
 	}
 
-	public static double calcWSGPMult(List<YahooRotoTeam> teams) {
-		List<Integer> wins = new ArrayList<Integer>();
+	public static double calcAvgSGPMult(List<Double> avgs) {
 		List<BigDecimal> diff = new ArrayList<BigDecimal>();
 		BigDecimal sum = new BigDecimal(0);
 		
-		// pull run values from team
-		for (YahooRotoTeam team : teams) {
-			wins.add(team.getWStats());
+		// calculate difference between stats at each rank
+		for (int i = 0; i < avgs.size() - 1; i++) {
+			diff.add(BigDecimal.valueOf(avgs.get(i + 1)).subtract(BigDecimal.valueOf(avgs.get(i))));
 		}
-		Collections.sort(wins); // sort list from smallest to largest
+		Collections.sort(diff); // sort list from smallest to largest
+		diff.remove(diff.get(0)); // remove smallest value
+		diff.remove(diff.get(diff.size() - 1)); // remove largest value
+		
+		// calculate average SGP
+		for (int j = 0; j < diff.size(); j++) {
+			sum = sum.add(diff.get(j));
+		}
+		BigDecimal avg = sum.divide(BigDecimal.valueOf(diff.size()), 4, RoundingMode.HALF_EVEN);
+		double avgSGP = Double.parseDouble(avg.toString());
+		
+		return avgSGP;
+	}
+
+	public static double calcWSGPMult(List<Integer> wins) {
+		List<BigDecimal> diff = new ArrayList<BigDecimal>();
+		BigDecimal sum = new BigDecimal(0);
 		
 		// calculate difference between stats at each rank
 		for (int i = 0; i < wins.size() - 1; i++) {
@@ -238,16 +220,9 @@ public class SGPMultCalc {
 		return winSGP;
 	}
 
-	public static double calcSvSGPMult(List<YahooRotoTeam> teams) {
-		List<Integer> svs = new ArrayList<Integer>();
+	public static double calcSvSGPMult(List<Integer> svs) {
 		List<BigDecimal> diff = new ArrayList<BigDecimal>();
 		BigDecimal sum = new BigDecimal(0);
-		
-		// pull run values from team
-		for (YahooRotoTeam team : teams) {
-			svs.add(team.getSvStats());
-		}
-		Collections.sort(svs); // sort list from smallest to largest
 		
 		// calculate difference between stats at each rank
 		for (int i = 0; i < svs.size() - 1; i++) {
@@ -267,16 +242,9 @@ public class SGPMultCalc {
 		return svSGP;
 	}
 
-	public static double calcKSGPMult(List<YahooRotoTeam> teams) {
-		List<Integer> ks = new ArrayList<Integer>();
+	public static double calcKSGPMult(List<Integer> ks) {
 		List<BigDecimal> diff = new ArrayList<BigDecimal>();
 		BigDecimal sum = new BigDecimal(0);
-		
-		// pull run values from team
-		for (YahooRotoTeam team : teams) {
-			ks.add(team.getKStats());
-		}
-		Collections.sort(ks); // sort list from smallest to largest
 		
 		// calculate difference between stats at each rank
 		for (int i = 0; i < ks.size() - 1; i++) {
@@ -296,16 +264,9 @@ public class SGPMultCalc {
 		return kSGP;
 	}
 
-	public static double calcEraSGPMult(List<YahooRotoTeam> teams) {
-		List<Double> eras = new ArrayList<Double>();
+	public static double calcEraSGPMult(List<Double> eras) {
 		List<BigDecimal> diff = new ArrayList<BigDecimal>();
 		BigDecimal sum = new BigDecimal(0);
-		
-		// pull run values from team
-		for (YahooRotoTeam team : teams) {
-			eras.add(team.getEraStats());
-		}
-		Collections.sort(eras); // sort list from smallest to largest
 		
 		// calculate difference between stats at each rank
 		for (int i = 0; i < eras.size() - 1; i++) {
@@ -325,16 +286,9 @@ public class SGPMultCalc {
 		return eraSGP;
 	}
 
-	public static double calcWhipSGPMult(List<YahooRotoTeam> teams) {
-		List<Double> whips = new ArrayList<Double>();
+	public static double calcWhipSGPMult(List<Double> whips) {
 		List<BigDecimal> diff = new ArrayList<BigDecimal>();
 		BigDecimal sum = new BigDecimal(0);
-		
-		// pull run values from team
-		for (YahooRotoTeam team : teams) {
-			whips.add(team.getWhipStats());
-		}
-		Collections.sort(whips); // sort list from smallest to largest
 		
 		// calculate difference between stats at each rank
 		for (int i = 0; i < whips.size() - 1; i++) {

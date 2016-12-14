@@ -49,7 +49,7 @@ public class UserAccountController extends AbstractController {
 		List<UserBatterSGP> userBatterSGPPlayers = userBatterSGPDao.findByUser(user);
 		List<YahooRotoLeague> batterLeagues = new ArrayList<YahooRotoLeague>();
 		for (UserBatterSGP player : userBatterSGPPlayers) {
-			YahooRotoLeague league = player.getLeague();
+			YahooRotoLeague league = player.getYahooRotoLeague();
 			if (!batterLeagues.contains(league)) {
 				batterLeagues.add(league);
 			}
@@ -59,7 +59,7 @@ public class UserAccountController extends AbstractController {
 		List<UserPitcherSGP> userPitcherSGPPlayers = userPitcherSGPDao.findByUser(user);
 		List<YahooRotoLeague> pitcherLeagues = new ArrayList<YahooRotoLeague>();
 		for (UserPitcherSGP player : userPitcherSGPPlayers) {
-			YahooRotoLeague league = player.getLeague();
+			YahooRotoLeague league = player.getYahooRotoLeague();
 			if (!pitcherLeagues.contains(league)) {
 				pitcherLeagues.add(league);
 			}

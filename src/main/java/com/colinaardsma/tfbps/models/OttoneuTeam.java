@@ -121,7 +121,7 @@ public class OttoneuTeam extends AbstractEntity {
 	public OttoneuTeam(){}
 
     @NotNull
-    @Column(name = "teamNumber", unique = true)
+    @Column(name = "teamNumber")
 	public int getTeamNumber() {
 		return teamNumber;
 	}

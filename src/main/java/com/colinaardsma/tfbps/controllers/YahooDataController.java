@@ -253,7 +253,6 @@ public class YahooDataController extends AbstractController {
 								yahooRotoLeagueDao.save(newLeague);
 							}
 
-
 							linkedLeagues.add(newLeague);
 
 							// if league exists add previous year key as required
@@ -455,18 +454,87 @@ public class YahooDataController extends AbstractController {
 				// calculate league SGP and save to db
 				YahooRotoLeague league = yahooRotoLeagueDao.findByLeagueKey(leagueKey); // pull league to add and save data
 				List<YahooRotoTeam> teams = yahooRotoTeamDao.findByLeagueKey(leagueKey); // pull list of teams in leagye
-				// add data
-				league.setRSGPMult(SGPMultCalc.calcRSGPMult(teams));
-				league.setHrSGPMult(SGPMultCalc.calcHrSGPMult(teams));
-				league.setRbiSGPMult(SGPMultCalc.calcRbiSGPMult(teams));
-				league.setSbSGPMult(SGPMultCalc.calcSbSGPMult(teams));
-				league.setOpsSGPMult(SGPMultCalc.calcOpsSGPMult(teams));
-				league.setWSGPMult(SGPMultCalc.calcWSGPMult(teams));
-				league.setSvSGPMult(SGPMultCalc.calcSvSGPMult(teams));
-				league.setKSGPMult(SGPMultCalc.calcKSGPMult(teams));
-				league.setEraSGPMult(SGPMultCalc.calcEraSGPMult(teams));
-				league.setWhipSGPMult(SGPMultCalc.calcWhipSGPMult(teams));
-	
+				
+				// add runs
+				List<Integer> rs = new ArrayList<Integer>();
+				for (YahooRotoTeam team : teams) {
+					rs.add(team.getRStats());
+				}
+				Collections.sort(rs); // sort list from smallest to largest
+				league.setRSGPMult(SGPMultCalc.calcRSGPMult(rs)); // calculate average and store in league
+				
+				// add hrs
+				List<Integer> hrs = new ArrayList<Integer>();
+				for (YahooRotoTeam team : teams) {
+					hrs.add(team.getHrStats());
+				}
+				Collections.sort(hrs); // sort list from smallest to largest
+				league.setHrSGPMult(SGPMultCalc.calcHrSGPMult(hrs)); // calculate average and store in league
+				
+				// add rbi
+				List<Integer> rbis = new ArrayList<Integer>();
+				for (YahooRotoTeam team : teams) {
+					rbis.add(team.getRbiStats());
+				}
+				Collections.sort(rbis); // sort list from smallest to largest
+				league.setRbiSGPMult(SGPMultCalc.calcRbiSGPMult(rbis)); // calculate average and store in league
+				
+				// add sb
+				List<Integer> sbs = new ArrayList<Integer>();
+				for (YahooRotoTeam team : teams) {
+					sbs.add(team.getSbStats());
+				}
+				Collections.sort(sbs); // sort list from smallest to largest
+				league.setSbSGPMult(SGPMultCalc.calcSbSGPMult(sbs)); // calculate average and store in league
+				
+				// add avg
+				List<Double> opss = new ArrayList<Double>();
+				for (YahooRotoTeam team : teams) {
+					opss.add(team.getOpsStats());
+				}
+				Collections.sort(opss); // sort list from smallest to largest
+				league.setOpsSGPMult(SGPMultCalc.calcOpsSGPMult(opss)); // calculate average and store in league
+				
+				// add wins
+				List<Integer> ws = new ArrayList<Integer>();
+				for (YahooRotoTeam team : teams) {
+					ws.add(team.getWStats());
+				}
+				Collections.sort(ws); // sort list from smallest to largest
+				league.setWSGPMult(SGPMultCalc.calcWSGPMult(ws)); // calculate average and store in league
+				
+				// add saves
+				List<Integer> svs = new ArrayList<Integer>();
+				for (YahooRotoTeam team : teams) {
+					svs.add(team.getSvStats());
+				}
+				Collections.sort(svs); // sort list from smallest to largest
+				league.setSvSGPMult(SGPMultCalc.calcSvSGPMult(svs)); // calculate average and store in league
+				
+				// add k
+				List<Integer> ks = new ArrayList<Integer>();
+				for (YahooRotoTeam team : teams) {
+					ks.add(team.getKStats());
+				}
+				Collections.sort(ks); // sort list from smallest to largest
+				league.setKSGPMult(SGPMultCalc.calcKSGPMult(ks)); // calculate average and store in league
+				
+				// add era
+				List<Double> eras = new ArrayList<Double>();
+				for (YahooRotoTeam team : teams) {
+					eras.add(team.getEraStats());
+				}
+				Collections.sort(eras); // sort list from smallest to largest
+				league.setEraSGPMult(SGPMultCalc.calcEraSGPMult(eras)); // calculate average and store in league
+				
+				// add whip
+				List<Double> whips = new ArrayList<Double>();
+				for (YahooRotoTeam team : teams) {
+					whips.add(team.getWhipStats());
+				}
+				Collections.sort(whips); // sort list from smallest to largest
+				league.setWhipSGPMult(SGPMultCalc.calcWhipSGPMult(whips)); // calculate average and store in league
+
 				yahooRotoLeagueDao.save(league); // save
 				
 			} catch (ParserConfigurationException | SAXException | IOException e) {

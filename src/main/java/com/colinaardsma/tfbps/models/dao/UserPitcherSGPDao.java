@@ -8,6 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import com.colinaardsma.tfbps.models.FPProjPitcher;
+import com.colinaardsma.tfbps.models.OttoneuOldSchoolLeague;
 import com.colinaardsma.tfbps.models.User;
 import com.colinaardsma.tfbps.models.UserPitcherSGP;
 import com.colinaardsma.tfbps.models.YahooRotoLeague;
@@ -19,13 +20,14 @@ public interface UserPitcherSGPDao extends CrudRepository<UserPitcherSGP, Intege
 	List<UserPitcherSGP> findAll(); // get all players
 	List<UserPitcherSGP> findAllByOrderByHistSGPDesc();
 	List<UserPitcherSGP> findByUser(User user);
-	List<UserPitcherSGP> findByUserAndLeague(User user, YahooRotoLeague league);
-	UserPitcherSGP findByPitcherAndUserAndLeague(FPProjPitcher pitcher, User user, YahooRotoLeague league);
 	UserPitcherSGP findByPitcher_uid(int pitcher_uid);
 	
-//	List<UserPitcherSGP> findByTeam(String team); // get players on a team
-//	UserPitcherSGP findByName(String name); // get object with name only
-//	UserPitcherSGP findByNameAndTeam(String name, String team); // get player with name and team only
-//	UserPitcherSGP findByUid(int uid); // get player with unique id only
+	// Yahoo Roto Leagues
+	List<UserPitcherSGP> findByUserAndYahooRotoLeague(User user, YahooRotoLeague league);
+	UserPitcherSGP findByPitcherAndUserAndYahooRotoLeague(FPProjPitcher pitcher, User user, YahooRotoLeague league);
 	
+	// Ottoneu Old School Leagues
+	List<UserPitcherSGP> findByUserAndOttoneuOldSchoolLeague(User user, OttoneuOldSchoolLeague league);
+	UserPitcherSGP findByPitcherAndUserAndOttoneuOldSchoolLeague(FPProjPitcher pitcher, User user, OttoneuOldSchoolLeague league);
+
 }

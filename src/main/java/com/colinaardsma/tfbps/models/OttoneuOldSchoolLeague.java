@@ -20,6 +20,7 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 	// league variables
 	private int leagueNumber;
 	private String leagueKey;
+	private String prevYearKey;
 	private String leagueName;
 	private String leagueURL;
 	private int teamCount;
@@ -30,7 +31,7 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 	private double hrSGPMult;
 	private double rbiSGPMult;
 	private double sbSGPMult;
-	private double opsSGPMult;
+	private double avgSGPMult;
 	private double wSGPMult;
 	private double svSGPMult;
 	private double kSGPMult;
@@ -42,7 +43,7 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 	private double hrHistSGPMult;
 	private double rbiHistSGPMult;
 	private double sbHistSGPMult;
-	private double opsHistSGPMult;
+	private double avgHistSGPMult;
 	private double wHistSGPMult;
 	private double svHistSGPMult;
 	private double kHistSGPMult;
@@ -89,6 +90,16 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 	}
 
     @NotNull
+    @Column(name = "prevyearkey", unique = true)
+	public String getPreviousYearKey() {
+		return prevYearKey;
+	}
+
+	public void setPreviousYearKey(String prevYearKey) {
+		this.prevYearKey = prevYearKey;
+	}
+
+    @NotNull
     @Column(name = "leaguename")
 	public String getLeagueName() {
 		return leagueName;
@@ -99,7 +110,7 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 	}
 
     @NotNull
-    @Column(name = "leagueURL", unique = true)
+    @Column(name = "leagueURL")
 	public String getLeagueURL() {
 		return leagueURL;
 	}
@@ -164,13 +175,13 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 		this.sbSGPMult = sbSGP;
 	}
 
-    @Column(name = "opsSGPMult")
-	public double getOpsSGPMult() {
-		return opsSGPMult;
+    @Column(name = "avgSGPMult")
+	public double getAvgSGPMult() {
+		return avgSGPMult;
 	}
 
-	public void setOpsSGPMult(double opsSGP) {
-		this.opsSGPMult = opsSGP;
+	public void setAvgSGPMult(double avgSGP) {
+		this.avgSGPMult = avgSGP;
 	}
 
     @Column(name = "wSGPMult")
@@ -254,13 +265,13 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 		this.sbHistSGPMult = sbHistSGPMult;
 	}
 
-    @Column(name = "OpsHistSGPMult")
-	public double getOpsHistSGPMult() {
-		return opsHistSGPMult;
+    @Column(name = "AvgHistSGPMult")
+	public double getAvgHistSGPMult() {
+		return avgHistSGPMult;
 	}
 
-	public void setOpsHistSGPMult(double opsHistSGPMult) {
-		this.opsHistSGPMult = opsHistSGPMult;
+	public void setAvgHistSGPMult(double avgHistSGPMult) {
+		this.avgHistSGPMult = avgHistSGPMult;
 	}
 
     @Column(name = "wHistSGPMult")
@@ -367,7 +378,7 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 		BigDecimal hrSum = new BigDecimal(0);
 		BigDecimal rbiSum = new BigDecimal(0);
 		BigDecimal sbSum = new BigDecimal(0);
-		BigDecimal opsSum = new BigDecimal(0);
+		BigDecimal avgSum = new BigDecimal(0);
 		BigDecimal wSum = new BigDecimal(0);
 		BigDecimal svSum = new BigDecimal(0);
 		BigDecimal kSum = new BigDecimal(0);
@@ -380,7 +391,7 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 			hrSum = hrSum.add(BigDecimal.valueOf(league.getHrSGPMult()));
 			rbiSum = rbiSum.add(BigDecimal.valueOf(league.getRbiSGPMult()));
 			sbSum = sbSum.add(BigDecimal.valueOf(league.getSbSGPMult()));
-			opsSum = opsSum.add(BigDecimal.valueOf(league.getOpsSGPMult()));
+			avgSum = avgSum.add(BigDecimal.valueOf(league.getAvgSGPMult()));
 			wSum = wSum.add(BigDecimal.valueOf(league.getWSGPMult()));
 			svSum = svSum.add(BigDecimal.valueOf(league.getSvSGPMult()));
 			kSum = kSum.add(BigDecimal.valueOf(league.getKSGPMult()));
@@ -397,8 +408,8 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 		this.rbiHistSGPMult = Double.parseDouble(rbiAvg.toString());	
 		BigDecimal sbAvg = sbSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
 		this.sbHistSGPMult = Double.parseDouble(sbAvg.toString());	
-		BigDecimal opsAvg = opsSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
-		this.opsHistSGPMult = Double.parseDouble(opsAvg.toString());	
+		BigDecimal avgAvg = avgSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		this.avgHistSGPMult = Double.parseDouble(avgAvg.toString());	
 		BigDecimal wAvg = wSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
 		this.wHistSGPMult = Double.parseDouble(wAvg.toString());	
 		BigDecimal svAvg = svSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);

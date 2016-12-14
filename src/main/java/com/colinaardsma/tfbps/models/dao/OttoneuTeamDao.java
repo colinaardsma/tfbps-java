@@ -21,8 +21,9 @@ public interface OttoneuTeamDao extends CrudRepository<OttoneuTeam, Integer> {
 	List<OttoneuTeam> findByOttoneuOldSchoolLeague(OttoneuOldSchoolLeague league); // get a list of teams in a league by league
 	List<OttoneuTeam> findByRank(int rank); // get a list of teams in any league by rank
 	List<OttoneuTeam> findByUser(User user); // get a list of teams by user with user object
+	List<OttoneuTeam> findByTeamNumber(int teamNumber); // get team with team number
+	OttoneuTeam findByTeamNumberAndSeason(int teamNumber, int season); // get team with team key
 	OttoneuTeam findByTeamKey(String teamKey); // get team with team key
-	OttoneuTeam findByTeamNumber(int teamNumber); // get team with team number
 	OttoneuTeam findByUid(int uid); // get team with unique id only
 
 }

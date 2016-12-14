@@ -5,12 +5,13 @@
 		<div class="container">
 			<div id="top" th:include="template :: masthead(${currentUser})"></div>
 			<div id="middle">
+				<h4>Add Your Ottoneu League</h4>
 				<form style="width:80%; margin:auto" method="post">
-				    <label style="width:80%; text-align:left">Ottoneu League Number<br/>
+				    <label>Ottoneu League Number<br/>
 			    	    <input style="width:20em" type="text" name="leagueNumber" th:value="${leagueNumber}"></input>
 	    			</label>
 	    			<br/>
-	    			<select name="season" style="text-align:left">
+	    			<select name="season">
 						<option value="2016" th:selected="(${season} == '2016')">2016</option>
 						<option value="2015" th:selected="(${season} == '2015')">2015</option>
 						<option value="2014" th:selected="(${season} == '2014')">2014</option>
@@ -19,8 +20,24 @@
 						<option value="2011" th:selected="(${season} == '2011')">2011</option>
 						<option value="2010" th:selected="(${season} == '2010')">2010</option>
 					</select>
+					<br/>
+					<label>
+						<input type="checkbox" name="leagueHistory" value="true" checked="checked" />
+						Link Previous Years
+					</label>
+					<br/>
+					<label>Years to Link: 
+						<select name="prevyears">
+							<option value="0">0</option>
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+						</select>
+					</label>
 	    			<div class="error" th:text="${error}"></div>
-	    			<label style="width:80%; text-align:left">
+	    			<label>
 	    				<button type="submit">Lookup</button>
 	    			</label>
 				</form>

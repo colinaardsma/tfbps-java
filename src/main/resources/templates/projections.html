@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+	<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org/">
 	<head th:replace="template :: head"></head>
 	<body>
@@ -11,25 +11,30 @@
 						<th style="padding-right: 2em">Name</th>
 						<th style="padding-right: 2em">Team</th>
 						<th style="padding-right: 2em">Pos</th>
-						<th style="padding-right: 2em">SGP</th>
+						<th style="padding-right: 2em" th:if="${category} == 'batter'">OPS SGP</th>
+						<th style="padding-right: 2em" th:text="(${category} == 'batter' ? 'AVG SGP' : 'SGP')"></th>
 						<th style="padding-right: 2em" th:text="(${category} == 'batter' ? 'AB' : 'IP')"></th>
 						<th style="padding-right: 2em" th:text="(${category} == 'batter' ? 'R' : 'W')"></th>
 						<th style="padding-right: 2em" th:text="(${category} == 'batter' ? 'HR' : 'SV')"></th>
 						<th style="padding-right: 2em" th:text="(${category} == 'batter' ? 'RBI' : 'K')"></th>
 						<th style="padding-right: 2em" th:text="(${category} == 'batter' ? 'SB' : 'ERA')"></th>
 						<th th:text="(${category} == 'batter' ? 'OPS' : 'WHIP')"></th>
+						<th style="padding-right: 2em" th:if="${category} == 'batter'">AVG</th>
+						
 					</tr>
 					<tr th:each="player : ${players}">
         				<td style="padding-right: 2em" th:text="${player.name}"></td>
  			   	    	<td style="padding-right: 2em" th:text="${player.team}"></td>
        			 		<td style="padding-right: 2em" th:text="${player.pos}"></td>
-       		 			<td style="padding-right: 2em" th:text="${player.sgp}"></td>
+       		 			<td style="padding-right: 2em" th:if="${category} == 'batter'" th:text="${player.opsTotalSGP}"></td>
+        				<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.avgTotalSGP} : ${player.sgp})"></td>
         				<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.ab} : ${player.ip})"></td>
 		        		<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.r} : ${player.w})"></td>
       			  		<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.hr} : ${player.sv})"></td>
 	    	    		<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.rbi} : ${player.k})"></td>
     		    		<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.sb} : ${player.era})"></td>
         				<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.ops} : ${player.whip})"></td>
+        				<td style="padding-right: 2em" th:if="${category} == 'batter'" th:text="${player.avg}"></td>
 					</tr>
 				</table>
     		</div>

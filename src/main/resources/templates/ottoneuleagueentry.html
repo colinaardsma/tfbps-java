@@ -5,6 +5,7 @@
 		<div class="container">
 			<div id="top" th:include="template :: masthead(${currentUser})"></div>
 			<div id="middle">
+				<p th:text:="${seasonStandingsUrl}"></p>
 				<p th:text="${notice}"></p>
 				<br/>
 				<a th:href="${leagueURL}" th:text="${leagueName}" target="_blank"></a>

@@ -51,7 +51,7 @@ public class ProjectionController extends AbstractController {
 		User user = this.getUserFromSession(request);
 		
 		// populate html table
-		List<FPProjBatter> players = fpProjBatterDao.findAllByOrderBySgpDesc();
+		List<FPProjBatter> players = fpProjBatterDao.findAllByOrderByOpsTotalSGPDesc();
 		
 		// get date of last data pull
 		Date lastPullDate = players.get(0).getCreated();
@@ -90,7 +90,7 @@ public class ProjectionController extends AbstractController {
         return "projections";
     }
 
-	@RequestMapping(value = "/user_fpprojb", method = RequestMethod.GET)
+	@RequestMapping(value = "/user_yahoo_roto_fpprojb", method = RequestMethod.GET)
 	public String userfpprojbform(Model model, HttpServletRequest request){
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
@@ -109,7 +109,7 @@ public class ProjectionController extends AbstractController {
         return "user_projection_selection";
 	}
 	
-	@RequestMapping(value = "/user_fpprojb", method = RequestMethod.POST)
+	@RequestMapping(value = "/user_yahoo_roto_fpprojb", method = RequestMethod.POST)
     public String userfpprojb(Model model, HttpServletRequest request){
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
@@ -120,10 +120,10 @@ public class ProjectionController extends AbstractController {
 		YahooRotoLeague league = yahooRotoLeagueDao.findByLeagueKey(leagueKey);
 		
 		// pull player list
-		List<FPProjBatter> batters = fpProjBatterDao.findAllByOrderBySgpDesc();
+		List<FPProjBatter> batters = fpProjBatterDao.findAllByOrderByOpsTotalSGPDesc();
 		
 		// if histsgp has not been calculated for this league/user then calculate, otherwise continue
-		if (userBatterSGPDao.findByUserAndLeague(user, league).size() == 0) {
+		if (userBatterSGPDao.findByUserAndYahooRotoLeague(user, league).size() == 0) {
 			for (FPProjBatter batter : batters) {
 				UserBatterSGP userBatterSGP = new UserBatterSGP(batter, league, user);
 				userBatterSGPDao.save(userBatterSGP);
@@ -152,11 +152,11 @@ public class ProjectionController extends AbstractController {
 			double slg = batter.getSlg();
 			double ops = batter.getOps();
 			String category = batter.getCategory();
-			UserBatterSGP userBatterSGP = userBatterSGPDao.findByBatterAndUserAndLeague(batter, user, league);
+			UserBatterSGP userBatterSGP = userBatterSGPDao.findByBatterAndUserAndYahooRotoLeague(batter, user, league);
 			double customSGP = userBatterSGP.getHistSGP();
 
 			FPProjBatter sgpBatter = new FPProjBatter(name, team, pos, ab, r, hr, rbi, sb, avg, obp, h, dbl, tpl, bb, k, slg, ops, category);
-			sgpBatter.setSgp(customSGP);			
+			sgpBatter.setOpsTotalSGP(customSGP);			
 			sgpBatters.add(sgpBatter);
 		}
 		
@@ -164,8 +164,8 @@ public class ProjectionController extends AbstractController {
 		Collections.sort(sgpBatters, new Comparator<FPProjBatter>() {
 			@Override
 			public int compare(FPProjBatter p1, FPProjBatter p2) {
-				if (p1.getSgp() < p2.getSgp()) return 1;
-				if (p1.getSgp() > p2.getSgp()) return -1;
+				if (p1.getOpsTotalSGP() < p2.getOpsTotalSGP()) return 1;
+				if (p1.getOpsTotalSGP() > p2.getOpsTotalSGP()) return -1;
 				return 0;
 			}
 		});
@@ -184,7 +184,7 @@ public class ProjectionController extends AbstractController {
         return "user_projections";
     }
 
-	@RequestMapping(value = "/user_fpprojp", method = RequestMethod.GET)
+	@RequestMapping(value = "/user_yahoo_roto_fpprojp", method = RequestMethod.GET)
 	public String userfpprojpform(Model model, HttpServletRequest request){
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
@@ -203,7 +203,7 @@ public class ProjectionController extends AbstractController {
         return "user_projection_selection";
 	}
 	
-	@RequestMapping(value = "/user_fpprojp", method = RequestMethod.POST)
+	@RequestMapping(value = "/user_yahoo_roto_fpprojp", method = RequestMethod.POST)
     public String userfpprojp(Model model, HttpServletRequest request){
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
@@ -217,7 +217,7 @@ public class ProjectionController extends AbstractController {
 		List<FPProjPitcher> pitchers = fpProjPitcherDao.findAllByOrderBySgpDesc();
 		
 		// if histsgp has not been calculated for this league/user then calculate, otherwise continue
-		if (userPitcherSGPDao.findByUserAndLeague(user, league).size() == 0) {
+		if (userPitcherSGPDao.findByUserAndYahooRotoLeague(user, league).size() == 0) {
 			for (FPProjPitcher pitcher : pitchers) {
 				UserPitcherSGP userPitcherSGP = new UserPitcherSGP(pitcher, league, user);
 				userPitcherSGPDao.save(userPitcherSGP);
@@ -246,7 +246,7 @@ public class ProjectionController extends AbstractController {
 			int l = pitcher.getL();
 			int cg = pitcher.getCg();
 			String category = pitcher.getCategory();
-			UserPitcherSGP userPitcherSGP = userPitcherSGPDao.findByPitcherAndUserAndLeague(pitcher, user, league);
+			UserPitcherSGP userPitcherSGP = userPitcherSGPDao.findByPitcherAndUserAndYahooRotoLeague(pitcher, user, league);
 			double customSGP = userPitcherSGP.getHistSGP();
 
 			FPProjPitcher sgpPitcher = new FPProjPitcher(name, team, pos, ip, k, w, sv, era, whip, er, h, bb, hr, g, gs, l, cg, category);

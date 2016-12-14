@@ -7,9 +7,9 @@
 			<div id="middle">
 				<h3 th:text="${currentUser} + '\'s account'"></h3>
 				<hr/>
-				<div>
+				<div th:if="${not #lists.isEmpty(batterLeagues) or not #lists.isEmpty(pitcherLeagues)}">
 					<h4 th:text="${currentUser} + '\'s Custom SGP'"></h4>
-					<form action="/user_fpprojb" method="post">
+					<form action="/user_fpprojb" method="post" th:if="${not #lists.isEmpty(batterLeagues)}">
 						<table style="margin:auto">
 							<tr>
 								<td><select name="league">
@@ -18,9 +18,9 @@
 								<td><input type="submit" value="Show Custom Batter SGP" /></td>
 							</tr>
 						</table>
+						<br/>
 					</form>
-					<br/>
-					<form action="/user_fpprojp" method="post">
+					<form action="/user_fpprojp" method="post" th:if="${not #lists.isEmpty(pitcherLeagues)}">
 						<table style="margin:auto">
 							<tr>
 								<td><select name="league">
@@ -30,27 +30,42 @@
 							</tr>
 						</table>
 					</form>	
+					<br/>
 				</div>
-				<br/>
-				<div>
-					<h4>Calculate new Custom SGPs</h4>
+				<div th:if="${not #lists.isEmpty(user.yahooRotoLeagues)}">
+					<h4>Calculate new Yahoo Roto League Custom SGPs</h4>
 					<ul class="nav nav-pills">
-						<li style="width:49.9%"><a href="/user_fpprojb">Calculate Batter SGP</a></li>
-						<li style="width:49.9%"><a href="/user_fpprojp">Calculate Pitcher SGP</a></li>
+						<li style="width:49.9%"><a href="/user_yahoo_roto_fpprojb">Calculate Batter SGP</a></li>
+						<li style="width:49.9%"><a href="/user_yahoo_roto_fpprojp">Calculate Pitcher SGP</a></li>
 					</ul>
+					<hr/>
 				</div>
-				<hr/>
-				<div>
+				<div th:if="${not #lists.isEmpty(user.ottoneuOldSchoolLeagues)}">
+					<h4>Calculate new Ottoneu Old School League Custom SGPs</h4>
+					<ul class="nav nav-pills">
+						<li style="width:49.9%"><a href="/user_ottoneu_old_school_fpprojb">Calculate Batter SGP</a></li>
+						<li style="width:49.9%"><a href="/user_ottoneu_old_school_fpprojp">Calculate Pitcher SGP</a></li>
+					</ul>
+					<hr/>
+				</div>
+				<div th:if="${user.yahooOAuthAccessToken} == null">
 					<h4>Link to Yahoo! Account</h4>
 					<ul class="nav nav-pills">
 						<li style="width:100%"><a onclick="javascript:popupWindow('/yahoolinkaccount')">Link Yahoo! Account</a></li>
 					</ul>
+				<hr/>
 				</div>
-				<br/>
-				<div>
+				<div th:if="${user.yahooOAuthAccessToken} != null">
 					<h4>Link Your Yahoo! Leagues</h4>
 					<ul class="nav nav-pills">
 						<li style="width:100%"><a href="/useryahooleagues">Link Your Yahoo! Leagues</a></li>
+					</ul>
+				<hr/>
+				</div>
+				<div>
+					<h4>Link to Ottoneu League</h4>
+					<ul class="nav nav-pills">
+						<li style="width:100%"><a href="/ottoneuleagueentry">Link Your Ottoneu League</a></li>
 					</ul>
 				</div>
 			</div>
