@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "ottoneuleague")
+@Table(name = "ottoneuoldschoolleague")
 public class OttoneuOldSchoolLeague extends AbstractEntity {
 	
 	// league variables
@@ -54,7 +54,7 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 	private int previousYearUID;
 	
 	private List<User> users;
-	private List<OttoneuTeam> ottoneuTeams;
+	private List<OttoneuOldSchoolTeam> ottoneuTeams;
 	private List<UserBatterSGP> userBatterSGP;
     private List<UserPitcherSGP> userPitcherSGP;
 	
@@ -329,7 +329,7 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 	}
 
     @ManyToMany
-    @JoinTable(name="USER_OTTONEULEAGUE")
+    @JoinTable(name="USER_OTTONEUOLDSCHOOLLEAGUE")
 	public List<User> getUsers() {
 		return users;
 	}
@@ -340,16 +340,16 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 	
     @OneToMany
     @JoinColumn(name = "ottoneu_old_school_league_uid")
-	public List<OttoneuTeam> getOttoneuTeams() {
+	public List<OttoneuOldSchoolTeam> getOttoneuTeams() {
 		return ottoneuTeams;
 	}
 	
-	public void setOttoneuTeams(List<OttoneuTeam> ottoneuTeams) {
+	public void setOttoneuTeams(List<OttoneuOldSchoolTeam> ottoneuTeams) {
 		this.ottoneuTeams = ottoneuTeams;
 	}
 
     @OneToMany
-    @JoinColumn(name = "league_uid")
+    @JoinColumn(name = "ottoneu_old_school_league_uid")
     public List<UserBatterSGP> getUserBatterSGP() {
     	return userBatterSGP;
     }
@@ -360,7 +360,7 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
     }
     
     @OneToMany
-    @JoinColumn(name = "league_uid")
+    @JoinColumn(name = "ottoneu_old_school_league_uid")
     public List<UserPitcherSGP> getUserPitcherSGP() {
     	return userPitcherSGP;
     }

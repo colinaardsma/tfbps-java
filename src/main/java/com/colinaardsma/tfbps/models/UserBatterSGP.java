@@ -55,7 +55,7 @@ public class UserBatterSGP extends AbstractEntity {
     	BigDecimal slgNum = new BigDecimal(batter.getSlg()).multiply(new BigDecimal(batter.getAb())).add(new BigDecimal(2528.5));
     	BigDecimal slgDenom = new BigDecimal(batter.getAb()).add(new BigDecimal(5993));
     	BigDecimal slg = slgNum.divide(slgDenom, 4, RoundingMode.HALF_EVEN);
-    	BigDecimal ops = obp.divide(slg, 2, RoundingMode.HALF_EVEN).subtract(new BigDecimal(0.748));
+    	BigDecimal ops = obp.divide(slg, 4, RoundingMode.HALF_EVEN).subtract(new BigDecimal(0.748));
     	ops = ops.divide(new BigDecimal(yahooRotoLeague.getOpsHistSGPMult()), 4, RoundingMode.HALF_EVEN);
     			 	
     	return r.add(hr.add(rbi.add(sb.add(ops)))).doubleValue();
@@ -70,7 +70,7 @@ public class UserBatterSGP extends AbstractEntity {
     	// avg
     	BigDecimal h = new BigDecimal(batter.getH()).add(new BigDecimal(1768));	
     	BigDecimal ab = new BigDecimal(batter.getAb()).add(new BigDecimal(6617));
-    	BigDecimal avg = h.divide(ab).subtract(new BigDecimal(0.267));
+    	BigDecimal avg = h.divide(ab, 4, RoundingMode.HALF_EVEN).subtract(new BigDecimal(0.267));
     	avg = avg.divide(new BigDecimal(ottoneuOldSchoolLeague.getAvgHistSGPMult()), 4, RoundingMode.HALF_EVEN);
     			 	
     	return r.add(hr.add(rbi.add(sb.add(avg)))).doubleValue();
@@ -119,8 +119,8 @@ public class UserBatterSGP extends AbstractEntity {
 		return yahooRotoLeague;
 	}
 
-	public void setYahooRotoLeague(YahooRotoLeague league) {
-		this.yahooRotoLeague = league;
+	public void setYahooRotoLeague(YahooRotoLeague yahooRotoLeague) {
+		this.yahooRotoLeague = yahooRotoLeague;
 	}
 
 	@ManyToOne

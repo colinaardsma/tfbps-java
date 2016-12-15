@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.colinaardsma.tfbps.models.FPProjBatter;
 import com.colinaardsma.tfbps.models.FPProjPitcher;
+import com.colinaardsma.tfbps.models.OttoneuOldSchoolLeague;
 import com.colinaardsma.tfbps.models.User;
 import com.colinaardsma.tfbps.models.UserBatterSGP;
 import com.colinaardsma.tfbps.models.UserPitcherSGP;
 import com.colinaardsma.tfbps.models.YahooRotoLeague;
 import com.colinaardsma.tfbps.models.dao.FPProjBatterDao;
 import com.colinaardsma.tfbps.models.dao.FPProjPitcherDao;
+import com.colinaardsma.tfbps.models.dao.OttoneuOldSchoolLeagueDao;
 import com.colinaardsma.tfbps.models.dao.UserBatterSGPDao;
 import com.colinaardsma.tfbps.models.dao.UserPitcherSGPDao;
 import com.colinaardsma.tfbps.models.dao.YahooRotoLeagueDao;
@@ -37,6 +39,9 @@ public class ProjectionController extends AbstractController {
 	
 	@Autowired
 	YahooRotoLeagueDao yahooRotoLeagueDao;
+	
+	@Autowired
+	OttoneuOldSchoolLeagueDao ottoneuOldSchoolLeagueDao;
 	
 	@Autowired
 	UserPitcherSGPDao userPitcherSGPDao;
@@ -90,8 +95,9 @@ public class ProjectionController extends AbstractController {
         return "projections";
     }
 
+	// YAHOO ROTO LEAGUE BATTER
 	@RequestMapping(value = "/user_yahoo_roto_fpprojb", method = RequestMethod.GET)
-	public String userfpprojbform(Model model, HttpServletRequest request){
+	public String useryahoorotofpprojbform(Model model, HttpServletRequest request){
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
 		User user = this.getUserFromSession(request);
@@ -100,9 +106,11 @@ public class ProjectionController extends AbstractController {
 		List<YahooRotoLeague> leagues = yahooRotoLeagueDao.findByUsers_uid(user.getUid());
 		// set category of data
 		String category = "batter";
+		String leagueType = "Yahoo Roto";
 	
     	model.addAttribute("currentUser", currentUser);
 		model.addAttribute("leagues", leagues);
+		model.addAttribute("leagueType", leagueType);
 		model.addAttribute("category", category);
         model.addAttribute("user", user);
 
@@ -110,7 +118,7 @@ public class ProjectionController extends AbstractController {
 	}
 	
 	@RequestMapping(value = "/user_yahoo_roto_fpprojb", method = RequestMethod.POST)
-    public String userfpprojb(Model model, HttpServletRequest request){
+    public String useryahoorotofpprojb(Model model, HttpServletRequest request){
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
 		User user = this.getUserFromSession(request);
@@ -174,18 +182,21 @@ public class ProjectionController extends AbstractController {
 		Date lastPullDate = batters.get(0).getCreated();
 		// set category of data
 		String category = "batter";
+		String leagueType = "Yahoo Roto";
 				
     	model.addAttribute("currentUser", currentUser);
 		model.addAttribute("players", sgpBatters);
 		model.addAttribute("lastPullDate", lastPullDate);
+		model.addAttribute("leagueType", leagueType);
 		model.addAttribute("category", category);
         model.addAttribute("user", user);
 
         return "user_projections";
     }
 
+	// YAHOO ROTO LEAGUE PITCHER
 	@RequestMapping(value = "/user_yahoo_roto_fpprojp", method = RequestMethod.GET)
-	public String userfpprojpform(Model model, HttpServletRequest request){
+	public String useryahoorotofpprojpform(Model model, HttpServletRequest request){
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
 		User user = this.getUserFromSession(request);
@@ -194,9 +205,11 @@ public class ProjectionController extends AbstractController {
 		List<YahooRotoLeague> leagues = yahooRotoLeagueDao.findByUsers_uid(user.getUid());
 		// set category of data
 		String category = "pitcher";
+		String leagueType = "Yahoo Roto";
 	
     	model.addAttribute("currentUser", currentUser);
 		model.addAttribute("leagues", leagues);
+		model.addAttribute("leagueType", leagueType);
 		model.addAttribute("category", category);
         model.addAttribute("user", user);
 
@@ -204,7 +217,7 @@ public class ProjectionController extends AbstractController {
 	}
 	
 	@RequestMapping(value = "/user_yahoo_roto_fpprojp", method = RequestMethod.POST)
-    public String userfpprojp(Model model, HttpServletRequest request){
+    public String useryahoorotofpprojp(Model model, HttpServletRequest request){
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
 		User user = this.getUserFromSession(request);
@@ -268,10 +281,210 @@ public class ProjectionController extends AbstractController {
 		Date lastPullDate = pitchers.get(0).getCreated();
 		// set category of data
 		String category = "pitcher";
+		String leagueType = "Yahoo Roto";
 				
     	model.addAttribute("currentUser", currentUser);
 		model.addAttribute("players", sgpPitchers);
 		model.addAttribute("lastPullDate", lastPullDate);
+		model.addAttribute("leagueType", leagueType);
+		model.addAttribute("category", category);
+        model.addAttribute("user", user);
+
+        return "user_projections";
+    }
+	
+	// OTTONEU OLD SCHOOL LEAGUE BATTER
+	@RequestMapping(value = "/user_ottoneu_old_school_fpprojb", method = RequestMethod.GET)
+	public String userottoneuoldschoolfpprojbform(Model model, HttpServletRequest request){
+		// check for user in session
+		String currentUser = this.getUsernameFromSession(request);
+		User user = this.getUserFromSession(request);
+		
+		// get list of user's leagues
+		List<OttoneuOldSchoolLeague> leagues = ottoneuOldSchoolLeagueDao.findByUsers_uid(user.getUid());
+		// set category of data
+		String category = "batter";
+		String leagueType = "Ottoneu Old School";
+	
+    	model.addAttribute("currentUser", currentUser);
+		model.addAttribute("leagues", leagues);
+		model.addAttribute("leagueType", leagueType);
+		model.addAttribute("category", category);
+        model.addAttribute("user", user);
+
+        return "user_projection_selection";
+	}
+	
+	@RequestMapping(value = "/user_ottoneu_old_school_fpprojb", method = RequestMethod.POST)
+    public String userottoneuoldschoolfpprojb(Model model, HttpServletRequest request){
+		// check for user in session
+		String currentUser = this.getUsernameFromSession(request);
+		User user = this.getUserFromSession(request);
+		
+		// get league and leaguekey from user selection in get
+		String leagueKey = request.getParameter("league");
+		OttoneuOldSchoolLeague league = ottoneuOldSchoolLeagueDao.findByLeagueKey(leagueKey);
+		
+		// pull player list
+		List<FPProjBatter> batters = fpProjBatterDao.findAllByOrderByOpsTotalSGPDesc();
+		
+		// if histsgp has not been calculated for this league/user then calculate, otherwise continue
+		if (userBatterSGPDao.findByUserAndOttoneuOldSchoolLeague(user, league).size() == 0) {
+			for (FPProjBatter batter : batters) {
+				UserBatterSGP userBatterSGP = new UserBatterSGP(batter, league, user);
+				userBatterSGPDao.save(userBatterSGP);
+			}
+		}
+
+		// create and populate list with players and user's custom sgp
+		List<FPProjBatter> sgpBatters = new ArrayList<FPProjBatter>();
+		
+		for (FPProjBatter batter : batters) {
+			String name = batter.getName();
+			String team = batter.getTeam();
+			String pos = batter.getPos();
+			int ab = batter.getAb();
+			int r = batter.getR();
+			int hr = batter.getHr();
+			int rbi = batter.getRbi();
+			int sb = batter.getSb();
+			double avg = batter.getAvg();
+			double obp = batter.getObp();
+			int h = batter.getH();
+			int dbl = batter.getDbl();
+			int tpl = batter.getTpl();
+			int bb = batter.getBb();
+			int k = batter.getK();
+			double slg = batter.getSlg();
+			double ops = batter.getOps();
+			String category = batter.getCategory();
+			UserBatterSGP userBatterSGP = userBatterSGPDao.findByBatterAndUserAndOttoneuOldSchoolLeague(batter, user, league);
+			double customSGP = userBatterSGP.getHistSGP();
+
+			FPProjBatter sgpBatter = new FPProjBatter(name, team, pos, ab, r, hr, rbi, sb, avg, obp, h, dbl, tpl, bb, k, slg, ops, category);
+			sgpBatter.setAvgTotalSGP(customSGP);
+			sgpBatters.add(sgpBatter);
+		}
+		
+		// sort list by user's custom sgp calculation (desc)
+		Collections.sort(sgpBatters, new Comparator<FPProjBatter>() {
+			@Override
+			public int compare(FPProjBatter p1, FPProjBatter p2) {
+				if (p1.getAvgTotalSGP() < p2.getAvgTotalSGP()) return 1;
+				if (p1.getAvgTotalSGP() > p2.getAvgTotalSGP()) return -1;
+				return 0;
+			}
+		});
+		
+		// get date of last data pull
+		Date lastPullDate = batters.get(0).getCreated();
+		// set category of data
+		String category = "batter";
+		String leagueType = "Ottoneu Old School";
+				
+    	model.addAttribute("currentUser", currentUser);
+		model.addAttribute("players", sgpBatters);
+		model.addAttribute("lastPullDate", lastPullDate);
+		model.addAttribute("leagueType", leagueType);
+		model.addAttribute("category", category);
+        model.addAttribute("user", user);
+
+        return "user_projections";
+    }
+
+	// OTTONEU OLD SCHOOL PITCHER
+	@RequestMapping(value = "/user_ottoneu_old_school_fpprojp", method = RequestMethod.GET)
+	public String userottoneuoldschoolfpprojpform(Model model, HttpServletRequest request){
+		// check for user in session
+		String currentUser = this.getUsernameFromSession(request);
+		User user = this.getUserFromSession(request);
+		
+		// get list of user's leagues
+		List<OttoneuOldSchoolLeague> leagues = ottoneuOldSchoolLeagueDao.findByUsers_uid(user.getUid());
+		// set category of data
+		String category = "pitcher";
+		String leagueType = "Ottoneu Old School";
+	
+    	model.addAttribute("currentUser", currentUser);
+		model.addAttribute("leagues", leagues);
+		model.addAttribute("leagueType", leagueType);
+		model.addAttribute("category", category);
+        model.addAttribute("user", user);
+
+        return "user_projection_selection";
+	}
+	
+	@RequestMapping(value = "/user_ottoneu_old_school_fpprojp", method = RequestMethod.POST)
+    public String userottoneuoldschoolfpprojp(Model model, HttpServletRequest request){
+		// check for user in session
+		String currentUser = this.getUsernameFromSession(request);
+		User user = this.getUserFromSession(request);
+		
+		// get league and leaguekey from user selection in get
+		String leagueKey = request.getParameter("league");
+		OttoneuOldSchoolLeague league = ottoneuOldSchoolLeagueDao.findByLeagueKey(leagueKey);
+		
+		// pull player list
+		List<FPProjPitcher> pitchers = fpProjPitcherDao.findAllByOrderBySgpDesc();
+		
+		// if histsgp has not been calculated for this league/user then calculate, otherwise continue
+		if (userPitcherSGPDao.findByUserAndOttoneuOldSchoolLeague(user, league).size() == 0) {
+			for (FPProjPitcher pitcher : pitchers) {
+				UserPitcherSGP userPitcherSGP = new UserPitcherSGP(pitcher, league, user);
+				userPitcherSGPDao.save(userPitcherSGP);
+			}
+		}
+
+		// create and populate list with players and user's custom sgp
+		List<FPProjPitcher> sgpPitchers = new ArrayList<FPProjPitcher>();
+		
+		for (FPProjPitcher pitcher : pitchers) {
+			String name = pitcher.getName();
+			String team = pitcher.getTeam();
+			String pos = pitcher.getPos();
+			int ip = pitcher.getIp();
+			int k = pitcher.getK();
+			int w = pitcher.getW();
+			int sv = pitcher.getSv();
+			double era = pitcher.getEra();
+			double whip = pitcher.getWhip();
+			int er = pitcher.getEr();
+			int h = pitcher.getH();
+			int bb = pitcher.getBb();
+			int hr = pitcher.getHr();
+			int g = pitcher.getG();
+			int gs = pitcher.getGs();
+			int l = pitcher.getL();
+			int cg = pitcher.getCg();
+			String category = pitcher.getCategory();
+			UserPitcherSGP userPitcherSGP = userPitcherSGPDao.findByPitcherAndUserAndOttoneuOldSchoolLeague(pitcher, user, league);
+			double customSGP = userPitcherSGP.getHistSGP();
+
+			FPProjPitcher sgpPitcher = new FPProjPitcher(name, team, pos, ip, k, w, sv, era, whip, er, h, bb, hr, g, gs, l, cg, category);
+			sgpPitcher.setSgp(customSGP);			
+			sgpPitchers.add(sgpPitcher);
+		}
+		
+		// sort list by user's custom sgp calculation (desc)
+		Collections.sort(sgpPitchers, new Comparator<FPProjPitcher>() {
+			@Override
+			public int compare(FPProjPitcher p1, FPProjPitcher p2) {
+				if (p1.getSgp() < p2.getSgp()) return 1;
+				if (p1.getSgp() > p2.getSgp()) return -1;
+				return 0;
+			}
+		});
+		
+		// get date of last data pull
+		Date lastPullDate = pitchers.get(0).getCreated();
+		// set category of data
+		String category = "pitcher";
+		String leagueType = "Ottoneu Old School";
+				
+    	model.addAttribute("currentUser", currentUser);
+		model.addAttribute("players", sgpPitchers);
+		model.addAttribute("lastPullDate", lastPullDate);
+		model.addAttribute("leagueType", leagueType);
 		model.addAttribute("category", category);
         model.addAttribute("user", user);
 

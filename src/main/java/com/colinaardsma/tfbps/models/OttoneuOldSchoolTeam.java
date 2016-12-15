@@ -7,8 +7,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "ottoneuteam")
-public class OttoneuTeam extends AbstractEntity {
+@Table(name = "ottoneuoldschoolteam")
+public class OttoneuOldSchoolTeam extends AbstractEntity {
 
 	// team identifiers
 	private int teamNumber;
@@ -70,7 +70,7 @@ public class OttoneuTeam extends AbstractEntity {
 	 * 27 = whip
 	 */
 	
-	public OttoneuTeam(int teamNumber, String teamName, String teamURL, int leagueNumber, int season, String leagueKey, 
+	public OttoneuOldSchoolTeam(int teamNumber, String teamName, String teamURL, int leagueNumber, int season, String leagueKey, 
 			int rStats, int hrStats, int rbiStats, int sbStats, double avgStats, int wStats, int svStats, int kStats, 
 			double eraStats, double whipStats, double rPoints, double hrPoints, double rbiPoints, double sbPoints, 
 			double avgPoints, double ipStats, double wPoints, double svPoints, double kPoints, double eraPoints,
@@ -107,7 +107,7 @@ public class OttoneuTeam extends AbstractEntity {
 		this.totalPoints = totalPoints;
 	}
 	
-	public OttoneuTeam(int teamNumber, String teamName, String teamURL, int leagueNumber, int season, String leagueKey) {
+	public OttoneuOldSchoolTeam(int teamNumber, String teamName, String teamURL, int leagueNumber, int season, String leagueKey) {
 		this.teamKey = leagueKey + "." + teamNumber;
 		this.teamNumber = teamNumber;
 		this.teamName = teamName;
@@ -118,7 +118,7 @@ public class OttoneuTeam extends AbstractEntity {
 
 	}
 
-	public OttoneuTeam(){}
+	public OttoneuOldSchoolTeam(){}
 
     @NotNull
     @Column(name = "teamNumber")

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.colinaardsma.tfbps.models.OttoneuOldSchoolLeague;
 import com.colinaardsma.tfbps.models.User;
 import com.colinaardsma.tfbps.models.UserBatterSGP;
 import com.colinaardsma.tfbps.models.UserPitcherSGP;
@@ -45,32 +46,63 @@ public class UserAccountController extends AbstractController {
 		User user = this.getUserFromSession(request);
 		
 		// create list of user's leagues that already have custom SGPs
+		// YAHOO ROTO LEAGUES
 		// batter
-		List<UserBatterSGP> userBatterSGPPlayers = userBatterSGPDao.findByUser(user);
-		List<YahooRotoLeague> batterLeagues = new ArrayList<YahooRotoLeague>();
-		for (UserBatterSGP player : userBatterSGPPlayers) {
-			YahooRotoLeague league = player.getYahooRotoLeague();
-			if (!batterLeagues.contains(league)) {
-				batterLeagues.add(league);
+		List<UserBatterSGP> userBatterYahooRotoSGPPlayers = userBatterSGPDao.findByUser(user);
+		List<YahooRotoLeague> batterYahooRotoLeagues = new ArrayList<YahooRotoLeague>();
+		for (UserBatterSGP player : userBatterYahooRotoSGPPlayers) {
+			if (player.getYahooRotoLeague() != null) {
+				YahooRotoLeague league = player.getYahooRotoLeague();
+				if (!batterYahooRotoLeagues.contains(league)) {
+					batterYahooRotoLeagues.add(league);
+				}
 			}
 		}
 		
 		// pitcher
-		List<UserPitcherSGP> userPitcherSGPPlayers = userPitcherSGPDao.findByUser(user);
-		List<YahooRotoLeague> pitcherLeagues = new ArrayList<YahooRotoLeague>();
-		for (UserPitcherSGP player : userPitcherSGPPlayers) {
-			YahooRotoLeague league = player.getYahooRotoLeague();
-			if (!pitcherLeagues.contains(league)) {
-				pitcherLeagues.add(league);
+		List<UserPitcherSGP> userPitcherYahooRotoSGPPlayers = userPitcherSGPDao.findByUser(user);
+		List<YahooRotoLeague> pitcherYahooRotoLeagues = new ArrayList<YahooRotoLeague>();
+		for (UserPitcherSGP player : userPitcherYahooRotoSGPPlayers) {
+			if (player.getYahooRotoLeague() != null) {
+				YahooRotoLeague league = player.getYahooRotoLeague();
+				if (!pitcherYahooRotoLeagues.contains(league)) {
+					pitcherYahooRotoLeagues.add(league);
+				}
 			}
 		}
 
+		// OTTONEU OLD SCHOOL LEAGUES
+		// batter
+		List<UserBatterSGP> userBatterOttoneuOldSchoolSGPPlayers = userBatterSGPDao.findByUser(user);
+		List<OttoneuOldSchoolLeague> batterOttoneuOldSchoolLeagues = new ArrayList<OttoneuOldSchoolLeague>();
+		for (UserBatterSGP player : userBatterOttoneuOldSchoolSGPPlayers) {
+			if (player.getOttoneuOldSchoolLeague() != null) {
+				OttoneuOldSchoolLeague league = player.getOttoneuOldSchoolLeague();
+				if (!batterOttoneuOldSchoolLeagues.contains(league)) {
+					batterOttoneuOldSchoolLeagues.add(league);
+				}
+			}
+		}
+		
+		// pitcher
+		List<UserPitcherSGP> userPitcherOttoneuOldSchoolSGPPlayers = userPitcherSGPDao.findByUser(user);
+		List<OttoneuOldSchoolLeague> pitcherOttoneuOldSchoolLeagues = new ArrayList<OttoneuOldSchoolLeague>();
+		for (UserPitcherSGP player : userPitcherOttoneuOldSchoolSGPPlayers) {
+			if (player.getOttoneuOldSchoolLeague() != null) {
+				OttoneuOldSchoolLeague league = player.getOttoneuOldSchoolLeague();
+				if (!pitcherOttoneuOldSchoolLeagues.contains(league)) {
+					pitcherOttoneuOldSchoolLeagues.add(league);
+				}
+			}
+		}
 		
     	model.addAttribute("currentUser", currentUser);
         model.addAttribute("user", user);
-        model.addAttribute("batterLeagues", batterLeagues);
-        model.addAttribute("pitcherLeagues", pitcherLeagues);
-   	
+        model.addAttribute("batterYahooRotoLeagues", batterYahooRotoLeagues);
+        model.addAttribute("pitcherYahooRotoLeagues", pitcherYahooRotoLeagues);
+        model.addAttribute("batterOttoneuOldSchoolLeagues", batterOttoneuOldSchoolLeagues);
+        model.addAttribute("pitcherOttoneuOldSchoolLeagues", pitcherOttoneuOldSchoolLeagues);
+  	
     	return "useraccount";
     }
 

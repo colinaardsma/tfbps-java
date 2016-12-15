@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.colinaardsma.tfbps.models.OttoneuOldSchoolLeague;
-import com.colinaardsma.tfbps.models.OttoneuTeam;
+import com.colinaardsma.tfbps.models.OttoneuOldSchoolTeam;
 import com.colinaardsma.tfbps.models.User;
 import com.colinaardsma.tfbps.models.dao.OttoneuOldSchoolLeagueDao;
-import com.colinaardsma.tfbps.models.dao.OttoneuTeamDao;
+import com.colinaardsma.tfbps.models.dao.OttoneuOldSchoolTeamDao;
 import com.colinaardsma.tfbps.models.dao.UserDao;
 import com.colinaardsma.tfbps.models.util.SGPMultCalc;
 
@@ -36,7 +36,7 @@ public class OttoneuDataController extends AbstractController {
 	OttoneuOldSchoolLeagueDao ottoneuOldSchoolLeagueDao;
 	
 	@Autowired
-	OttoneuTeamDao ottoneuTeamDao;
+	OttoneuOldSchoolTeamDao ottoneuTeamDao;
 
 	@RequestMapping(value = "/ottoneuleagueentry", method = RequestMethod.GET)
 	public String ottoneuleagueentryform(Model model, HttpServletRequest request) {
@@ -83,8 +83,8 @@ public class OttoneuDataController extends AbstractController {
 //		int teamTrades = 0; // https://ottoneu.fangraphs.com/642/transactions
 		String teamManagerName = null; //teamUrl
 		String leagueKey = leagueNumber + "." + season;
-		List<OttoneuTeam> teamList = new ArrayList<OttoneuTeam>();
-		List<OttoneuTeam> teamMasterList = new ArrayList<OttoneuTeam>();
+		List<OttoneuOldSchoolTeam> teamList = new ArrayList<OttoneuOldSchoolTeam>();
+		List<OttoneuOldSchoolTeam> teamMasterList = new ArrayList<OttoneuOldSchoolTeam>();
 
 		// stats
 		int rStats = 0;
@@ -254,7 +254,7 @@ public class OttoneuDataController extends AbstractController {
 										teamURL = baseUrl + href;
 										teamNumber = Integer.parseInt(href.substring(href.lastIndexOf("=") + 1));
 
-										OttoneuTeam team = new OttoneuTeam(teamNumber, teamName, teamURL, leagueNumber, season, leagueKey);
+										OttoneuOldSchoolTeam team = new OttoneuOldSchoolTeam(teamNumber, teamName, teamURL, leagueNumber, season, leagueKey);
 
 										// stats
 										rStats = Integer.parseInt(tds.get(1).text());
@@ -310,7 +310,7 @@ public class OttoneuDataController extends AbstractController {
 										whipPoints = Double.parseDouble(tds.get(10).text());
 										totalPoints = Double.parseDouble(tds.get(11).text());
 
-										OttoneuTeam team = ottoneuTeamDao.findByTeamNumberAndSeason(teamNumber, season);
+										OttoneuOldSchoolTeam team = ottoneuTeamDao.findByTeamNumberAndSeason(teamNumber, season);
 
 										team.setRPoints(rPoints);
 										team.setHrPoints(hrPoints);
@@ -332,9 +332,9 @@ public class OttoneuDataController extends AbstractController {
 						}
 
 						// add teamBudget, teamManagerName, and rank
-						Collections.sort(teamList, new Comparator<OttoneuTeam>() { // sort list by user's custom sgp calculation (desc)
+						Collections.sort(teamList, new Comparator<OttoneuOldSchoolTeam>() { // sort list by user's custom sgp calculation (desc)
 							@Override
-							public int compare(OttoneuTeam t1, OttoneuTeam t2) {
+							public int compare(OttoneuOldSchoolTeam t1, OttoneuOldSchoolTeam t2) {
 								if (t1.getTotalPoints() < t2.getTotalPoints()) return 1;
 								if (t1.getTotalPoints() > t2.getTotalPoints()) return -1;
 								return 0;
@@ -343,7 +343,7 @@ public class OttoneuDataController extends AbstractController {
 
 						int rank = 12;
 
-						for (OttoneuTeam team : teamList) {
+						for (OttoneuOldSchoolTeam team : teamList) {
 							Document teamPage = Jsoup.connect(team.getTeamURL()).get();
 
 							for (Element div : teamPage.select("div[id=left]")) {
@@ -357,7 +357,7 @@ public class OttoneuDataController extends AbstractController {
 									teamBudget = Integer.parseInt(spans.get(0).ownText().replace("$", ""));						
 								}
 							}
-							OttoneuTeam savedTeam = ottoneuTeamDao.findByTeamNumberAndSeason(team.getTeamNumber(), team.getSeason());
+							OttoneuOldSchoolTeam savedTeam = ottoneuTeamDao.findByTeamNumberAndSeason(team.getTeamNumber(), team.getSeason());
 							savedTeam.setTeamManagerName(teamManagerName);
 							savedTeam.setTeamBudget(teamBudget);
 							savedTeam.setRank(rank);
@@ -368,11 +368,11 @@ public class OttoneuDataController extends AbstractController {
 
 						// calculate league SGP and save to db
 						OttoneuOldSchoolLeague league = ottoneuOldSchoolLeagueDao.findByLeagueNumberAndSeason(leagueNumber, season); // pull league to add and save data
-						List<OttoneuTeam> teams = ottoneuTeamDao.findByLeagueNumberAndSeason(leagueNumber, season); // pull list of teams in league
+						List<OttoneuOldSchoolTeam> teams = ottoneuTeamDao.findByLeagueNumberAndSeason(leagueNumber, season); // pull list of teams in league
 
 						// add runs
 						List<Integer> rs = new ArrayList<Integer>();
-						for (OttoneuTeam team : teams) {
+						for (OttoneuOldSchoolTeam team : teams) {
 							rs.add(team.getRStats());
 						}
 						Collections.sort(rs); // sort list from smallest to largest
@@ -380,7 +380,7 @@ public class OttoneuDataController extends AbstractController {
 
 						// add hrs
 						List<Integer> hrs = new ArrayList<Integer>();
-						for (OttoneuTeam team : teams) {
+						for (OttoneuOldSchoolTeam team : teams) {
 							hrs.add(team.getHrStats());
 						}
 						Collections.sort(hrs); // sort list from smallest to largest
@@ -388,7 +388,7 @@ public class OttoneuDataController extends AbstractController {
 
 						// add rbi
 						List<Integer> rbis = new ArrayList<Integer>();
-						for (OttoneuTeam team : teams) {
+						for (OttoneuOldSchoolTeam team : teams) {
 							rbis.add(team.getRbiStats());
 						}
 						Collections.sort(rbis); // sort list from smallest to largest
@@ -396,7 +396,7 @@ public class OttoneuDataController extends AbstractController {
 
 						// add sb
 						List<Integer> sbs = new ArrayList<Integer>();
-						for (OttoneuTeam team : teams) {
+						for (OttoneuOldSchoolTeam team : teams) {
 							sbs.add(team.getSbStats());
 						}
 						Collections.sort(sbs); // sort list from smallest to largest
@@ -404,7 +404,7 @@ public class OttoneuDataController extends AbstractController {
 
 						// add avg
 						List<Double> avgs = new ArrayList<Double>();
-						for (OttoneuTeam team : teams) {
+						for (OttoneuOldSchoolTeam team : teams) {
 							avgs.add(team.getAvgStats());
 						}
 						Collections.sort(avgs); // sort list from smallest to largest
@@ -412,7 +412,7 @@ public class OttoneuDataController extends AbstractController {
 
 						// add wins
 						List<Integer> ws = new ArrayList<Integer>();
-						for (OttoneuTeam team : teams) {
+						for (OttoneuOldSchoolTeam team : teams) {
 							ws.add(team.getWStats());
 						}
 						Collections.sort(ws); // sort list from smallest to largest
@@ -420,7 +420,7 @@ public class OttoneuDataController extends AbstractController {
 
 						// add saves
 						List<Integer> svs = new ArrayList<Integer>();
-						for (OttoneuTeam team : teams) {
+						for (OttoneuOldSchoolTeam team : teams) {
 							svs.add(team.getSvStats());
 						}
 						Collections.sort(svs); // sort list from smallest to largest
@@ -428,7 +428,7 @@ public class OttoneuDataController extends AbstractController {
 
 						// add k
 						List<Integer> ks = new ArrayList<Integer>();
-						for (OttoneuTeam team : teams) {
+						for (OttoneuOldSchoolTeam team : teams) {
 							ks.add(team.getKStats());
 						}
 						Collections.sort(ks); // sort list from smallest to largest
@@ -436,7 +436,7 @@ public class OttoneuDataController extends AbstractController {
 
 						// add era
 						List<Double> eras = new ArrayList<Double>();
-						for (OttoneuTeam team : teams) {
+						for (OttoneuOldSchoolTeam team : teams) {
 							eras.add(team.getEraStats());
 						}
 						Collections.sort(eras); // sort list from smallest to largest
@@ -444,7 +444,7 @@ public class OttoneuDataController extends AbstractController {
 
 						// add whip
 						List<Double> whips = new ArrayList<Double>();
-						for (OttoneuTeam team : teams) {
+						for (OttoneuOldSchoolTeam team : teams) {
 							whips.add(team.getWhipStats());
 						}
 						Collections.sort(whips); // sort list from smallest to largest
@@ -518,7 +518,7 @@ public class OttoneuDataController extends AbstractController {
 		String currentUser = this.getUsernameFromSession(request);
 		User user = this.getUserFromSession(request);
 		int teamUid = Integer.parseInt(request.getParameter("team"));
-		OttoneuTeam team = ottoneuTeamDao.findByUid(teamUid);
+		OttoneuOldSchoolTeam team = ottoneuTeamDao.findByUid(teamUid);
 		
 		// not getting any values in leaguenumber or season
 		int leagueNumber = team.getLeagueNumber();

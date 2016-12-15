@@ -336,7 +336,7 @@ public class YahooRotoLeague extends AbstractEntity {
 	}
 
     @OneToMany
-    @JoinColumn(name = "league_uid")
+    @JoinColumn(name = "yahoo_roto_league_uid")
     public List<UserBatterSGP> getUserBatterSGP() {
     	return userBatterSGP;
     }
@@ -347,7 +347,7 @@ public class YahooRotoLeague extends AbstractEntity {
     }
     
     @OneToMany
-    @JoinColumn(name = "league_uid")
+    @JoinColumn(name = "yahoo_roto_league_uid")
     public List<UserPitcherSGP> getUserPitcherSGP() {
     	return userPitcherSGP;
     }
