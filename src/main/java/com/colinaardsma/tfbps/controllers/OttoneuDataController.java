@@ -184,7 +184,6 @@ public class OttoneuDataController extends AbstractController {
 					e.printStackTrace();
 				}
 
-				// TODO: need to stop from pulling years with no data (0s across the board)
 				// league
 				// pull data from the season's league page
 				try {
@@ -482,12 +481,10 @@ public class OttoneuDataController extends AbstractController {
 				prevYears--;
 			}
 			
-			for (OttoneuTeam team : teamList) {
-				if (!teamMasterList.contains(team)) { // change this to be generic team number instead of specific team instance
-					teamMasterList.add(team);
-				}
+			if (teamMasterList.isEmpty()) {
+				teamMasterList.addAll(teamList);
 			}
-			
+						
 		} while (prevYears >= 0);
 		
 		// calculate historical sgp for each year (change value in years variable to change the number of years)
