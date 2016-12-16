@@ -23,6 +23,11 @@ public class YahooRotoLeague extends AbstractEntity {
 	private String leagueURL;
 	private int teamCount;
 	private int season;
+	private int auctionBudget;
+	private int teamBatters;
+	private int teamPitchers;
+	private int teamBench;
+	private int teamRosterSize;
 	
 	// yearly sgp variables
 	private double rSGPMult;
@@ -36,6 +41,12 @@ public class YahooRotoLeague extends AbstractEntity {
 	private double eraSGPMult;
 	private double whipSGPMult;
 	
+	// yearly auction value variables
+	private double budgetPctB; // http://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/draftresults
+	private double budgetPctP; // http://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/draftresults
+	private int draftedB; // http://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/draftresults
+	private int draftedP; // http://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/draftresults
+	
 	// historical sgp variables
 	private double rHistSGPMult;
 	private double hrHistSGPMult;
@@ -47,6 +58,12 @@ public class YahooRotoLeague extends AbstractEntity {
 	private double kHistSGPMult;
 	private double eraHistSGPMult;
 	private double whipHistSGPMult;
+	
+	// historical auction value variables
+	private double histBudgetPctB; // http://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/draftresults
+	private double histBudgetPctP; // http://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/draftresults
+	private int histDraftedB; // http://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/draftresults
+	private int histDraftedP; // http://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/draftresults
 	
 	// links to other leagues within this database
 	private String previousYearKey;
@@ -117,7 +134,52 @@ public class YahooRotoLeague extends AbstractEntity {
 		this.season = season;
 	}
 	
-    @Column(name = "rSGPMult")
+    @Column(name = "auctionbudget")
+    public int getAuctionBudget() {
+		return auctionBudget;
+	}
+
+	public void setAuctionBudget(int auctionBudget) {
+		this.auctionBudget = auctionBudget;
+	}
+
+    @Column(name = "teambatters")
+	public int getTeamBatters() {
+		return teamBatters;
+	}
+
+	public void setTeamBatters(int teamBatters) {
+		this.teamBatters = teamBatters;
+	}
+
+    @Column(name = "teampitchers")
+	public int getTeamPitchers() {
+		return teamPitchers;
+	}
+
+	public void setTeamPitchers(int teamPitchers) {
+		this.teamPitchers = teamPitchers;
+	}
+
+    @Column(name = "teambench")
+	public int getTeamBench() {
+		return teamBench;
+	}
+
+	public void setTeamBench(int teamBench) {
+		this.teamBench = teamBench;
+	}
+
+    @Column(name = "teamrostersize")
+	public int getTeamRosterSize() {
+		return teamRosterSize;
+	}
+
+	public void setTeamRosterSize(int teamRosterSize) {
+		this.teamRosterSize = teamRosterSize;
+	}
+
+	@Column(name = "rSGPMult")
     public double getRSGPMult() {
 		return rSGPMult;
 	}
@@ -207,7 +269,43 @@ public class YahooRotoLeague extends AbstractEntity {
 		this.whipSGPMult = whipSGP;
 	}
 
-    @Column(name = "rHistSGPMult")
+    @Column(name = "budgetPctB")
+    public double getBudgetPctB() {
+		return budgetPctB;
+	}
+
+	public void setBudgetPctB(double budgetPctB) {
+		this.budgetPctB = budgetPctB;
+	}
+
+    @Column(name = "budgetPctP")
+	public double getBudgetPctP() {
+		return budgetPctP;
+	}
+
+	public void setBudgetPctP(double budgetPctP) {
+		this.budgetPctP = budgetPctP;
+	}
+
+    @Column(name = "draftedB")
+	public int getDraftedB() {
+		return draftedB;
+	}
+
+	public void setDraftedB(int draftedB) {
+		this.draftedB = draftedB;
+	}
+
+    @Column(name = "draftedP")
+	public int getDraftedP() {
+		return draftedP;
+	}
+
+	public void setDraftedP(int draftedP) {
+		this.draftedP = draftedP;
+	}
+
+	@Column(name = "rHistSGPMult")
 	public double getRHistSGPMult() {
 		return rHistSGPMult;
 	}
@@ -295,6 +393,38 @@ public class YahooRotoLeague extends AbstractEntity {
 
 	public void setWhipHistSGPMult(double whipHistSGPMult) {
 		this.whipHistSGPMult = whipHistSGPMult;
+	}
+
+	public double getHistBudgetPctB() {
+		return histBudgetPctB;
+	}
+
+	public void setHistBudgetPctB(double histBudgetPctB) {
+		this.histBudgetPctB = histBudgetPctB;
+	}
+
+	public double getHistBudgetPctP() {
+		return histBudgetPctP;
+	}
+
+	public void setHistBudgetPctP(double histBudgetPctP) {
+		this.histBudgetPctP = histBudgetPctP;
+	}
+
+	public int getHistDraftedB() {
+		return histDraftedB;
+	}
+
+	public void setHistDraftedB(int histDraftedB) {
+		this.histDraftedB = histDraftedB;
+	}
+
+	public int getHistDraftedP() {
+		return histDraftedP;
+	}
+
+	public void setHistDraftedP(int histDraftedP) {
+		this.histDraftedP = histDraftedP;
 	}
 
 	@Column(name = "prevyearkey")

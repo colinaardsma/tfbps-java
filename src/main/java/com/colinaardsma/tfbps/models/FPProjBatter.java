@@ -43,6 +43,8 @@ public class FPProjBatter extends AbstractEntity {
 	private double avgSGP;
 	private double opsTotalSGP;
 	private double avgTotalSGP;
+	private double opsTotalAAV;
+	private double avgTotalAAV;
 	private String category;
 	private Date created;
 	
@@ -325,7 +327,25 @@ public class FPProjBatter extends AbstractEntity {
     	this.avgTotalSGP = avgTotalSGP;
     }
 
-   @NotNull
+    @Column(name = "opsTotalAAV")
+   public double getOpsTotalAAV() {
+		return opsTotalAAV;
+	}
+
+	public void setOpsTotalAAV(double opsTotalAAV) {
+		this.opsTotalAAV = opsTotalAAV;
+	}
+
+    @Column(name = "avgTotalAAV")
+	public double getAvgTotalAAV() {
+		return avgTotalAAV;
+	}
+
+	public void setAvgTotalAAV(double avgTotalAAV) {
+		this.avgTotalAAV = avgTotalAAV;
+	}
+
+@NotNull
     @Column(name = "category")
 	public String getCategory() {
 		return category;

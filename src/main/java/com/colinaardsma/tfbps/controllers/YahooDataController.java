@@ -139,6 +139,7 @@ public class YahooDataController extends AbstractController {
 		String xmlData = null;
 		String leagueName = null;
 		String leagueURL = null;
+		int auctionBudget;
 		//		String leagueScoringType = null;
 		String prevYearKey = null;
 		String nextYearKey = null;
@@ -196,11 +197,13 @@ public class YahooDataController extends AbstractController {
 		}
 
 		do {
-			String url = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=" + leagueKey + "/standings";
+			String standingsURL = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=" + leagueKey + "/standings";
 
 			try {
 				checkOAuthExpiration(user); // make sure authorization is still valid, if not renew
-				xmlData = YahooOAuth.oauthGetRequest(url, user);
+				
+				// fantasysports.leagues.standings
+				xmlData = YahooOAuth.oauthGetRequest(standingsURL, user);
 //				System.out.println(xmlData);
 
 				// parse xml data
@@ -224,10 +227,18 @@ public class YahooDataController extends AbstractController {
 //						System.out.println("Previous Year Key: " + prevYearKey);
 						nextYearKey = leagueElement.getElementsByTagName("renewed").item(0).getTextContent().replace("_", ".l.");
 						season = Integer.parseInt(leagueElement.getElementsByTagName("season").item(0).getTextContent());
+						Node standingsNode = leagueElement.getElementsByTagName("standings").item(0);
+						Element standingsElement = (Element) standingsNode;
+						Node teamsNode = standingsElement.getElementsByTagName("teams").item(0);
+						Element teamsElement = (Element) teamsNode;
+						Node teamNode = teamsElement.getElementsByTagName("team").item(0);
+						Element teamElement = (Element) teamNode;
+						auctionBudget = Integer.parseInt(teamElement.getElementsByTagName("auction_budget_total").item(0).getTextContent());
 
 						// if league does not already exist create it
 						if (yahooRotoLeagueDao.findByLeagueKey(leagueKey) == null) {
 							YahooRotoLeague newLeague = new YahooRotoLeague(leagueKey, leagueName, leagueURL, teamCount, season);
+							newLeague.setAuctionBudget(auctionBudget);
 
 							// add current user to list of league managers
 							List<User> managers = new ArrayList<User>();
@@ -451,6 +462,71 @@ public class YahooDataController extends AbstractController {
 					yahooRotoTeamDao.save(newTeam);
 				}
 				
+				// fantasysports.leagues.settings
+				String settingsURL = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=" + leagueKey + "/settings";
+
+				xmlData = YahooOAuth.oauthGetRequest(settingsURL, user);
+//				System.out.println(xmlData);
+
+				// parse xml data
+				factory = DocumentBuilderFactory.newInstance();
+				builder = factory.newDocumentBuilder();
+				is = new InputSource(new StringReader(xmlData));
+				document = builder.parse(is);
+
+				int teamBatters = 0;
+				int teamPitchers = 0;
+				int teamBench = 0;
+				
+				// iterate through the nodes and extract the data.
+				Node settingsNode = document.getElementsByTagName("settings").item(0);
+				if (settingsNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element settingsElement = (Element) settingsNode;
+					Node rosterPosNode = settingsElement.getElementsByTagName("roset_positions").item(0);
+					Element rosterPosElement = (Element) rosterPosNode;
+					NodeList rosterPosList = rosterPosElement.getElementsByTagName("roster_position");
+					for (int i = 0; i < rosterPosList.getLength(); i++) {
+						Node rpNode = rosterPosList.item(i);
+						Element rpElement = (Element) rpNode;
+						if (rpElement.getElementsByTagName("position_type").item(0).getTextContent().equals("B")) {
+							teamBatters += Integer.parseInt(rpElement.getElementsByTagName("count").item(0).getTextContent());
+						} else if (rpElement.getElementsByTagName("position_type").item(0).getTextContent().equals("P")) {
+							teamPitchers += Integer.parseInt(rpElement.getElementsByTagName("count").item(0).getTextContent());
+						} else if (rpElement.getElementsByTagName("position_type").item(0).getTextContent().equals("BN")) {
+							teamBench += Integer.parseInt(rpElement.getElementsByTagName("count").item(0).getTextContent());
+						}
+					}
+				}
+				int teamRosterSize = teamBatters + teamPitchers + teamBench;
+				
+				YahooRotoLeague existingLeague = yahooRotoLeagueDao.findByLeagueKey(leagueKey);
+				existingLeague.setTeamBatters(teamBatters);
+				existingLeague.setTeamPitchers(teamPitchers);
+				existingLeague.setTeamBench(teamBench);
+				existingLeague.setTeamRosterSize(teamRosterSize);
+				yahooRotoLeagueDao.save(existingLeague);
+				
+				
+				// TODO: gather draft results and parse $ spent on batters and pitchers and # of batters and pitchers taken
+//				// fantasysports.draftresults
+//				String drafResultsURL = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=" + leagueKey + "/draftresults";
+//
+//				xmlData = YahooOAuth.oauthGetRequest(drafResultsURL, user);
+////				System.out.println(xmlData);
+//
+//				// parse xml data
+//				factory = DocumentBuilderFactory.newInstance();
+//				builder = factory.newDocumentBuilder();
+//				is = new InputSource(new StringReader(xmlData));
+//				document = builder.parse(is);
+//
+//				// iterate through the nodes and extract the data.
+//				Node draftResultsNode = document.getElementsByTagName("draft_results").item(0);
+//				if (draftResultsNode.getNodeType() == Node.ELEMENT_NODE) {
+//					Element draftResultsElement = (Element) draftResultsNode;
+//					Node draftResultNode = draftResultsElement.getElementsByTagName("draft_result")
+ 
+						
 				// calculate league SGP and save to db
 				YahooRotoLeague league = yahooRotoLeagueDao.findByLeagueKey(leagueKey); // pull league to add and save data
 				List<YahooRotoTeam> teams = yahooRotoTeamDao.findByLeagueKey(leagueKey); // pull list of teams in leagye
