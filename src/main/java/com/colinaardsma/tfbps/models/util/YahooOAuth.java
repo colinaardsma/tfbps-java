@@ -63,8 +63,8 @@ public class YahooOAuth {
 			String key = OAuth.percentEncode(consumer_secret) + "&";
 			String base_string = OAuthUtil.getSignatureBaseString(requestURL, method, paramMap);
 
-			System.out.println(key);
-			System.out.println(base_string);
+//			System.out.println(key);
+//			System.out.println(base_string);
 			
 		    byte[] keyBytes = key.getBytes();
 		    SecretKey secretKey = new SecretKeySpec(keyBytes, "HmacSHA1");
@@ -77,7 +77,7 @@ public class YahooOAuth {
 
 			oauth_signature = new String(Base64.encodeBase64(mac.doFinal(text))).trim();
 			oauth_signature = OAuth.percentEncode(oauth_signature);
-			System.out.println(oauth_signature);
+//			System.out.println(oauth_signature);
 			
 		} catch (OAuthException | NoSuchAlgorithmException | InvalidKeyException e) {
 			e.printStackTrace();
@@ -99,7 +99,7 @@ public class YahooOAuth {
 			Scanner scanner = new Scanner(in,"UTF-8");
 			oauth_response_token = scanner.useDelimiter("\\A").next();;
 			scanner.close();
-			System.out.println(oauth_response_token);
+//			System.out.println(oauth_response_token);
 		}
 		finally {
 			urlConnection.disconnect();
@@ -144,8 +144,8 @@ public class YahooOAuth {
 			String key = OAuth.percentEncode(consumer_secret) + "&" + OAuth.percentEncode(oauth_token_secret);
 			String base_string = OAuthUtil.getSignatureBaseString(tokenURL, method, paramMap);
 
-			System.out.println(key);
-			System.out.println(base_string);
+//			System.out.println(key);
+//			System.out.println(base_string);
 			
 		    byte[] keyBytes = key.getBytes();
 		    SecretKey secretKey = new SecretKeySpec(keyBytes, "HmacSHA1");
@@ -157,9 +157,9 @@ public class YahooOAuth {
 		    byte[] text = base_string.getBytes();
 
 			oauth_signature = new String(Base64.encodeBase64(mac.doFinal(text))).trim();
-			System.out.println(oauth_signature);
+//			System.out.println(oauth_signature);
 			oauth_signature = OAuth.percentEncode(oauth_signature);
-			System.out.println(oauth_signature);
+//			System.out.println(oauth_signature);
 			
 		} catch (OAuthException | NoSuchAlgorithmException | InvalidKeyException e) {
 			e.printStackTrace();
@@ -180,7 +180,7 @@ public class YahooOAuth {
 			Scanner scanner = new Scanner(in,"UTF-8");
 			access_token = scanner.useDelimiter("\\A").next();;
 			scanner.close();
-			System.out.println(access_token);
+//			System.out.println(access_token);
 		}
 		finally {
 			urlConnection.disconnect();
@@ -221,8 +221,8 @@ public class YahooOAuth {
 			String key = OAuth.percentEncode(consumer_secret) + "&" + OAuth.percentEncode(oauth_access_token_secret);
 			String base_string = OAuthUtil.getSignatureBaseString(tokenURL, method, paramMap);
 
-			System.out.println(key);
-			System.out.println(base_string);
+//			System.out.println(key);
+//			System.out.println(base_string);
 			
 		    byte[] keyBytes = key.getBytes();
 		    SecretKey secretKey = new SecretKeySpec(keyBytes, "HmacSHA1");
@@ -234,9 +234,9 @@ public class YahooOAuth {
 		    byte[] text = base_string.getBytes();
 
 			oauth_signature = new String(Base64.encodeBase64(mac.doFinal(text))).trim();
-			System.out.println(oauth_signature);
+//			System.out.println(oauth_signature);
 			oauth_signature = OAuth.percentEncode(oauth_signature);
-			System.out.println(oauth_signature);
+//			System.out.println(oauth_signature);
 			
 		} catch (OAuthException | NoSuchAlgorithmException | InvalidKeyException e) {
 			e.printStackTrace();
@@ -258,7 +258,7 @@ public class YahooOAuth {
 			Scanner scanner = new Scanner(in,"UTF-8");
 			access_token = scanner.useDelimiter("\\A").next();;
 			scanner.close();
-			System.out.println(access_token);
+//			System.out.println(access_token);
 		}
 		finally {
 			urlConnection.disconnect();
@@ -313,9 +313,9 @@ public class YahooOAuth {
 		    byte[] text = base_string.getBytes();
 
 			oauth_signature = new String(Base64.encodeBase64(mac.doFinal(text))).trim();
-			System.out.println(oauth_signature);
+//			System.out.println(oauth_signature);
 			oauth_signature = OAuth.percentEncode(oauth_signature);
-			System.out.println(oauth_signature);
+//			System.out.println(oauth_signature);
 			
 		} catch (OAuthException | NoSuchAlgorithmException | InvalidKeyException e) {
 			e.printStackTrace();

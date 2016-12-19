@@ -153,11 +153,11 @@ public class YahooOAuthController extends AbstractController {
 				oauth_callback_confirmed = oauth_response_token.substring(index, oauth_response_token.length());
 
 				// print values to log
-				System.out.println("oauth_token=" + oauth_token);
-				System.out.println("oauth_token_secret=" + oauth_token_secret);
-				System.out.println("oauth_expires_in=" + oauth_expires_in);
-				System.out.println("xoauth_request_auth_url=" + xoauth_request_auth_url);
-				System.out.println("oauth_callback_confirmed=" + oauth_callback_confirmed);
+//				System.out.println("oauth_token=" + oauth_token);
+//				System.out.println("oauth_token_secret=" + oauth_token_secret);
+//				System.out.println("oauth_expires_in=" + oauth_expires_in);
+//				System.out.println("xoauth_request_auth_url=" + xoauth_request_auth_url);
+//				System.out.println("oauth_callback_confirmed=" + oauth_callback_confirmed);
 			
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -184,12 +184,12 @@ public class YahooOAuthController extends AbstractController {
 			xoauth_yahoo_guid = access_token.substring(index, access_token.length());
 
 			// print values to log
-			System.out.println("oauth_token=" + oauth_access_token);
-			System.out.println("oauth_token_secret=" + oauth_access_token_secret);
-			System.out.println("oauth_expires_in=" + oauth_expires_in);
-			System.out.println("oauth_session_handle=" + oauth_session_handle);
-			System.out.println("oauth_authorization_expires_in=" + oauth_authorization_expires_in);
-			System.out.println("xoauth_yahoo_guid=" + xoauth_yahoo_guid);
+//			System.out.println("oauth_token=" + oauth_access_token);
+//			System.out.println("oauth_token_secret=" + oauth_access_token_secret);
+//			System.out.println("oauth_expires_in=" + oauth_expires_in);
+//			System.out.println("oauth_session_handle=" + oauth_session_handle);
+//			System.out.println("oauth_authorization_expires_in=" + oauth_authorization_expires_in);
+//			System.out.println("xoauth_yahoo_guid=" + xoauth_yahoo_guid);
 
 			User yahooUser = userDao.findByUserName(currentUser);
 			if (yahooUser.getYahooGUID() == null) {
@@ -255,12 +255,12 @@ public class YahooOAuthController extends AbstractController {
 				xoauth_yahoo_guid = access_token.substring(index, access_token.length());
 
 				// print values to log
-				System.out.println("oauth_token=" + oauth_access_token);
-				System.out.println("oauth_token_secret=" + oauth_access_token_secret);
-				System.out.println("oauth_expires_in=" + oauth_expires_in);
-				System.out.println("oauth_session_handle=" + oauth_session_handle);
-				System.out.println("oauth_authorization_expires_in=" + oauth_authorization_expires_in);
-				System.out.println("xoauth_yahoo_guid=" + xoauth_yahoo_guid);
+//				System.out.println("oauth_token=" + oauth_access_token);
+//				System.out.println("oauth_token_secret=" + oauth_access_token_secret);
+//				System.out.println("oauth_expires_in=" + oauth_expires_in);
+//				System.out.println("oauth_session_handle=" + oauth_session_handle);
+//				System.out.println("oauth_authorization_expires_in=" + oauth_authorization_expires_in);
+//				System.out.println("xoauth_yahoo_guid=" + xoauth_yahoo_guid);
 
 				yahooUser.setYahooOAuthAccessToken(oauth_access_token);
 				yahooUser.setYahooOAuthSessionHandle(oauth_session_handle);

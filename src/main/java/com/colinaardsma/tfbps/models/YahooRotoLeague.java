@@ -42,10 +42,10 @@ public class YahooRotoLeague extends AbstractEntity {
 	private double whipSGPMult;
 	
 	// yearly auction value variables
-	private double budgetPctB; // http://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/draftresults
-	private double budgetPctP; // http://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/draftresults
-	private int draftedB; // http://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/draftresults
-	private int draftedP; // http://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/draftresults
+	private double budgetPctB;
+	private double budgetPctP;
+	private int draftedB;
+	private int draftedP;
 	
 	// historical sgp variables
 	private double rHistSGPMult;
@@ -60,10 +60,10 @@ public class YahooRotoLeague extends AbstractEntity {
 	private double whipHistSGPMult;
 	
 	// historical auction value variables
-	private double histBudgetPctB; // http://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/draftresults
-	private double histBudgetPctP; // http://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/draftresults
-	private int histDraftedB; // http://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/draftresults
-	private int histDraftedP; // http://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/draftresults
+	private double histBudgetPctB;
+	private double histBudgetPctP;
+	private int histDraftedB;
+	private int histDraftedP;
 	
 	// links to other leagues within this database
 	private String previousYearKey;
