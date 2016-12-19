@@ -46,6 +46,7 @@ public class YahooRotoLeague extends AbstractEntity {
 	private double budgetPctP;
 	private int draftedB;
 	private int draftedP;
+	private int totalSpent;
 	
 	// historical sgp variables
 	private double rHistSGPMult;
@@ -62,8 +63,9 @@ public class YahooRotoLeague extends AbstractEntity {
 	// historical auction value variables
 	private double histBudgetPctB;
 	private double histBudgetPctP;
-	private int histDraftedB;
-	private int histDraftedP;
+	private double histDraftedB;
+	private double histDraftedP;
+	private double histTotalSpent;
 	
 	// links to other leagues within this database
 	private String previousYearKey;
@@ -305,6 +307,15 @@ public class YahooRotoLeague extends AbstractEntity {
 		this.draftedP = draftedP;
 	}
 
+    @Column(name = "totalSpent")
+	public int getTotalSpent() {
+		return totalSpent;
+	}
+
+	public void setTotalSpent(int totalSpent) {
+		this.totalSpent = totalSpent;
+	}
+
 	@Column(name = "rHistSGPMult")
 	public double getRHistSGPMult() {
 		return rHistSGPMult;
@@ -395,6 +406,7 @@ public class YahooRotoLeague extends AbstractEntity {
 		this.whipHistSGPMult = whipHistSGPMult;
 	}
 
+    @Column(name = "histBudgetPctB")
 	public double getHistBudgetPctB() {
 		return histBudgetPctB;
 	}
@@ -403,6 +415,7 @@ public class YahooRotoLeague extends AbstractEntity {
 		this.histBudgetPctB = histBudgetPctB;
 	}
 
+    @Column(name = "histBudgetPctP")
 	public double getHistBudgetPctP() {
 		return histBudgetPctP;
 	}
@@ -411,20 +424,31 @@ public class YahooRotoLeague extends AbstractEntity {
 		this.histBudgetPctP = histBudgetPctP;
 	}
 
-	public int getHistDraftedB() {
+    @Column(name = "histDraftedB")
+	public double getHistDraftedB() {
 		return histDraftedB;
 	}
 
-	public void setHistDraftedB(int histDraftedB) {
+	public void setHistDraftedB(double histDraftedB) {
 		this.histDraftedB = histDraftedB;
 	}
 
-	public int getHistDraftedP() {
+    @Column(name = "histDraftedP")
+	public double getHistDraftedP() {
 		return histDraftedP;
 	}
 
-	public void setHistDraftedP(int histDraftedP) {
+	public void setHistDraftedP(double histDraftedP) {
 		this.histDraftedP = histDraftedP;
+	}
+
+   @Column(name = "histTotalSpent")
+	public double getHistTotalSpent() {
+		return histTotalSpent;
+	}
+
+	public void setHistTotalSpent(double histTotalSpent) {
+		this.histTotalSpent = histTotalSpent;
 	}
 
 	@Column(name = "prevyearkey")
@@ -539,5 +563,43 @@ public class YahooRotoLeague extends AbstractEntity {
 		this.whipHistSGPMult = Double.parseDouble(whipAvg.toString());	
 		
 	}
-	
+
+	// calculates historical aav for league (number of years is based on size of list provided)
+	public void calcHistAAVs(List<YahooRotoLeague> leagues) {
+		
+		// BigDecimal variables used since double is not accurate when dividing small decimals
+		BigDecimal budgetPctBSum = new BigDecimal(0);
+		BigDecimal budgetPctPSum = new BigDecimal(0);
+		BigDecimal draftedBSum = new BigDecimal(0);
+		BigDecimal draftedPSum = new BigDecimal(0);
+		BigDecimal totalSpentSum = new BigDecimal(0);
+		
+		// loop through list and pull out relevant data
+		int counter = 0;
+		for (YahooRotoLeague league : leagues) {
+			if (league.getAuctionBudget() > 0) {
+				budgetPctBSum = budgetPctBSum.add(BigDecimal.valueOf(league.getBudgetPctB()));
+				budgetPctPSum = budgetPctPSum.add(BigDecimal.valueOf(league.getBudgetPctP()));
+				draftedBSum = draftedBSum.add(BigDecimal.valueOf(league.getDraftedB()));
+				draftedPSum = draftedPSum.add(BigDecimal.valueOf(league.getDraftedP()));
+				totalSpentSum = totalSpentSum.add(BigDecimal.valueOf(league.getTotalSpent()));
+				counter++;
+			}
+		}
+		
+		// calculate averages and set to respective variables
+		if (counter > 0) {
+			BigDecimal budgetPctBAvg = budgetPctBSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_EVEN);
+			this.histBudgetPctB = Double.parseDouble(budgetPctBAvg.toString());	
+			BigDecimal budgetPctPAvg = budgetPctPSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_EVEN);
+			this.histBudgetPctP = Double.parseDouble(budgetPctPAvg.toString());	
+			BigDecimal draftedBAvg = draftedBSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_EVEN);
+			this.histDraftedB = Double.parseDouble(draftedBAvg.toString());	
+			BigDecimal draftedPAvg = draftedPSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_EVEN);
+			this.histDraftedP = Double.parseDouble(draftedPAvg.toString());	
+			BigDecimal totalSpentAvg = totalSpentSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_EVEN);
+			this.histTotalSpent = Double.parseDouble(totalSpentAvg.toString());	
+		}
+	}
+
 }

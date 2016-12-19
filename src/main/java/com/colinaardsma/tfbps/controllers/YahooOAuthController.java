@@ -118,12 +118,14 @@ public class YahooOAuthController extends AbstractController {
 
 		// oauth request token variables
 		String xoauth_request_auth_url = null;
+	    @SuppressWarnings("unused")
 		String oauth_callback_confirmed = null;
 		
 		// oauth access token variables
 		String oauth_access_token = null;
 		String oauth_access_token_secret = null;
 		String oauth_session_handle = request.getParameter("oauth_session_handle");
+	    @SuppressWarnings("unused")
 		String oauth_authorization_expires_in = null;
 		String xoauth_yahoo_guid = null;
 		
@@ -225,7 +227,9 @@ public class YahooOAuthController extends AbstractController {
 		String oauth_access_token = null;
 		String oauth_access_token_secret = null;
 		String oauth_session_handle = request.getParameter("oauth_session_handle");
+	    @SuppressWarnings("unused")
 		String oauth_authorization_expires_in = null;
+	    @SuppressWarnings("unused")
 		String xoauth_yahoo_guid = null;
 		String oauth_expires_in = null;
 		
