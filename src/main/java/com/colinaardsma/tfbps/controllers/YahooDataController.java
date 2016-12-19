@@ -143,6 +143,8 @@ public class YahooDataController extends AbstractController {
 		String leagueURL = null;
 		int auctionBudget = -1;
 		int totalSpent = 0;
+		int oneDollarB = 0;
+		int oneDollarP = 0;
 		//		String leagueScoringType = null;
 		String prevYearKey = null;
 		String nextYearKey = null;
@@ -575,11 +577,19 @@ public class YahooDataController extends AbstractController {
 											// iterate through the nodes and extract the data.
 											if (playerDocument.getElementsByTagName("position_type").item(0).getTextContent().equals("B")) {
 												draftedB++;
-												dollarsB += Integer.parseInt(draftResultElement.getElementsByTagName("cost").item(0).getTextContent());
+												int cost = Integer.parseInt(draftResultElement.getElementsByTagName("cost").item(0).getTextContent());
+												dollarsB += cost;
+												if (cost == 1) {
+													oneDollarB++;
+												}
 											} else if (playerDocument.getElementsByTagName("position_type").item(0).getTextContent().equals("P")) {
 												draftedP++;
-												dollarsP += Integer.parseInt(draftResultElement.getElementsByTagName("cost").item(0).getTextContent());
-											}
+												int cost = Integer.parseInt(draftResultElement.getElementsByTagName("cost").item(0).getTextContent());
+												dollarsP += cost;
+												if (cost == 1) {
+													oneDollarP++;
+												}
+										}
 											playerCounter = playerMaxTries; // exit yahoo error while loop
 										} catch (IOException e) { // if yahoo throws a 500 error count it as a B or P at whatever the cost was
 											if (playerCounter < playerMaxTries) {
@@ -588,10 +598,18 @@ public class YahooDataController extends AbstractController {
 												e.printStackTrace();
 												if (counter % 2 == 0) {
 													draftedB++;
-													dollarsB += Integer.parseInt(draftResultElement.getElementsByTagName("cost").item(0).getTextContent());
+													int cost = Integer.parseInt(draftResultElement.getElementsByTagName("cost").item(0).getTextContent());
+													dollarsB += cost;
+													if (cost == 1) {
+														oneDollarB++;
+													}
 												} else {
 													draftedP++;
-													dollarsP += Integer.parseInt(draftResultElement.getElementsByTagName("cost").item(0).getTextContent());
+													int cost = Integer.parseInt(draftResultElement.getElementsByTagName("cost").item(0).getTextContent());
+													dollarsP += cost;
+													if (cost == 1) {
+														oneDollarP++;
+													}
 												}
 												counter++;
 											}
@@ -608,6 +626,8 @@ public class YahooDataController extends AbstractController {
 							league.setDraftedP(draftedP);
 							league.setBudgetPctB(budgetPctB);
 							league.setBudgetPctP(budgetPctP);
+							league.setOneDollarB(oneDollarB);
+							league.setOneDollarP(oneDollarP);
 						}
 						int teamRosterSize = teamBatters + teamPitchers + teamBench;
 
@@ -714,6 +734,8 @@ public class YahooDataController extends AbstractController {
 				}
 			}
 
+			oneDollarB = 0;
+			oneDollarP = 0;
 			totalSpent = 0;
 			auctionBudget = -1;
 			leagueKey = prevYearKey;
@@ -721,7 +743,7 @@ public class YahooDataController extends AbstractController {
 
 		} while (prevYears >= 0);
 		
-		// calculate historical sgp for each year (change value in years variable to change the number of years)
+		// calculate historical sgp and aav for each year (change value in years variable to change the number of years)
 		int years = 3;
 		for (int i = 0; i < linkedLeagues.size(); i++) {
 			YahooRotoLeague league = yahooRotoLeagueDao.findByLeagueKey(linkedLeagues.get(i).getLeagueKey());
@@ -732,6 +754,7 @@ public class YahooDataController extends AbstractController {
 			}
 			league.calcHistSGPs(leagueHist); // calculate historical SGPs
 			league.calcHistAAVs(leagueHist); // calculate historical AAVs
+			league.calcHistDollarPlayers(leagueHist); // calculate historical $1 players
 			yahooRotoLeagueDao.save(league); // save
 		}
 

@@ -47,6 +47,8 @@ public class YahooRotoLeague extends AbstractEntity {
 	private int draftedB;
 	private int draftedP;
 	private int totalSpent;
+	private int oneDollarB;
+	private int oneDollarP;
 	
 	// historical sgp variables
 	private double rHistSGPMult;
@@ -66,6 +68,8 @@ public class YahooRotoLeague extends AbstractEntity {
 	private double histDraftedB;
 	private double histDraftedP;
 	private double histTotalSpent;
+	private double histOneDollarB;
+	private double histOneDollarP;
 	
 	// links to other leagues within this database
 	private String previousYearKey;
@@ -316,6 +320,24 @@ public class YahooRotoLeague extends AbstractEntity {
 		this.totalSpent = totalSpent;
 	}
 
+	@Column(name = "oneDollarB")
+	public int getOneDollarB() {
+		return oneDollarB;
+	}
+
+	public void setOneDollarB(int oneDollarB) {
+		this.oneDollarB = oneDollarB;
+	}
+
+	@Column(name = "oneDollarP")
+	public int getOneDollarP() {
+		return oneDollarP;
+	}
+
+	public void setOneDollarP(int oneDollarP) {
+		this.oneDollarP = oneDollarP;
+	}
+
 	@Column(name = "rHistSGPMult")
 	public double getRHistSGPMult() {
 		return rHistSGPMult;
@@ -449,6 +471,24 @@ public class YahooRotoLeague extends AbstractEntity {
 
 	public void setHistTotalSpent(double histTotalSpent) {
 		this.histTotalSpent = histTotalSpent;
+	}
+
+	@Column(name = "histOneDollarB")
+	public double getHistOneDollarB() {
+		return histOneDollarB;
+	}
+
+	public void setHistOneDollarB(double histOneDollarB) {
+		this.histOneDollarB = histOneDollarB;
+	}
+
+	@Column(name = "histOneDollarP")
+	public double getHistOneDollarP() {
+		return histOneDollarP;
+	}
+
+	public void setHistOneDollarP(double histOneDollarP) {
+		this.histOneDollarP = histOneDollarP;
 	}
 
 	@Column(name = "prevyearkey")
@@ -599,6 +639,32 @@ public class YahooRotoLeague extends AbstractEntity {
 			this.histDraftedP = Double.parseDouble(draftedPAvg.toString());	
 			BigDecimal totalSpentAvg = totalSpentSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_EVEN);
 			this.histTotalSpent = Double.parseDouble(totalSpentAvg.toString());	
+		}
+	}
+
+	// calculates historical aav for league (number of years is based on size of list provided)
+	public void calcHistDollarPlayers(List<YahooRotoLeague> leagues) {
+		
+		// BigDecimal variables used since double is not accurate when dividing small decimals
+		BigDecimal dollarBSum = new BigDecimal(0);
+		BigDecimal dollarPSum = new BigDecimal(0);
+		
+		// loop through list and pull out relevant data
+		int counter = 0;
+		for (YahooRotoLeague league : leagues) {
+			if (league.getAuctionBudget() > 0) {
+				dollarBSum = dollarBSum.add(BigDecimal.valueOf(league.getOneDollarB()));
+				dollarPSum = dollarPSum.add(BigDecimal.valueOf(league.getOneDollarP()));
+				counter++;
+			}
+		}
+		
+		// calculate averages and set to respective variables
+		if (counter > 0) {
+			BigDecimal dollarBAvg = dollarBSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_EVEN);
+			this.histOneDollarB = Double.parseDouble(dollarBAvg.toString());	
+			BigDecimal dollarPAvg = dollarPSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_EVEN);
+			this.histOneDollarP = Double.parseDouble(dollarPAvg.toString());	
 		}
 	}
 

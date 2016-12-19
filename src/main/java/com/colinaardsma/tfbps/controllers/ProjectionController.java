@@ -133,7 +133,7 @@ public class ProjectionController extends AbstractController {
 		// if histsgp has not been calculated for this league/user then calculate, otherwise continue
 		if (userBatterSGPDao.findByUserAndYahooRotoLeague(user, league).size() == 0) {
 			for (FPProjBatter batter : batters) {
-				UserBatterSGP userBatterSGP = new UserBatterSGP(batter, league, user);
+				UserBatterSGP userBatterSGP = new UserBatterSGP(batters, batter, league, user);
 				userBatterSGPDao.save(userBatterSGP);
 			}
 		}
@@ -171,12 +171,23 @@ public class ProjectionController extends AbstractController {
 		// sort list by user's custom sgp calculation (desc)
 		Collections.sort(sgpBatters, new Comparator<FPProjBatter>() {
 			@Override
-			public int compare(FPProjBatter p1, FPProjBatter p2) {
-				if (p1.getOpsTotalSGP() < p2.getOpsTotalSGP()) return 1;
-				if (p1.getOpsTotalSGP() > p2.getOpsTotalSGP()) return -1;
+			public int compare(FPProjBatter b1, FPProjBatter b2) {
+				if (b1.getOpsTotalSGP() < b2.getOpsTotalSGP()) return 1;
+				if (b1.getOpsTotalSGP() > b2.getOpsTotalSGP()) return -1;
 				return 0;
 			}
 		});
+		
+		if (league.getAuctionBudget() > -1) {
+//			List<FPProjBatter> aavBatters = new ArrayList<FPProjBatter>();
+			for (int i = 0; i < league.getHistDraftedB(); i++) {
+				UserBatterSGP userBatterSGP = userBatterSGPDao.findByBatterAndUserAndYahooRotoLeague(sgpBatters.get(i), user, league);
+				double customAAV = userBatterSGP.calcLeagueHistAAV(sgpBatters, sgpBatters.get(i), league);
+				sgpBatters.get(i).setOpsTotalAAV(customAAV);
+//				aavBatters.add(sgpBatters.get(i));
+
+			}
+		}
 		
 		// get date of last data pull
 		Date lastPullDate = batters.get(0).getCreated();
@@ -369,9 +380,9 @@ public class ProjectionController extends AbstractController {
 		// sort list by user's custom sgp calculation (desc)
 		Collections.sort(sgpBatters, new Comparator<FPProjBatter>() {
 			@Override
-			public int compare(FPProjBatter p1, FPProjBatter p2) {
-				if (p1.getAvgTotalSGP() < p2.getAvgTotalSGP()) return 1;
-				if (p1.getAvgTotalSGP() > p2.getAvgTotalSGP()) return -1;
+			public int compare(FPProjBatter b1, FPProjBatter b2) {
+				if (b1.getAvgTotalSGP() < b2.getAvgTotalSGP()) return 1;
+				if (b1.getAvgTotalSGP() > b2.getAvgTotalSGP()) return -1;
 				return 0;
 			}
 		});
