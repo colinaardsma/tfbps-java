@@ -582,7 +582,6 @@ public class YahooDataController extends AbstractController {
 					double budgetPctB = new BigDecimal(dollarsB).divide(new BigDecimal(auctionBudget).multiply(new BigDecimal(12)), 4, RoundingMode.HALF_EVEN).doubleValue();
 					double budgetPctP = new BigDecimal(dollarsP).divide(new BigDecimal(auctionBudget).multiply(new BigDecimal(12)), 4, RoundingMode.HALF_EVEN).doubleValue();
 				
-					league.setTeamRosterSize(teamRosterSize);
 					league.setDraftedB(draftedB);
 					league.setDraftedP(draftedP);
 					league.setBudgetPctB(budgetPctB);
@@ -593,6 +592,8 @@ public class YahooDataController extends AbstractController {
 				league.setTeamBatters(teamBatters);
 				league.setTeamPitchers(teamPitchers);
 				league.setTeamBench(teamBench);
+				league.setTeamRosterSize(teamRosterSize);
+
 //				yahooRotoLeagueDao.save(existingLeague);
 						
 				// calculate league SGP and save to db
