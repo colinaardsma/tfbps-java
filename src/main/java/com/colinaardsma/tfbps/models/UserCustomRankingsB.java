@@ -158,32 +158,43 @@ public class UserCustomRankingsB extends AbstractEntity {
 //			}
 //		});
 
-//    	BigDecimal totalBudgetB = new BigDecimal(yahooRotoLeague.getHistBudgetPctB()).multiply(new BigDecimal(yahooRotoLeague.getAuctionBudget()));
     	BigDecimal leagueBudgetB = new BigDecimal(yahooRotoLeague.getHistBudgetPctB()).multiply(new BigDecimal(yahooRotoLeague.getAuctionBudget()).multiply(new BigDecimal(yahooRotoLeague.getTeamCount()))).subtract(new BigDecimal(yahooRotoLeague.getHistOneDollarB()));
-//    	BigDecimal bOverOneDollar = new BigDecimal(yahooRotoLeague.getHistDraftedB()).subtract(new BigDecimal(yahooRotoLeague.getHistOneDollarB()));
-//    	BigDecimal dollarBatterSGP = new BigDecimal(batterList.get(bOverOneDollar.intValue()).getOpsTotalSGP());
-    	
-    	// need to sort list
 
-    	int bOverOneDollar = (int) (yahooRotoLeague.getHistDraftedB() - yahooRotoLeague.getHistOneDollarB());
-    	int oneDollarB = bOverOneDollar;
-    	BigDecimal oneDollarSGP = new BigDecimal(batterList.get(oneDollarB).getHistSGP());
+    	// zero dollar calcs
+    	int bOverZeroDollar = (int) yahooRotoLeague.getHistDraftedB();
+    	BigDecimal zeroDollarSGP = new BigDecimal(batterList.get(bOverZeroDollar).getHistSGP());
+
+		BigDecimal valueAboveZero = new BigDecimal(this.histSGP).subtract(zeroDollarSGP);
+    	BigDecimal sgpOverZero = new BigDecimal(this.histSGP).divide(zeroDollarSGP, 4, RoundingMode.HALF_UP);
     	
-		BigDecimal valueAboveOne = new BigDecimal(this.getHistSGP()).subtract(oneDollarSGP);
-    	BigDecimal sgpOverOne = new BigDecimal(this.histSGP).divide(oneDollarSGP, 4, RoundingMode.HALF_UP);
-		
     	BigDecimal totalSGPb = new BigDecimal(0);
-    	for (int i = 0; i < bOverOneDollar; i++) {
-    		totalSGPb = totalSGPb.add(new BigDecimal(batterList.get(i).getHistSGP()));
+    	for (int i = 0; i < bOverZeroDollar; i++) {
+    		totalSGPb = totalSGPb.add(new BigDecimal(batterList.get(i).getHistSGP()).subtract(zeroDollarSGP));
     	}
     	
+//    	// one dollar calcs
+//    	int bOverOneDollar = (int) (yahooRotoLeague.getHistDraftedB() - yahooRotoLeague.getHistOneDollarB());
+//    	BigDecimal oneDollarSGP = new BigDecimal(batterList.get(bOverOneDollar).getHistSGP());
+//   	
+//		BigDecimal valueAboveOne = new BigDecimal(this.histSGP).subtract(oneDollarSGP);
+//    	BigDecimal sgpOverOne = new BigDecimal(this.histSGP).divide(oneDollarSGP, 4, RoundingMode.HALF_UP);
+//		
+//    	BigDecimal totalSGPb = new BigDecimal(0);
+//    	for (int i = 0; i < bOverOneDollar; i++) {
+//    		totalSGPb = totalSGPb.add(new BigDecimal(batterList.get(i).getHistSGP()).subtract(oneDollarSGP));
+//    	}
+//    	
     	BigDecimal dollarPerSGP = leagueBudgetB.divide(totalSGPb, 4, RoundingMode.HALF_UP);
     	
+//    	BigDecimal aav = valueAboveOne.multiply(sgpOverOne).multiply(dollarPerSGP).multiply(new BigDecimal(5));
+//    	BigDecimal aav = valueAboveOne.multiply(sgpOverOne).multiply(dollarPerSGP);
+    	BigDecimal aav = valueAboveZero.multiply(sgpOverZero).multiply(dollarPerSGP);
+
+
     	int counter = 0;
     	for (UserCustomRankingsB b : batterList) {
     		if (this.batter == b.getBatter()) {
     			if (counter < yahooRotoLeague.getHistDraftedB()) {
-        	    	BigDecimal aav = valueAboveOne.multiply(sgpOverOne).multiply(dollarPerSGP).multiply(new BigDecimal(5));
         	    	this.histAAV = aav.setScale(2, BigDecimal.ROUND_HALF_UP);
 //    			if (counter < bOverOneDollar) {
 //        	    	BigDecimal aav = new BigDecimal(this.histSGP).multiply(dollarPerSGP);
@@ -192,7 +203,7 @@ public class UserCustomRankingsB extends AbstractEntity {
 //        			BigDecimal aav = new BigDecimal(1);
 //        	    	this.histAAV = aav.setScale(2, BigDecimal.ROUND_HALF_UP);
     			} else {
-        			BigDecimal aav = new BigDecimal(0);
+        			aav = new BigDecimal(0);
         	    	this.histAAV = aav.setScale(2, BigDecimal.ROUND_HALF_UP);
     			}
     		}
