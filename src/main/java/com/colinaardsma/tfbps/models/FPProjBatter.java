@@ -48,7 +48,7 @@ public class FPProjBatter extends AbstractEntity {
 	private String category;
 	private Date created;
 	
-	private List<UserBatterSGP> userBatterSGP;
+	private List<UserCustomRankingsB> userBatterSGP;
 
 	public FPProjBatter(String name, String team, String pos, int ab, int r, int hr, int rbi, int sb, double avg, double obp, int h, int dbl, int tpl, int bb, int k, double slg, double ops, String category) {
 		this.name = name;
@@ -368,12 +368,12 @@ public class FPProjBatter extends AbstractEntity {
 	
     @OneToMany
     @JoinColumn(name = "batter_uid")
-    public List<UserBatterSGP> getUserBatterSGP() {
+    public List<UserCustomRankingsB> getUserBatterSGP() {
     	return userBatterSGP;
     }
     
     @SuppressWarnings("unused")
-    private void setUserBatterSGP(List<UserBatterSGP> userBatterSGP) {
+    private void setUserBatterSGP(List<UserCustomRankingsB> userBatterSGP) {
     	this.userBatterSGP = userBatterSGP;
     }
     

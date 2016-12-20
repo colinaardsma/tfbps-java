@@ -55,8 +55,8 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 	
 	private List<User> users;
 	private List<OttoneuOldSchoolTeam> ottoneuTeams;
-	private List<UserBatterSGP> userBatterSGP;
-    private List<UserPitcherSGP> userPitcherSGP;
+	private List<UserCustomRankingsB> userBatterSGP;
+    private List<UserCustomRankingsP> userPitcherSGP;
 	
 	public OttoneuOldSchoolLeague(int leagueNumber, String leagueName, String leagueURL, int season) {
 		this.leagueNumber = leagueNumber;
@@ -350,23 +350,23 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 
     @OneToMany
     @JoinColumn(name = "ottoneu_old_school_league_uid")
-    public List<UserBatterSGP> getUserBatterSGP() {
+    public List<UserCustomRankingsB> getUserBatterSGP() {
     	return userBatterSGP;
     }
     
     @SuppressWarnings("unused")
-   private void setUserBatterSGP(List<UserBatterSGP> userBatterSGP) {
+   private void setUserBatterSGP(List<UserCustomRankingsB> userBatterSGP) {
     	this.userBatterSGP = userBatterSGP;
     }
     
     @OneToMany
     @JoinColumn(name = "ottoneu_old_school_league_uid")
-    public List<UserPitcherSGP> getUserPitcherSGP() {
+    public List<UserCustomRankingsP> getUserPitcherSGP() {
     	return userPitcherSGP;
     }
     
     @SuppressWarnings("unused")
-    private void setUserPitcherSGP(List<UserPitcherSGP> userPitcherSGP) {
+    private void setUserPitcherSGP(List<UserCustomRankingsP> userPitcherSGP) {
     	this.userPitcherSGP = userPitcherSGP;
     }
 

@@ -39,8 +39,8 @@ public class User extends AbstractEntity {
 	private List<YahooRotoTeam> yahooRotoTeams;
 	private List<OttoneuOldSchoolLeague> ottoneuOldSchoolLeagues;
 	private List<OttoneuOldSchoolTeam> ottoneuTeams;
-	private List<UserBatterSGP> userBatterSGP;
-    private List<UserPitcherSGP> userPitcherSGP;
+	private List<UserCustomRankingsB> userBatterSGP;
+    private List<UserCustomRankingsP> userPitcherSGP;
 
 //    private Map<String, StockHolding> portfolio; // turn this into custom spreadsheets
         
@@ -194,23 +194,23 @@ public class User extends AbstractEntity {
     
    @OneToMany
     @JoinColumn(name = "user_uid")
-    public List<UserBatterSGP> getUserBatterSGP() {
+    public List<UserCustomRankingsB> getUserBatterSGP() {
     	return userBatterSGP;
     }
     
     @SuppressWarnings("unused")
-   private void setUserBatterSGP(List<UserBatterSGP> userBatterSGP) {
+   private void setUserBatterSGP(List<UserCustomRankingsB> userBatterSGP) {
     	this.userBatterSGP = userBatterSGP;
     }
     
     @OneToMany
     @JoinColumn(name = "user_uid")
-    public List<UserPitcherSGP> getUserPitcherSGP() {
+    public List<UserCustomRankingsP> getUserPitcherSGP() {
     	return userPitcherSGP;
     }
     
     @SuppressWarnings("unused")
-    private void setUserPitcherSGP(List<UserPitcherSGP> userPitcherSGP) {
+    private void setUserPitcherSGP(List<UserCustomRankingsP> userPitcherSGP) {
     	this.userPitcherSGP = userPitcherSGP;
     }
 

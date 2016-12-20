@@ -18,14 +18,14 @@ import com.colinaardsma.tfbps.models.FPProjBatter;
 import com.colinaardsma.tfbps.models.FPProjPitcher;
 import com.colinaardsma.tfbps.models.OttoneuOldSchoolLeague;
 import com.colinaardsma.tfbps.models.User;
-import com.colinaardsma.tfbps.models.UserBatterSGP;
-import com.colinaardsma.tfbps.models.UserPitcherSGP;
+import com.colinaardsma.tfbps.models.UserCustomRankingsB;
+import com.colinaardsma.tfbps.models.UserCustomRankingsP;
 import com.colinaardsma.tfbps.models.YahooRotoLeague;
 import com.colinaardsma.tfbps.models.dao.FPProjBatterDao;
 import com.colinaardsma.tfbps.models.dao.FPProjPitcherDao;
 import com.colinaardsma.tfbps.models.dao.OttoneuOldSchoolLeagueDao;
-import com.colinaardsma.tfbps.models.dao.UserBatterSGPDao;
-import com.colinaardsma.tfbps.models.dao.UserPitcherSGPDao;
+import com.colinaardsma.tfbps.models.dao.UserCustomRankingsBDao;
+import com.colinaardsma.tfbps.models.dao.UserCustomRankingsPDao;
 import com.colinaardsma.tfbps.models.dao.YahooRotoLeagueDao;
 
 @Controller
@@ -44,10 +44,10 @@ public class ProjectionController extends AbstractController {
 	OttoneuOldSchoolLeagueDao ottoneuOldSchoolLeagueDao;
 	
 	@Autowired
-	UserPitcherSGPDao userPitcherSGPDao;
+	UserCustomRankingsPDao userCustomRankingsPDao;
 	
 	@Autowired
-	UserBatterSGPDao userBatterSGPDao;
+	UserCustomRankingsBDao userCustomRankingsBDao;
 	
 	@RequestMapping(value = "/fpprojb")
     public String fpprojb(Model model, HttpServletRequest request){
@@ -129,12 +129,14 @@ public class ProjectionController extends AbstractController {
 		
 		// pull player list
 		List<FPProjBatter> batters = fpProjBatterDao.findAllByOrderByOpsTotalSGPDesc();
+		List<FPProjBatter> batterList = new ArrayList<FPProjBatter>();
+		batterList.addAll(batters);
 		
-		// if histsgp has not been calculated for this league/user then calculate, otherwise continue
-		if (userBatterSGPDao.findByUserAndYahooRotoLeague(user, league).size() == 0) {
+		// if hist sgp and aav have not been calculated for this league/user then calculate, otherwise continue
+		if (userCustomRankingsBDao.findByUserAndYahooRotoLeague(user, league).size() == 0) {
 			for (FPProjBatter batter : batters) {
-				UserBatterSGP userBatterSGP = new UserBatterSGP(batters, batter, league, user);
-				userBatterSGPDao.save(userBatterSGP);
+				UserCustomRankingsB userBatterSGP = new UserCustomRankingsB(batterList, batter, league, user);
+				userCustomRankingsBDao.save(userBatterSGP);
 			}
 		}
 
@@ -160,7 +162,7 @@ public class ProjectionController extends AbstractController {
 			double slg = batter.getSlg();
 			double ops = batter.getOps();
 			String category = batter.getCategory();
-			UserBatterSGP userBatterSGP = userBatterSGPDao.findByBatterAndUserAndYahooRotoLeague(batter, user, league);
+			UserCustomRankingsB userBatterSGP = userCustomRankingsBDao.findByBatterAndUserAndYahooRotoLeague(batter, user, league);
 			double customSGP = userBatterSGP.getHistSGP();
 
 			FPProjBatter sgpBatter = new FPProjBatter(name, team, pos, ab, r, hr, rbi, sb, avg, obp, h, dbl, tpl, bb, k, slg, ops, category);
@@ -178,16 +180,16 @@ public class ProjectionController extends AbstractController {
 			}
 		});
 		
-		if (league.getAuctionBudget() > -1) {
-//			List<FPProjBatter> aavBatters = new ArrayList<FPProjBatter>();
-			for (int i = 0; i < league.getHistDraftedB(); i++) {
-				UserBatterSGP userBatterSGP = userBatterSGPDao.findByBatterAndUserAndYahooRotoLeague(sgpBatters.get(i), user, league);
-				double customAAV = userBatterSGP.calcLeagueHistAAV(sgpBatters, sgpBatters.get(i), league);
-				sgpBatters.get(i).setOpsTotalAAV(customAAV);
-//				aavBatters.add(sgpBatters.get(i));
-
-			}
-		}
+//		if (league.getAuctionBudget() > -1) {
+////			List<FPProjBatter> aavBatters = new ArrayList<FPProjBatter>();
+//			for (int i = 0; i < league.getHistDraftedB(); i++) {
+//				UserCustomRankingsB userBatterSGP = userCustomRankingsBDao.findByBatterAndUserAndYahooRotoLeague(sgpBatters.get(i), user, league);
+//				double customAAV = userBatterSGP.calcLeagueHistAAV(sgpBatters, sgpBatters.get(i), league);
+//				sgpBatters.get(i).setOpsTotalAAV(customAAV);
+////				aavBatters.add(sgpBatters.get(i));
+//
+//			}
+//		}
 		
 		// get date of last data pull
 		Date lastPullDate = batters.get(0).getCreated();
@@ -241,10 +243,10 @@ public class ProjectionController extends AbstractController {
 		List<FPProjPitcher> pitchers = fpProjPitcherDao.findAllByOrderBySgpDesc();
 		
 		// if histsgp has not been calculated for this league/user then calculate, otherwise continue
-		if (userPitcherSGPDao.findByUserAndYahooRotoLeague(user, league).size() == 0) {
+		if (userCustomRankingsPDao.findByUserAndYahooRotoLeague(user, league).size() == 0) {
 			for (FPProjPitcher pitcher : pitchers) {
-				UserPitcherSGP userPitcherSGP = new UserPitcherSGP(pitcher, league, user);
-				userPitcherSGPDao.save(userPitcherSGP);
+				UserCustomRankingsP userPitcherSGP = new UserCustomRankingsP(pitcher, league, user);
+				userCustomRankingsPDao.save(userPitcherSGP);
 			}
 		}
 
@@ -270,7 +272,7 @@ public class ProjectionController extends AbstractController {
 			int l = pitcher.getL();
 			int cg = pitcher.getCg();
 			String category = pitcher.getCategory();
-			UserPitcherSGP userPitcherSGP = userPitcherSGPDao.findByPitcherAndUserAndYahooRotoLeague(pitcher, user, league);
+			UserCustomRankingsP userPitcherSGP = userCustomRankingsPDao.findByPitcherAndUserAndYahooRotoLeague(pitcher, user, league);
 			double customSGP = userPitcherSGP.getHistSGP();
 
 			FPProjPitcher sgpPitcher = new FPProjPitcher(name, team, pos, ip, k, w, sv, era, whip, er, h, bb, hr, g, gs, l, cg, category);
@@ -340,10 +342,10 @@ public class ProjectionController extends AbstractController {
 		List<FPProjBatter> batters = fpProjBatterDao.findAllByOrderByOpsTotalSGPDesc();
 		
 		// if histsgp has not been calculated for this league/user then calculate, otherwise continue
-		if (userBatterSGPDao.findByUserAndOttoneuOldSchoolLeague(user, league).size() == 0) {
+		if (userCustomRankingsBDao.findByUserAndOttoneuOldSchoolLeague(user, league).size() == 0) {
 			for (FPProjBatter batter : batters) {
-				UserBatterSGP userBatterSGP = new UserBatterSGP(batter, league, user);
-				userBatterSGPDao.save(userBatterSGP);
+				UserCustomRankingsB userBatterSGP = new UserCustomRankingsB(batter, league, user);
+				userCustomRankingsBDao.save(userBatterSGP);
 			}
 		}
 
@@ -369,7 +371,7 @@ public class ProjectionController extends AbstractController {
 			double slg = batter.getSlg();
 			double ops = batter.getOps();
 			String category = batter.getCategory();
-			UserBatterSGP userBatterSGP = userBatterSGPDao.findByBatterAndUserAndOttoneuOldSchoolLeague(batter, user, league);
+			UserCustomRankingsB userBatterSGP = userCustomRankingsBDao.findByBatterAndUserAndOttoneuOldSchoolLeague(batter, user, league);
 			double customSGP = userBatterSGP.getHistSGP();
 
 			FPProjBatter sgpBatter = new FPProjBatter(name, team, pos, ab, r, hr, rbi, sb, avg, obp, h, dbl, tpl, bb, k, slg, ops, category);
@@ -439,10 +441,10 @@ public class ProjectionController extends AbstractController {
 		List<FPProjPitcher> pitchers = fpProjPitcherDao.findAllByOrderBySgpDesc();
 		
 		// if histsgp has not been calculated for this league/user then calculate, otherwise continue
-		if (userPitcherSGPDao.findByUserAndOttoneuOldSchoolLeague(user, league).size() == 0) {
+		if (userCustomRankingsPDao.findByUserAndOttoneuOldSchoolLeague(user, league).size() == 0) {
 			for (FPProjPitcher pitcher : pitchers) {
-				UserPitcherSGP userPitcherSGP = new UserPitcherSGP(pitcher, league, user);
-				userPitcherSGPDao.save(userPitcherSGP);
+				UserCustomRankingsP userPitcherSGP = new UserCustomRankingsP(pitcher, league, user);
+				userCustomRankingsPDao.save(userPitcherSGP);
 			}
 		}
 
@@ -468,7 +470,7 @@ public class ProjectionController extends AbstractController {
 			int l = pitcher.getL();
 			int cg = pitcher.getCg();
 			String category = pitcher.getCategory();
-			UserPitcherSGP userPitcherSGP = userPitcherSGPDao.findByPitcherAndUserAndOttoneuOldSchoolLeague(pitcher, user, league);
+			UserCustomRankingsP userPitcherSGP = userCustomRankingsPDao.findByPitcherAndUserAndOttoneuOldSchoolLeague(pitcher, user, league);
 			double customSGP = userPitcherSGP.getHistSGP();
 
 			FPProjPitcher sgpPitcher = new FPProjPitcher(name, team, pos, ip, k, w, sv, era, whip, er, h, bb, hr, g, gs, l, cg, category);
