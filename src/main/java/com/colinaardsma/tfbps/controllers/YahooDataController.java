@@ -619,8 +619,8 @@ public class YahooDataController extends AbstractController {
 							}
 
 							// calculate percentage of league budget spent on batters and pitchers
-							double budgetPctB = new BigDecimal(dollarsB).divide(new BigDecimal(totalSpent), 4, RoundingMode.HALF_EVEN).doubleValue();
-							double budgetPctP = new BigDecimal(dollarsP).divide(new BigDecimal(totalSpent), 4, RoundingMode.HALF_EVEN).doubleValue();
+							double budgetPctB = new BigDecimal(dollarsB).divide(new BigDecimal(totalSpent), 4, RoundingMode.HALF_UP).doubleValue();
+							double budgetPctP = new BigDecimal(dollarsP).divide(new BigDecimal(totalSpent), 4, RoundingMode.HALF_UP).doubleValue();
 
 							league.setDraftedB(draftedB);
 							league.setDraftedP(draftedP);

@@ -581,25 +581,25 @@ public class YahooRotoLeague extends AbstractEntity {
 		}
 		
 		// calculate averages and set to respective variables
-		BigDecimal rAvg = rSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal rAvg = rSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.rHistSGPMult = Double.parseDouble(rAvg.toString());	
-		BigDecimal hrAvg = hrSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal hrAvg = hrSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.hrHistSGPMult = Double.parseDouble(hrAvg.toString());	
-		BigDecimal rbiAvg = rbiSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal rbiAvg = rbiSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.rbiHistSGPMult = Double.parseDouble(rbiAvg.toString());	
-		BigDecimal sbAvg = sbSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal sbAvg = sbSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.sbHistSGPMult = Double.parseDouble(sbAvg.toString());	
-		BigDecimal opsAvg = opsSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal opsAvg = opsSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.opsHistSGPMult = Double.parseDouble(opsAvg.toString());	
-		BigDecimal wAvg = wSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal wAvg = wSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.wHistSGPMult = Double.parseDouble(wAvg.toString());	
-		BigDecimal svAvg = svSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal svAvg = svSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.svHistSGPMult = Double.parseDouble(svAvg.toString());	
-		BigDecimal kAvg = kSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal kAvg = kSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.kHistSGPMult = Double.parseDouble(kAvg.toString());	
-		BigDecimal eraAvg = eraSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal eraAvg = eraSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.eraHistSGPMult = Double.parseDouble(eraAvg.toString());	
-		BigDecimal whipAvg = whipSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal whipAvg = whipSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.whipHistSGPMult = Double.parseDouble(whipAvg.toString());	
 		
 	}
@@ -629,15 +629,15 @@ public class YahooRotoLeague extends AbstractEntity {
 		
 		// calculate averages and set to respective variables
 		if (counter > 0) {
-			BigDecimal budgetPctBAvg = budgetPctBSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_EVEN);
+			BigDecimal budgetPctBAvg = budgetPctBSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_UP);
 			this.histBudgetPctB = Double.parseDouble(budgetPctBAvg.toString());	
-			BigDecimal budgetPctPAvg = budgetPctPSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_EVEN);
+			BigDecimal budgetPctPAvg = budgetPctPSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_UP);
 			this.histBudgetPctP = Double.parseDouble(budgetPctPAvg.toString());	
-			BigDecimal draftedBAvg = draftedBSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_EVEN);
+			BigDecimal draftedBAvg = draftedBSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_UP);
 			this.histDraftedB = Double.parseDouble(draftedBAvg.toString());	
-			BigDecimal draftedPAvg = draftedPSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_EVEN);
+			BigDecimal draftedPAvg = draftedPSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_UP);
 			this.histDraftedP = Double.parseDouble(draftedPAvg.toString());	
-			BigDecimal totalSpentAvg = totalSpentSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_EVEN);
+			BigDecimal totalSpentAvg = totalSpentSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_UP);
 			this.histTotalSpent = Double.parseDouble(totalSpentAvg.toString());	
 		}
 	}
@@ -661,9 +661,9 @@ public class YahooRotoLeague extends AbstractEntity {
 		
 		// calculate averages and set to respective variables
 		if (counter > 0) {
-			BigDecimal dollarBAvg = dollarBSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_EVEN);
+			BigDecimal dollarBAvg = dollarBSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_UP);
 			this.histOneDollarB = Double.parseDouble(dollarBAvg.toString());	
-			BigDecimal dollarPAvg = dollarPSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_EVEN);
+			BigDecimal dollarPAvg = dollarPSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_UP);
 			this.histOneDollarP = Double.parseDouble(dollarPAvg.toString());	
 		}
 	}

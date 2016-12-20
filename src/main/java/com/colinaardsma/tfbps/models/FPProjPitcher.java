@@ -45,7 +45,7 @@ public class FPProjPitcher extends AbstractEntity {
 	private String category;
 	private Date created;
 	
-	List<UserCustomRankingsP> userPitcherSGP;
+	List<UserCustomRankingsP> userCustomRankingsP;
 
 	public FPProjPitcher(String name, String team, String pos, int ip, int k, int w, int sv, double era, double whip, int er, int h, int bb, int hr, int g, int gs, int l, int cg, String category) {
 		this.name = name;
@@ -327,20 +327,20 @@ public class FPProjPitcher extends AbstractEntity {
     @OneToMany
     @JoinColumn(name = "pitcher_uid")
     public List<UserCustomRankingsP> getUserPitcherSGP() {
-    	return userPitcherSGP;
+    	return userCustomRankingsP;
     }
     
     @SuppressWarnings("unused")
     private void setUserPitcherSGP(List<UserCustomRankingsP> userPitcherSGP) {
-    	this.userPitcherSGP = userPitcherSGP;
+    	this.userCustomRankingsP = userPitcherSGP;
     }
 
     protected void calcSgp(double sgpMultW, double sgpMultSV, double sgpMultK, double sgpMultERA, double sgpMultWHIP) {
-    	BigDecimal w = new BigDecimal(this.w).divide(new BigDecimal(sgpMultW), 4, RoundingMode.HALF_EVEN);
+    	BigDecimal w = new BigDecimal(this.w).divide(new BigDecimal(sgpMultW), 4, RoundingMode.HALF_UP);
     	this.wSGP = w.doubleValue();
-    	BigDecimal sv = new BigDecimal(this.sv).divide(new BigDecimal(sgpMultSV), 4, RoundingMode.HALF_EVEN);
+    	BigDecimal sv = new BigDecimal(this.sv).divide(new BigDecimal(sgpMultSV), 4, RoundingMode.HALF_UP);
     	this.svSGP = sv.doubleValue();
-    	BigDecimal k = new BigDecimal(this.k).divide(new BigDecimal(sgpMultK), 4, RoundingMode.HALF_EVEN);
+    	BigDecimal k = new BigDecimal(this.k).divide(new BigDecimal(sgpMultK), 4, RoundingMode.HALF_UP);
     	this.kSGP = k.doubleValue();
     	
     	// era
@@ -348,34 +348,34 @@ public class FPProjPitcher extends AbstractEntity {
         BigDecimal eraNum = er.multiply(new BigDecimal(9));
         BigDecimal ip = new BigDecimal(1192).add(new BigDecimal(this.ip));
         BigDecimal eraDenom = ip;
-        BigDecimal era = eraNum.divide(eraDenom, 4, RoundingMode.HALF_EVEN).subtract(new BigDecimal(3.59)).divide(new BigDecimal(sgpMultERA), 4, RoundingMode.HALF_EVEN);;
+        BigDecimal era = eraNum.divide(eraDenom, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(3.59)).divide(new BigDecimal(sgpMultERA), 4, RoundingMode.HALF_UP);;
         this.eraSGP = era.doubleValue();
         
         // whip
         BigDecimal whipNum = new BigDecimal(1466).add(new BigDecimal(this.h)).add(new BigDecimal(this.bb));
         BigDecimal whipDenom = ip;
-        BigDecimal whip = whipNum.divide(whipDenom, 4, RoundingMode.HALF_EVEN).subtract(new BigDecimal(1.23)).divide(new BigDecimal(sgpMultWHIP), 4, RoundingMode.HALF_EVEN);;
+        BigDecimal whip = whipNum.divide(whipDenom, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(1.23)).divide(new BigDecimal(sgpMultWHIP), 4, RoundingMode.HALF_UP);;
         this.whipSGP = whip.doubleValue();
         
     	this.sgp = w.add(sv.add(k.add(era.add(whip)))).doubleValue();
     }
     
 //    public double calcLeagueHistSGP(double wHistSGPMult, double svHistSGPMult, double kHistSGPMult, double eraHistSGPMult, double whipHistSGPMult) {
-//    	BigDecimal w = new BigDecimal(this.w).divide(new BigDecimal(wHistSGPMult), 4, RoundingMode.HALF_EVEN);
-//    	BigDecimal sv = new BigDecimal(this.sv).divide(new BigDecimal(svHistSGPMult), 4, RoundingMode.HALF_EVEN);
-//    	BigDecimal k = new BigDecimal(this.k).divide(new BigDecimal(kHistSGPMult), 4, RoundingMode.HALF_EVEN);
+//    	BigDecimal w = new BigDecimal(this.w).divide(new BigDecimal(wHistSGPMult), 4, RoundingMode.HALF_UP);
+//    	BigDecimal sv = new BigDecimal(this.sv).divide(new BigDecimal(svHistSGPMult), 4, RoundingMode.HALF_UP);
+//    	BigDecimal k = new BigDecimal(this.k).divide(new BigDecimal(kHistSGPMult), 4, RoundingMode.HALF_UP);
 //    	
 //    	// era
 //        BigDecimal er = new BigDecimal(475).add(new BigDecimal(this.er));
 //        BigDecimal eraNum = er.multiply(new BigDecimal(9));
 //        BigDecimal ip = new BigDecimal(1192).add(new BigDecimal(this.ip));
 //        BigDecimal eraDenom = ip;
-//        BigDecimal era = eraNum.divide(eraDenom, 4, RoundingMode.HALF_EVEN).subtract(new BigDecimal(3.59)).divide(new BigDecimal(eraHistSGPMult), 4, RoundingMode.HALF_EVEN);
+//        BigDecimal era = eraNum.divide(eraDenom, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(3.59)).divide(new BigDecimal(eraHistSGPMult), 4, RoundingMode.HALF_UP);
 //        
 //        // whip
 //        BigDecimal whipNum = new BigDecimal(1466).add(new BigDecimal(this.h)).add(new BigDecimal(this.bb));
 //        BigDecimal whipDenom = ip;
-//        BigDecimal whip = whipNum.divide(whipDenom, 4, RoundingMode.HALF_EVEN).subtract(new BigDecimal(1.23)).divide(new BigDecimal(whipHistSGPMult), 4, RoundingMode.HALF_EVEN);
+//        BigDecimal whip = whipNum.divide(whipDenom, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(1.23)).divide(new BigDecimal(whipHistSGPMult), 4, RoundingMode.HALF_UP);
 //        
 //    	return w.add(sv.add(k.add(era.add(whip)))).doubleValue();
 //    }

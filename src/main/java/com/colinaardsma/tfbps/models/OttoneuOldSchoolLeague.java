@@ -400,25 +400,25 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 		}
 		
 		// calculate averages and set to respective variables
-		BigDecimal rAvg = rSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal rAvg = rSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.rHistSGPMult = Double.parseDouble(rAvg.toString());	
-		BigDecimal hrAvg = hrSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal hrAvg = hrSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.hrHistSGPMult = Double.parseDouble(hrAvg.toString());	
-		BigDecimal rbiAvg = rbiSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal rbiAvg = rbiSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.rbiHistSGPMult = Double.parseDouble(rbiAvg.toString());	
-		BigDecimal sbAvg = sbSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal sbAvg = sbSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.sbHistSGPMult = Double.parseDouble(sbAvg.toString());	
-		BigDecimal avgAvg = avgSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal avgAvg = avgSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.avgHistSGPMult = Double.parseDouble(avgAvg.toString());	
-		BigDecimal wAvg = wSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal wAvg = wSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.wHistSGPMult = Double.parseDouble(wAvg.toString());	
-		BigDecimal svAvg = svSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal svAvg = svSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.svHistSGPMult = Double.parseDouble(svAvg.toString());	
-		BigDecimal kAvg = kSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal kAvg = kSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.kHistSGPMult = Double.parseDouble(kAvg.toString());	
-		BigDecimal eraAvg = eraSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal eraAvg = eraSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.eraHistSGPMult = Double.parseDouble(eraAvg.toString());	
-		BigDecimal whipAvg = whipSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_EVEN);
+		BigDecimal whipAvg = whipSum.divide(new BigDecimal(leagues.size()), 4, RoundingMode.HALF_UP);
 		this.whipHistSGPMult = Double.parseDouble(whipAvg.toString());	
 		
 	}

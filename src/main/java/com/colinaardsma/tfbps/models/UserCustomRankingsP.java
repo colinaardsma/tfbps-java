@@ -100,42 +100,42 @@ public class UserCustomRankingsP extends AbstractEntity {
 
 	// yahoo roto league
 	public double calcLeagueHistSGP(FPProjPitcher pitcher, YahooRotoLeague yahooRotoLeague) {
-	  BigDecimal w = new BigDecimal(pitcher.getW()).divide(new BigDecimal(yahooRotoLeague.getWHistSGPMult()), 4, RoundingMode.HALF_EVEN);
-	  BigDecimal sv = new BigDecimal(pitcher.getSv()).divide(new BigDecimal(yahooRotoLeague.getSvHistSGPMult()), 4, RoundingMode.HALF_EVEN);
-	  BigDecimal k = new BigDecimal(pitcher.getK()).divide(new BigDecimal(yahooRotoLeague.getKHistSGPMult()), 4, RoundingMode.HALF_EVEN);
+	  BigDecimal w = new BigDecimal(pitcher.getW()).divide(new BigDecimal(yahooRotoLeague.getWHistSGPMult()), 4, RoundingMode.HALF_UP);
+	  BigDecimal sv = new BigDecimal(pitcher.getSv()).divide(new BigDecimal(yahooRotoLeague.getSvHistSGPMult()), 4, RoundingMode.HALF_UP);
+	  BigDecimal k = new BigDecimal(pitcher.getK()).divide(new BigDecimal(yahooRotoLeague.getKHistSGPMult()), 4, RoundingMode.HALF_UP);
 
 	  // era
 	  BigDecimal er = new BigDecimal(475).add(new BigDecimal(pitcher.getEr()));
 	  BigDecimal eraNum = er.multiply(new BigDecimal(9));
 	  BigDecimal ip = new BigDecimal(1192).add(new BigDecimal(pitcher.getIp()));
 	  BigDecimal eraDenom = ip;
-	  BigDecimal era = eraNum.divide(eraDenom, 4, RoundingMode.HALF_EVEN).subtract(new BigDecimal(3.59)).divide(new BigDecimal(yahooRotoLeague.getEraHistSGPMult()), 4, RoundingMode.HALF_EVEN);
+	  BigDecimal era = eraNum.divide(eraDenom, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(3.59)).divide(new BigDecimal(yahooRotoLeague.getEraHistSGPMult()), 4, RoundingMode.HALF_UP);
 
 	  // whip
 	  BigDecimal whipNum = new BigDecimal(1466).add(new BigDecimal(pitcher.getH())).add(new BigDecimal(pitcher.getBb()));
 	  BigDecimal whipDenom = ip;
-	  BigDecimal whip = whipNum.divide(whipDenom, 4, RoundingMode.HALF_EVEN).subtract(new BigDecimal(1.23)).divide(new BigDecimal(yahooRotoLeague.getWhipHistSGPMult()), 4, RoundingMode.HALF_EVEN);
+	  BigDecimal whip = whipNum.divide(whipDenom, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(1.23)).divide(new BigDecimal(yahooRotoLeague.getWhipHistSGPMult()), 4, RoundingMode.HALF_UP);
 
 	  return w.add(sv.add(k.add(era.add(whip)))).doubleValue();
   	}
 
 	// ottoneu old school league
 	public double calcLeagueHistSGP(FPProjPitcher pitcher, OttoneuOldSchoolLeague ottoneuOldSchoolLeague) {
-		  BigDecimal w = new BigDecimal(pitcher.getW()).divide(new BigDecimal(ottoneuOldSchoolLeague.getWHistSGPMult()), 4, RoundingMode.HALF_EVEN);
-		  BigDecimal sv = new BigDecimal(pitcher.getSv()).divide(new BigDecimal(ottoneuOldSchoolLeague.getSvHistSGPMult()), 4, RoundingMode.HALF_EVEN);
-		  BigDecimal k = new BigDecimal(pitcher.getK()).divide(new BigDecimal(ottoneuOldSchoolLeague.getKHistSGPMult()), 4, RoundingMode.HALF_EVEN);
+		  BigDecimal w = new BigDecimal(pitcher.getW()).divide(new BigDecimal(ottoneuOldSchoolLeague.getWHistSGPMult()), 4, RoundingMode.HALF_UP);
+		  BigDecimal sv = new BigDecimal(pitcher.getSv()).divide(new BigDecimal(ottoneuOldSchoolLeague.getSvHistSGPMult()), 4, RoundingMode.HALF_UP);
+		  BigDecimal k = new BigDecimal(pitcher.getK()).divide(new BigDecimal(ottoneuOldSchoolLeague.getKHistSGPMult()), 4, RoundingMode.HALF_UP);
 
 		  // era
 		  BigDecimal er = new BigDecimal(475).add(new BigDecimal(pitcher.getEr()));
 		  BigDecimal eraNum = er.multiply(new BigDecimal(9));
 		  BigDecimal ip = new BigDecimal(1192).add(new BigDecimal(pitcher.getIp()));
 		  BigDecimal eraDenom = ip;
-		  BigDecimal era = eraNum.divide(eraDenom, 4, RoundingMode.HALF_EVEN).subtract(new BigDecimal(3.59)).divide(new BigDecimal(ottoneuOldSchoolLeague.getEraHistSGPMult()), 4, RoundingMode.HALF_EVEN);
+		  BigDecimal era = eraNum.divide(eraDenom, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(3.59)).divide(new BigDecimal(ottoneuOldSchoolLeague.getEraHistSGPMult()), 4, RoundingMode.HALF_UP);
 
 		  // whip
 		  BigDecimal whipNum = new BigDecimal(1466).add(new BigDecimal(pitcher.getH())).add(new BigDecimal(pitcher.getBb()));
 		  BigDecimal whipDenom = ip;
-		  BigDecimal whip = whipNum.divide(whipDenom, 4, RoundingMode.HALF_EVEN).subtract(new BigDecimal(1.23)).divide(new BigDecimal(ottoneuOldSchoolLeague.getWhipHistSGPMult()), 4, RoundingMode.HALF_EVEN);
+		  BigDecimal whip = whipNum.divide(whipDenom, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(1.23)).divide(new BigDecimal(ottoneuOldSchoolLeague.getWhipHistSGPMult()), 4, RoundingMode.HALF_UP);
 
 		  return w.add(sv.add(k.add(era.add(whip)))).doubleValue();
 	  	}

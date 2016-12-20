@@ -43,12 +43,12 @@ public class FPProjBatter extends AbstractEntity {
 	private double avgSGP;
 	private double opsTotalSGP;
 	private double avgTotalSGP;
-	private double opsTotalAAV;
-	private double avgTotalAAV;
+	private BigDecimal opsTotalAAV;
+	private BigDecimal avgTotalAAV;
 	private String category;
 	private Date created;
 	
-	private List<UserCustomRankingsB> userBatterSGP;
+	private List<UserCustomRankingsB> userCustomRankingsB;
 
 	public FPProjBatter(String name, String team, String pos, int ab, int r, int hr, int rbi, int sb, double avg, double obp, int h, int dbl, int tpl, int bb, int k, double slg, double ops, String category) {
 		this.name = name;
@@ -328,20 +328,20 @@ public class FPProjBatter extends AbstractEntity {
     }
 
     @Column(name = "opsTotalAAV")
-   public double getOpsTotalAAV() {
+   public BigDecimal getOpsTotalAAV() {
 		return opsTotalAAV;
 	}
 
-	public void setOpsTotalAAV(double opsTotalAAV) {
+	public void setOpsTotalAAV(BigDecimal opsTotalAAV) {
 		this.opsTotalAAV = opsTotalAAV;
 	}
 
     @Column(name = "avgTotalAAV")
-	public double getAvgTotalAAV() {
+	public BigDecimal getAvgTotalAAV() {
 		return avgTotalAAV;
 	}
 
-	public void setAvgTotalAAV(double avgTotalAAV) {
+	public void setAvgTotalAAV(BigDecimal avgTotalAAV) {
 		this.avgTotalAAV = avgTotalAAV;
 	}
 
@@ -369,54 +369,54 @@ public class FPProjBatter extends AbstractEntity {
     @OneToMany
     @JoinColumn(name = "batter_uid")
     public List<UserCustomRankingsB> getUserBatterSGP() {
-    	return userBatterSGP;
+    	return userCustomRankingsB;
     }
     
     @SuppressWarnings("unused")
     private void setUserBatterSGP(List<UserCustomRankingsB> userBatterSGP) {
-    	this.userBatterSGP = userBatterSGP;
+    	this.userCustomRankingsB = userBatterSGP;
     }
     
     protected void calcOpsSgp(double sgpMultR, double sgpMultHR, double sgpMultRBI, double sgpMultSB, double sgpMultOPS) {
-    	BigDecimal r = new BigDecimal(this.r).divide(new BigDecimal(sgpMultR), 4, RoundingMode.HALF_EVEN);
+    	BigDecimal r = new BigDecimal(this.r).divide(new BigDecimal(sgpMultR), 4, RoundingMode.HALF_UP);
     	this.rSGP = r.doubleValue();
-    	BigDecimal hr = new BigDecimal(this.hr).divide(new BigDecimal(sgpMultHR), 4, RoundingMode.HALF_EVEN);
+    	BigDecimal hr = new BigDecimal(this.hr).divide(new BigDecimal(sgpMultHR), 4, RoundingMode.HALF_UP);
     	this.hrSGP = hr.doubleValue();
-    	BigDecimal rbi = new BigDecimal(this.rbi).divide(new BigDecimal(sgpMultRBI), 4, RoundingMode.HALF_EVEN);
+    	BigDecimal rbi = new BigDecimal(this.rbi).divide(new BigDecimal(sgpMultRBI), 4, RoundingMode.HALF_UP);
     	this.rbiSGP = rbi.doubleValue();
-    	BigDecimal sb = new BigDecimal(this.sb).divide(new BigDecimal(sgpMultSB), 4, RoundingMode.HALF_EVEN);
+    	BigDecimal sb = new BigDecimal(this.sb).divide(new BigDecimal(sgpMultSB), 4, RoundingMode.HALF_UP);
     	this.sbSGP = sb.doubleValue();
     	
     	// ops
     	BigDecimal ab = new BigDecimal(this.ab).multiply(new BigDecimal(1.15));	
     	BigDecimal obpNum = new BigDecimal(this.obp).multiply(ab).add(new BigDecimal(2178.8));
     	BigDecimal obpDenom = ab.add(new BigDecimal(6682));
-    	BigDecimal obp = obpNum.divide(obpDenom, 4, RoundingMode.HALF_EVEN);
+    	BigDecimal obp = obpNum.divide(obpDenom, 4, RoundingMode.HALF_UP);
     	BigDecimal slgNum = new BigDecimal(this.slg).multiply(new BigDecimal(this.ab)).add(new BigDecimal(2528.5));
     	BigDecimal slgDenom = new BigDecimal(this.ab).add(new BigDecimal(5993));
-    	BigDecimal slg = slgNum.divide(slgDenom, 4, RoundingMode.HALF_EVEN);
-    	BigDecimal ops = obp.divide(slg, 2, RoundingMode.HALF_EVEN).subtract(new BigDecimal(0.748));
-    	ops = ops.divide(new BigDecimal(sgpMultOPS), 4, RoundingMode.HALF_EVEN);
+    	BigDecimal slg = slgNum.divide(slgDenom, 4, RoundingMode.HALF_UP);
+    	BigDecimal ops = obp.divide(slg, 2, RoundingMode.HALF_UP).subtract(new BigDecimal(0.748));
+    	ops = ops.divide(new BigDecimal(sgpMultOPS), 4, RoundingMode.HALF_UP);
     	this.opsSGP = ops.doubleValue();
     			 	
     	this.opsTotalSGP = r.add(hr.add(rbi.add(sb.add(ops)))).doubleValue();
 	}
     
     protected void calcAvgSgp(double sgpMultR, double sgpMultHR, double sgpMultRBI, double sgpMultSB, double sgpMultAVG) {
-    	BigDecimal r = new BigDecimal(this.r).divide(new BigDecimal(sgpMultR), 4, RoundingMode.HALF_EVEN);
+    	BigDecimal r = new BigDecimal(this.r).divide(new BigDecimal(sgpMultR), 4, RoundingMode.HALF_UP);
     	this.rSGP = r.doubleValue();
-    	BigDecimal hr = new BigDecimal(this.hr).divide(new BigDecimal(sgpMultHR), 4, RoundingMode.HALF_EVEN);
+    	BigDecimal hr = new BigDecimal(this.hr).divide(new BigDecimal(sgpMultHR), 4, RoundingMode.HALF_UP);
     	this.hrSGP = hr.doubleValue();
-    	BigDecimal rbi = new BigDecimal(this.rbi).divide(new BigDecimal(sgpMultRBI), 4, RoundingMode.HALF_EVEN);
+    	BigDecimal rbi = new BigDecimal(this.rbi).divide(new BigDecimal(sgpMultRBI), 4, RoundingMode.HALF_UP);
     	this.rbiSGP = rbi.doubleValue();
-    	BigDecimal sb = new BigDecimal(this.sb).divide(new BigDecimal(sgpMultSB), 4, RoundingMode.HALF_EVEN);
+    	BigDecimal sb = new BigDecimal(this.sb).divide(new BigDecimal(sgpMultSB), 4, RoundingMode.HALF_UP);
     	this.sbSGP = sb.doubleValue();
     	
     	// avg
     	BigDecimal h = new BigDecimal(this.h).add(new BigDecimal(1768));	
     	BigDecimal ab = new BigDecimal(this.ab).add(new BigDecimal(6617));
-    	BigDecimal avg = h.divide(ab, 4, RoundingMode.HALF_EVEN).subtract(new BigDecimal(0.267));
-    	avg = avg.divide(new BigDecimal(sgpMultAVG), 4, RoundingMode.HALF_EVEN);
+    	BigDecimal avg = h.divide(ab, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(0.267));
+    	avg = avg.divide(new BigDecimal(sgpMultAVG), 4, RoundingMode.HALF_UP);
     	this.avgSGP = avg.doubleValue();
     	
     	this.avgTotalSGP = r.add(hr.add(rbi.add(sb.add(avg)))).doubleValue();

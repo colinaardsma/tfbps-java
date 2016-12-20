@@ -1,5 +1,6 @@
 package com.colinaardsma.tfbps.controllers;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -129,21 +130,43 @@ public class ProjectionController extends AbstractController {
 		
 		// pull player list
 		List<FPProjBatter> batters = fpProjBatterDao.findAllByOrderByOpsTotalSGPDesc();
-		List<FPProjBatter> batterList = new ArrayList<FPProjBatter>();
-		batterList.addAll(batters);
 		
-		// if hist sgp and aav have not been calculated for this league/user then calculate, otherwise continue
+		// if hist sgp has not been calculated for this league/user then calculate, otherwise continue
 		if (userCustomRankingsBDao.findByUserAndYahooRotoLeague(user, league).size() == 0) {
 			for (FPProjBatter batter : batters) {
-				UserCustomRankingsB userBatterSGP = new UserCustomRankingsB(batterList, batter, league, user);
+				UserCustomRankingsB userBatterSGP = new UserCustomRankingsB(batter, league, user);
 				userCustomRankingsBDao.save(userBatterSGP);
 			}
 		}
-
-		// create and populate list with players and user's custom sgp
-		List<FPProjBatter> sgpBatters = new ArrayList<FPProjBatter>();
 		
-		for (FPProjBatter batter : batters) {
+		List<UserCustomRankingsB> userBatterList =  userCustomRankingsBDao.findByUserAndYahooRotoLeague(user, league);
+
+		// sort list by user's custom sgp calculation (desc)
+		Collections.sort(userBatterList, new Comparator<UserCustomRankingsB>() {
+			@Override
+			public int compare(UserCustomRankingsB b1, UserCustomRankingsB b2) {
+				if (b1.getHistSGP() < b2.getHistSGP()) return 1;
+				if (b1.getHistSGP() > b2.getHistSGP()) return -1;
+				return 0;
+			}
+		});
+		
+		// create secondary list for use in AAV calculation
+		List<UserCustomRankingsB> userCustomList = new ArrayList<UserCustomRankingsB>();
+		userCustomList.addAll(userBatterList);
+		
+		for (UserCustomRankingsB userBatter : userBatterList) {
+			
+			userBatter.calcLeagueHistAAV(userCustomList, league);
+			userCustomRankingsBDao.save(userBatter);
+		}
+		
+		// create and populate list with players and user's custom sgp
+		List<FPProjBatter> customBatterRankings = new ArrayList<FPProjBatter>();
+		
+		for (UserCustomRankingsB userBatter : userBatterList) {
+			FPProjBatter batter = userBatter.getBatter();
+			
 			String name = batter.getName();
 			String team = batter.getTeam();
 			String pos = batter.getPos();
@@ -162,25 +185,51 @@ public class ProjectionController extends AbstractController {
 			double slg = batter.getSlg();
 			double ops = batter.getOps();
 			String category = batter.getCategory();
-			UserCustomRankingsB userBatterSGP = userCustomRankingsBDao.findByBatterAndUserAndYahooRotoLeague(batter, user, league);
-			double customSGP = userBatterSGP.getHistSGP();
-
-			FPProjBatter sgpBatter = new FPProjBatter(name, team, pos, ab, r, hr, rbi, sb, avg, obp, h, dbl, tpl, bb, k, slg, ops, category);
-			sgpBatter.setOpsTotalSGP(customSGP);			
-			sgpBatters.add(sgpBatter);
+			double customSGP = userBatter.getHistSGP();
+			BigDecimal customAAV = userBatter.getHistAAV();
+			
+			FPProjBatter customBatter = new FPProjBatter(name, team, pos, ab, r, hr, rbi, sb, avg, obp, h, dbl, tpl, bb, k, slg, ops, category);
+			customBatter.setOpsTotalSGP(customSGP);
+			customBatter.setOpsTotalAAV(customAAV);
+			customBatterRankings.add(customBatter);
 		}
 		
-		// sort list by user's custom sgp calculation (desc)
-		Collections.sort(sgpBatters, new Comparator<FPProjBatter>() {
-			@Override
-			public int compare(FPProjBatter b1, FPProjBatter b2) {
-				if (b1.getOpsTotalSGP() < b2.getOpsTotalSGP()) return 1;
-				if (b1.getOpsTotalSGP() > b2.getOpsTotalSGP()) return -1;
-				return 0;
-			}
-		});
+
+//		// create and populate list with players and user's custom sgp
+//		List<FPProjBatter> customBatterRankings = new ArrayList<FPProjBatter>();
+//		
+//		for (FPProjBatter batter : batters) {
+//			String name = batter.getName();
+//			String team = batter.getTeam();
+//			String pos = batter.getPos();
+//			int ab = batter.getAb();
+//			int r = batter.getR();
+//			int hr = batter.getHr();
+//			int rbi = batter.getRbi();
+//			int sb = batter.getSb();
+//			double avg = batter.getAvg();
+//			double obp = batter.getObp();
+//			int h = batter.getH();
+//			int dbl = batter.getDbl();
+//			int tpl = batter.getTpl();
+//			int bb = batter.getBb();
+//			int k = batter.getK();
+//			double slg = batter.getSlg();
+//			double ops = batter.getOps();
+//			String category = batter.getCategory();
+//			UserCustomRankingsB userBatterSGP = userCustomRankingsBDao.findByBatterAndUserAndYahooRotoLeague(batter, user, league);
+//			double customSGP = userBatterSGP.getHistSGP();
+//			BigDecimal customAAV = userBatterSGP.getHistAAV();
+//
+//			FPProjBatter customBatter = new FPProjBatter(name, team, pos, ab, r, hr, rbi, sb, avg, obp, h, dbl, tpl, bb, k, slg, ops, category);
+//			customBatter.setOpsTotalSGP(customSGP);
+//			customBatter.setOpsTotalAAV(customAAV);
+//			customBatterRankings.add(customBatter);
+//		}
 		
-//		if (league.getAuctionBudget() > -1) {
+		
+	
+		//		if (league.getAuctionBudget() > -1) {
 ////			List<FPProjBatter> aavBatters = new ArrayList<FPProjBatter>();
 //			for (int i = 0; i < league.getHistDraftedB(); i++) {
 //				UserCustomRankingsB userBatterSGP = userCustomRankingsBDao.findByBatterAndUserAndYahooRotoLeague(sgpBatters.get(i), user, league);
@@ -198,7 +247,7 @@ public class ProjectionController extends AbstractController {
 		String leagueType = "Yahoo Roto";
 				
     	model.addAttribute("currentUser", currentUser);
-		model.addAttribute("players", sgpBatters);
+		model.addAttribute("players", customBatterRankings);
 		model.addAttribute("lastPullDate", lastPullDate);
 		model.addAttribute("leagueType", leagueType);
 		model.addAttribute("category", category);
