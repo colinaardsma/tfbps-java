@@ -42,6 +42,7 @@ public class FPProjPitcher extends AbstractEntity {
 	private double eraSGP;
 	private double whipSGP;
 	private double sgp;
+	private BigDecimal aav;
 	private String category;
 	private Date created;
 	
@@ -301,6 +302,15 @@ public class FPProjPitcher extends AbstractEntity {
 
 	public void setSgp(double sgp) {
 		this.sgp = sgp;
+	}
+
+    @Column(name = "aav")
+	public BigDecimal getAav() {
+		return aav;
+	}
+
+	public void setAav(BigDecimal aav) {
+		this.aav = aav;
 	}
 
 	@NotNull

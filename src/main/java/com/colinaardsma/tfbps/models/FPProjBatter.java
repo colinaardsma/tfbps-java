@@ -345,7 +345,7 @@ public class FPProjBatter extends AbstractEntity {
 		this.avgTotalAAV = avgTotalAAV;
 	}
 
-@NotNull
+	@NotNull
     @Column(name = "category")
 	public String getCategory() {
 		return category;

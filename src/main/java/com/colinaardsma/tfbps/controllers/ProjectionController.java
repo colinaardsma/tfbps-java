@@ -139,7 +139,7 @@ public class ProjectionController extends AbstractController {
 			}
 		}
 		
-		List<UserCustomRankingsB> userBatterList =  userCustomRankingsBDao.findByUserAndYahooRotoLeague(user, league);
+		List<UserCustomRankingsB> userBatterList = userCustomRankingsBDao.findByUserAndYahooRotoLeague(user, league);
 
 		// sort list by user's custom sgp calculation (desc)
 		Collections.sort(userBatterList, new Comparator<UserCustomRankingsB>() {
@@ -156,7 +156,6 @@ public class ProjectionController extends AbstractController {
 		userCustomList.addAll(userBatterList);
 		
 		for (UserCustomRankingsB userBatter : userBatterList) {
-			
 			userBatter.calcLeagueHistAAV(userCustomList, league);
 			userCustomRankingsBDao.save(userBatter);
 		}
@@ -193,52 +192,6 @@ public class ProjectionController extends AbstractController {
 			customBatter.setOpsTotalAAV(customAAV);
 			customBatterRankings.add(customBatter);
 		}
-		
-
-//		// create and populate list with players and user's custom sgp
-//		List<FPProjBatter> customBatterRankings = new ArrayList<FPProjBatter>();
-//		
-//		for (FPProjBatter batter : batters) {
-//			String name = batter.getName();
-//			String team = batter.getTeam();
-//			String pos = batter.getPos();
-//			int ab = batter.getAb();
-//			int r = batter.getR();
-//			int hr = batter.getHr();
-//			int rbi = batter.getRbi();
-//			int sb = batter.getSb();
-//			double avg = batter.getAvg();
-//			double obp = batter.getObp();
-//			int h = batter.getH();
-//			int dbl = batter.getDbl();
-//			int tpl = batter.getTpl();
-//			int bb = batter.getBb();
-//			int k = batter.getK();
-//			double slg = batter.getSlg();
-//			double ops = batter.getOps();
-//			String category = batter.getCategory();
-//			UserCustomRankingsB userBatterSGP = userCustomRankingsBDao.findByBatterAndUserAndYahooRotoLeague(batter, user, league);
-//			double customSGP = userBatterSGP.getHistSGP();
-//			BigDecimal customAAV = userBatterSGP.getHistAAV();
-//
-//			FPProjBatter customBatter = new FPProjBatter(name, team, pos, ab, r, hr, rbi, sb, avg, obp, h, dbl, tpl, bb, k, slg, ops, category);
-//			customBatter.setOpsTotalSGP(customSGP);
-//			customBatter.setOpsTotalAAV(customAAV);
-//			customBatterRankings.add(customBatter);
-//		}
-		
-		
-	
-		//		if (league.getAuctionBudget() > -1) {
-////			List<FPProjBatter> aavBatters = new ArrayList<FPProjBatter>();
-//			for (int i = 0; i < league.getHistDraftedB(); i++) {
-//				UserCustomRankingsB userBatterSGP = userCustomRankingsBDao.findByBatterAndUserAndYahooRotoLeague(sgpBatters.get(i), user, league);
-//				double customAAV = userBatterSGP.calcLeagueHistAAV(sgpBatters, sgpBatters.get(i), league);
-//				sgpBatters.get(i).setOpsTotalAAV(customAAV);
-////				aavBatters.add(sgpBatters.get(i));
-//
-//			}
-//		}
 		
 		// get date of last data pull
 		Date lastPullDate = batters.get(0).getCreated();
@@ -300,9 +253,33 @@ public class ProjectionController extends AbstractController {
 		}
 
 		// create and populate list with players and user's custom sgp
-		List<FPProjPitcher> sgpPitchers = new ArrayList<FPProjPitcher>();
+		List<UserCustomRankingsP> userPitcherList = userCustomRankingsPDao.findByUserAndYahooRotoLeague(user, league);
 		
-		for (FPProjPitcher pitcher : pitchers) {
+		// sort list by user's custom sgp calculation (desc)
+		Collections.sort(userPitcherList, new Comparator<UserCustomRankingsP>() {
+			@Override
+			public int compare(UserCustomRankingsP p1, UserCustomRankingsP p2) {
+				if (p1.getHistSGP() < p2.getHistSGP()) return 1;
+				if (p1.getHistSGP() > p2.getHistSGP()) return -1;
+				return 0;
+			}
+		});
+		
+		// create secondary list for use in AAV calculation
+		List<UserCustomRankingsP> userCustomList = new ArrayList<UserCustomRankingsP>();
+		userCustomList.addAll(userPitcherList);
+		
+		for (UserCustomRankingsP userPitcher : userPitcherList) {
+			userPitcher.calcLeagueHistAAV(userCustomList, league);
+			userCustomRankingsPDao.save(userPitcher);
+		}
+		
+		// create and populate list with players and user's custom sgp
+		List<FPProjPitcher> customPitcherRankings = new ArrayList<FPProjPitcher>();
+		
+		for (UserCustomRankingsP userPitcher : userPitcherList) {
+			FPProjPitcher pitcher = userPitcher.getPitcher();
+			
 			String name = pitcher.getName();
 			String team = pitcher.getTeam();
 			String pos = pitcher.getPos();
@@ -321,23 +298,14 @@ public class ProjectionController extends AbstractController {
 			int l = pitcher.getL();
 			int cg = pitcher.getCg();
 			String category = pitcher.getCategory();
-			UserCustomRankingsP userPitcherSGP = userCustomRankingsPDao.findByPitcherAndUserAndYahooRotoLeague(pitcher, user, league);
-			double customSGP = userPitcherSGP.getHistSGP();
+			double customSGP = userPitcher.getHistSGP();
+			BigDecimal customAAV = userPitcher.getHistAAV();
 
-			FPProjPitcher sgpPitcher = new FPProjPitcher(name, team, pos, ip, k, w, sv, era, whip, er, h, bb, hr, g, gs, l, cg, category);
-			sgpPitcher.setSgp(customSGP);			
-			sgpPitchers.add(sgpPitcher);
+			FPProjPitcher customPitcher = new FPProjPitcher(name, team, pos, ip, k, w, sv, era, whip, er, h, bb, hr, g, gs, l, cg, category);
+			customPitcher.setSgp(customSGP);
+			customPitcher.setAav(customAAV);
+			customPitcherRankings.add(customPitcher);
 		}
-		
-		// sort list by user's custom sgp calculation (desc)
-		Collections.sort(sgpPitchers, new Comparator<FPProjPitcher>() {
-			@Override
-			public int compare(FPProjPitcher p1, FPProjPitcher p2) {
-				if (p1.getSgp() < p2.getSgp()) return 1;
-				if (p1.getSgp() > p2.getSgp()) return -1;
-				return 0;
-			}
-		});
 		
 		// get date of last data pull
 		Date lastPullDate = pitchers.get(0).getCreated();
@@ -346,7 +314,7 @@ public class ProjectionController extends AbstractController {
 		String leagueType = "Yahoo Roto";
 				
     	model.addAttribute("currentUser", currentUser);
-		model.addAttribute("players", sgpPitchers);
+		model.addAttribute("players", customPitcherRankings);
 		model.addAttribute("lastPullDate", lastPullDate);
 		model.addAttribute("leagueType", leagueType);
 		model.addAttribute("category", category);
