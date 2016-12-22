@@ -48,7 +48,20 @@ public class FPProjBatter extends AbstractEntity {
 	private String category;
 	private Date created;
 	
+	// join variables
 	private List<UserCustomRankingsB> userCustomRankingsB;
+	
+	// aav calculation variables
+	// player pool
+	int draftedB = 154; // total batters taken
+	int oneDollarB = 45; // total $1 batters taken
+	int draftedBOverOneDollar = draftedB - oneDollarB; // total batters taken minus $1 batters taken
+	int teamBudget = 260; // total budget per team
+	int teamCount = 12; // total teams in league
+	double budgetPctP = 0.65; // % of league budget spent on batters
+	
+	// total league budget (with $1 players taken out)
+	BigDecimal leagueBudgetOverOneB = new BigDecimal(budgetPctP).multiply(new BigDecimal(teamBudget).multiply(new BigDecimal(teamCount))).subtract(new BigDecimal(oneDollarB));
 
 	public FPProjBatter(String name, String team, String pos, int ab, int r, int hr, int rbi, int sb, double avg, double obp, int h, int dbl, int tpl, int bb, int k, double slg, double ops, String category) {
 		this.name = name;
@@ -421,5 +434,79 @@ public class FPProjBatter extends AbstractEntity {
     	
     	this.avgTotalSGP = r.add(hr.add(rbi.add(sb.add(avg)))).doubleValue();
 	}
+    
+    public void calcOpsAav(List<FPProjBatter> batterList) {
+    	
+    	// calculate average SGP value of $1 players
+    	BigDecimal oneDollarSGPSum = new BigDecimal(0);
+    	for (int i = draftedBOverOneDollar; i < draftedB; i++) {
+    		oneDollarSGPSum = oneDollarSGPSum.add(new BigDecimal(batterList.get(i).getOpsTotalSGP()));
+    	}
+    	BigDecimal oneDollarSGP = oneDollarSGPSum.divide(new BigDecimal(oneDollarB), 4, RoundingMode.HALF_UP);
+    	
+    	// calculate total SGP value above $1 players (with average $1 SGP value subtracted)
+    	BigDecimal totalSGPAboveOne = new BigDecimal(0);
+    	for (int j = 0; j < draftedBOverOneDollar; j++) {
+    		totalSGPAboveOne = totalSGPAboveOne.add(new BigDecimal(batterList.get(j).getOpsTotalSGP()).subtract(oneDollarSGP));
+    	}
+    	
+    	// calculate $ / SGP
+    	BigDecimal dollarsPerSGP = leagueBudgetOverOneB.divide(totalSGPAboveOne, 4, RoundingMode.HALF_UP);
+    	
+    	// check to see if this batter is a $1 batter, if so set value to $1
+       	int counter = 0;
+    	for (FPProjBatter b : batterList) {
+    		if (this == b) {
+    			if (counter < draftedBOverOneDollar) {
+    		    	this.opsTotalAAV = dollarsPerSGP.multiply(new BigDecimal(this.opsTotalSGP).subtract(oneDollarSGP)).setScale(2, BigDecimal.ROUND_HALF_UP);
+    		    	break;
+    			} else if (counter < draftedB && counter >= draftedBOverOneDollar) {
+    				this.opsTotalAAV = new BigDecimal(1).setScale(2, BigDecimal.ROUND_HALF_UP);
+    		    	break;
+    			} else {
+    				this.opsTotalAAV = new BigDecimal(0).setScale(2, BigDecimal.ROUND_HALF_UP);
+    		    	break;
+    			}
+    		}
+    		counter++;
+    	}
+    }
+    
+    public void calcAvgAav(List<FPProjBatter> batterList) {
+    	
+    	// calculate average SGP value of $1 players
+    	BigDecimal oneDollarSGPSum = new BigDecimal(0);
+    	for (int i = draftedBOverOneDollar; i < draftedB; i++) {
+    		oneDollarSGPSum = oneDollarSGPSum.add(new BigDecimal(batterList.get(i).getAvgTotalSGP()));
+    	}
+    	BigDecimal oneDollarSGP = oneDollarSGPSum.divide(new BigDecimal(oneDollarB), 4, RoundingMode.HALF_UP);
+    	
+    	// calculate total SGP value above $1 players (with average $1 SGP value subtracted)
+    	BigDecimal totalSGPAboveOne = new BigDecimal(0);
+    	for (int j = 0; j < draftedBOverOneDollar; j++) {
+    		totalSGPAboveOne = totalSGPAboveOne.add(new BigDecimal(batterList.get(j).getAvgTotalSGP()).subtract(oneDollarSGP));
+    	}
+    	
+    	// calculate $ / SGP
+    	BigDecimal dollarsPerSGP = leagueBudgetOverOneB.divide(totalSGPAboveOne, 4, RoundingMode.HALF_UP);
+    	
+    	// check to see if this batter is a $1 batter, if so set value to $1
+       	int counter = 0;
+    	for (FPProjBatter b : batterList) {
+    		if (this == b) {
+    			if (counter < draftedBOverOneDollar) {
+    		    	this.avgTotalAAV = dollarsPerSGP.multiply(new BigDecimal(this.avgTotalSGP).subtract(oneDollarSGP)).setScale(2, BigDecimal.ROUND_HALF_UP);
+    		    	break;
+    			} else if (counter < draftedB && counter >= draftedBOverOneDollar) {
+    				this.avgTotalAAV = new BigDecimal(1).setScale(2, BigDecimal.ROUND_HALF_UP);
+    		    	break;
+    			} else {
+    				this.avgTotalAAV = new BigDecimal(0).setScale(2, BigDecimal.ROUND_HALF_UP);
+    		    	break;
+    			}
+    		}
+    		counter++;
+    	}
+    }
     
 }

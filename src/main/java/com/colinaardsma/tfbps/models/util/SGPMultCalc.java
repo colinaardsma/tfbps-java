@@ -8,24 +8,26 @@ import java.util.List;
 
 public class SGPMultCalc {
 
+	// http://www.smartfantasybaseball.com/tag/standings-gain-points/
+	// http://www.smartfantasybaseball.com/2013/03/create-your-own-fantasy-baseball-rankings-part-5-understanding-standings-gain-points/
 	// generic multipliers
 	public static double sgpMultR() {
-		double sgpMultR = 24.6;
+		double sgpMultR = 18.23;
 		return sgpMultR;
 	}
 	
 	public static double sgpMultHR() {
-		double sgpMultHR = 10.4;
+		double sgpMultHR = 7.28;
 		return sgpMultHR;
 	}
 	
 	public static double sgpMultRBI() {
-		double sgpMultRBI = 24.6;
+		double sgpMultRBI = 18.96;
 		return sgpMultRBI;
 	}
 	
 	public static double sgpMultSB() {
-		double sgpMultSB = 9.4;
+		double sgpMultSB = 7.16;
 		return sgpMultSB;
 	}
 	
@@ -35,32 +37,32 @@ public class SGPMultCalc {
 	}
 	
 	public static double sgpMultAVG() {
-		double sgpMultAVG = 0.0024;
+		double sgpMultAVG = 0.0178;
 		return sgpMultAVG;
 	}
 	
 	public static double sgpMultW() {
-		double sgpMultW = 3.03;
+		double sgpMultW = 2.78;
 		return sgpMultW;
 	}
 	
 	public static double sgpMultSV() {
-		double sgpMultSV = 9.95;
+		double sgpMultSV = 6.47;
 		return sgpMultSV;
 	}
 	
 	public static double sgpMultK() {
-		double sgpMultK = 39.3;
+		double sgpMultK = 30.38;
 		return sgpMultK;
 	}
 	
 	public static double sgpMultERA() {
-		double sgpMultERA = -0.076;
+		double sgpMultERA = -0.0699;
 		return sgpMultERA;
 	}
 
 	public static double sgpMultWHIP() {
-		double sgpMultWHIP = -0.015;
+		double sgpMultWHIP = -0.0128;
 		return sgpMultWHIP;
 	}
 	

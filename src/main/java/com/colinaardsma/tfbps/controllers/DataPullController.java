@@ -1,6 +1,8 @@
 package com.colinaardsma.tfbps.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -86,6 +88,30 @@ public class DataPullController extends AbstractController {
 			e.printStackTrace();
 		}
 		
+		// create lists to calculate aav
+		List<FPProjBatter> opsBatterList = fpProjBatterDao.findAllByOrderByOpsTotalSGPDesc();
+		List<FPProjBatter> avgBatterList = fpProjBatterDao.findAllByOrderByAvgTotalSGPDesc();
+		
+		// create second list to pass into aav calculation method
+		List<FPProjBatter> batterList = new ArrayList<FPProjBatter>();
+		batterList.addAll(opsBatterList);
+		
+		// calc ops aav and save
+		for (FPProjBatter b : opsBatterList) {
+			b.calcOpsAav(batterList);
+			fpProjBatterDao.save(b);
+		}
+		
+		// erase second list, add avg data, and pass into aav calculation method
+		batterList = new ArrayList<FPProjBatter>();
+		batterList.addAll(avgBatterList);
+		
+		// calc avg aav and save
+		for (FPProjBatter b : avgBatterList) {
+			b.calcAvgAav(batterList);
+			fpProjBatterDao.save(b);
+		}
+
         return "redirect:fpprojb";
     }
 	
@@ -146,6 +172,19 @@ public class DataPullController extends AbstractController {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+		
+		// create lists to calculate aav
+		List<FPProjPitcher> pitcherList = fpProjPitcherDao.findAllByOrderBySgpDesc();
+		
+		// create second list to pass into aav calculation method
+		List<FPProjPitcher> pList = new ArrayList<FPProjPitcher>();
+		pList.addAll(pitcherList);
+		
+		// calc ops aav and save
+		for (FPProjPitcher p : pitcherList) {
+			p.calcAav(pList);
+			fpProjPitcherDao.save(p);
 		}
 		
         return "redirect:fpprojp";

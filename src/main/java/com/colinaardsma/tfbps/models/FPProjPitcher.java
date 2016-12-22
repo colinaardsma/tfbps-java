@@ -370,24 +370,52 @@ public class FPProjPitcher extends AbstractEntity {
     	this.sgp = w.add(sv.add(k.add(era.add(whip)))).doubleValue();
     }
     
-//    public double calcLeagueHistSGP(double wHistSGPMult, double svHistSGPMult, double kHistSGPMult, double eraHistSGPMult, double whipHistSGPMult) {
-//    	BigDecimal w = new BigDecimal(this.w).divide(new BigDecimal(wHistSGPMult), 4, RoundingMode.HALF_UP);
-//    	BigDecimal sv = new BigDecimal(this.sv).divide(new BigDecimal(svHistSGPMult), 4, RoundingMode.HALF_UP);
-//    	BigDecimal k = new BigDecimal(this.k).divide(new BigDecimal(kHistSGPMult), 4, RoundingMode.HALF_UP);
-//    	
-//    	// era
-//        BigDecimal er = new BigDecimal(475).add(new BigDecimal(this.er));
-//        BigDecimal eraNum = er.multiply(new BigDecimal(9));
-//        BigDecimal ip = new BigDecimal(1192).add(new BigDecimal(this.ip));
-//        BigDecimal eraDenom = ip;
-//        BigDecimal era = eraNum.divide(eraDenom, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(3.59)).divide(new BigDecimal(eraHistSGPMult), 4, RoundingMode.HALF_UP);
-//        
-//        // whip
-//        BigDecimal whipNum = new BigDecimal(1466).add(new BigDecimal(this.h)).add(new BigDecimal(this.bb));
-//        BigDecimal whipDenom = ip;
-//        BigDecimal whip = whipNum.divide(whipDenom, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(1.23)).divide(new BigDecimal(whipHistSGPMult), 4, RoundingMode.HALF_UP);
-//        
-//    	return w.add(sv.add(k.add(era.add(whip)))).doubleValue();
-//    }
+	public void calcAav(List<FPProjPitcher> pitcherList) {
+
+		// player pool
+		int draftedP = 154; // total batters taken
+		int oneDollarP = 45; // total $1 batters taken
+		int draftedPOverOneDollar = draftedP - oneDollarP; // total batters taken minus $1 batters taken
+		int teamBudget = 260; // total budget per team
+		int teamCount = 12; // total teams in league
+		double budgetPctP = 0.35; // % of league budget spent on pitchers
+		
+		// total league budget (with $1 players taken out)
+		BigDecimal leagueBudgetOverOneP = new BigDecimal(budgetPctP).multiply(new BigDecimal(teamBudget).multiply(new BigDecimal(teamCount))).subtract(new BigDecimal(oneDollarP));
+
+    	// calculate average SGP value of $1 players
+    	BigDecimal oneDollarSGPSum = new BigDecimal(0);
+    	for (int i = draftedPOverOneDollar; i < draftedP; i++) {
+    		oneDollarSGPSum = oneDollarSGPSum.add(new BigDecimal(pitcherList.get(i).getSgp()));
+    	}
+    	BigDecimal oneDollarSGP = oneDollarSGPSum.divide(new BigDecimal(oneDollarP), 4, RoundingMode.HALF_UP);
+    	
+    	// calculate total SGP value above $1 players (with average $1 SGP value subtracted)
+    	BigDecimal totalSGPAboveOne = new BigDecimal(0);
+    	for (int j = 0; j < draftedPOverOneDollar; j++) {
+    		totalSGPAboveOne = totalSGPAboveOne.add(new BigDecimal(pitcherList.get(j).getSgp()).subtract(oneDollarSGP));
+    	}
+    	
+    	// calculate $ / SGP
+    	BigDecimal dollarsPerSGP = leagueBudgetOverOneP.divide(totalSGPAboveOne, 4, RoundingMode.HALF_UP);
+    	
+    	// check to see if this pitcher is a $1 pitcher, if so set value to $1
+       	int counter = 0;
+    	for (FPProjPitcher b : pitcherList) {
+    		if (this == b) {
+    			if (counter < draftedPOverOneDollar) {
+    		    	this.aav = dollarsPerSGP.multiply(new BigDecimal(this.sgp).subtract(oneDollarSGP)).setScale(2, BigDecimal.ROUND_HALF_UP);
+    		    	break;
+    			} else if (counter < draftedP && counter >= draftedPOverOneDollar) {
+    				this.aav = new BigDecimal(1).setScale(2, BigDecimal.ROUND_HALF_UP);
+    		    	break;
+    			} else {
+    				this.aav = new BigDecimal(0).setScale(2, BigDecimal.ROUND_HALF_UP);
+    		    	break;
+    			}
+    		}
+    		counter++;
+    	}
+    }
 
 }
