@@ -206,7 +206,7 @@ public class ProjectionController extends AbstractController {
 		model.addAttribute("category", category);
         model.addAttribute("user", user);
 
-        return "user_projections";
+        return "projections";
     }
 
 	// YAHOO ROTO LEAGUE PITCHER
@@ -320,7 +320,7 @@ public class ProjectionController extends AbstractController {
 		model.addAttribute("category", category);
         model.addAttribute("user", user);
 
-        return "user_projections";
+        return "projections";
     }
 	
 	// OTTONEU OLD SCHOOL LEAGUE BATTER
@@ -419,7 +419,7 @@ public class ProjectionController extends AbstractController {
 		model.addAttribute("category", category);
         model.addAttribute("user", user);
 
-        return "user_projections";
+        return "projections";
     }
 
 	// OTTONEU OLD SCHOOL PITCHER
@@ -518,7 +518,7 @@ public class ProjectionController extends AbstractController {
 		model.addAttribute("category", category);
         model.addAttribute("user", user);
 
-        return "user_projections";
+        return "projections";
     }
 	
 }

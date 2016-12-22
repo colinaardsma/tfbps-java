@@ -16,7 +16,7 @@ Data Manipulation:
 -custom modify individual player?
 
 -Json export (added to fantasy pros b/p)
--memcached (added to fantasy pros b/p)
+-memcached/redis (added to fantasy pros b/p)
 
 Users:
 X-admins
@@ -42,6 +42,7 @@ X-add normalize.css
 -what sites to model after?
 
 Javascript:
+-working spinner
 -?
 
 Non-HTML Parsing:

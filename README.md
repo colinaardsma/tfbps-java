@@ -12,17 +12,16 @@ While still very much a work in progress I have achieved a few of my main goals:
 * Users:
     * Login/Logout/Register
     * Divide users into groups with permissions varying by group
+    * Storing of personalized data
 * Blog/Posts:
     * Allow certain users to post to blog
     * Create/Read/Update/Delete blog posts
 
 ## What's coming up
 * Data import/export/analysis:
-    * Store data in memcache to prevent excessive db hits
+    * Store data in memcache/redis to prevent excessive db hits
     * Export data to json
     * Allow users to create their own calculations
-* Users:
-    * Storing of personalized data
 * RSS import:
     * Import and format RSS data from external sites
 * Blog/Posts:
