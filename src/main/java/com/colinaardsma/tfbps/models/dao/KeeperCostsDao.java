@@ -21,7 +21,6 @@ import com.colinaardsma.tfbps.models.YahooRotoTeam;
 public interface KeeperCostsDao extends CrudRepository<KeeperCosts, Integer> {
 	
 	List<KeeperCosts> findAll(); // get all costs
-	List<KeeperCosts> findAllByOrderByHistSGPDesc();
 	List<KeeperCosts> findByUser(User user);
 
 	List<KeeperCosts> findByBatter(FPProjBatter batter);
@@ -30,11 +29,16 @@ public interface KeeperCostsDao extends CrudRepository<KeeperCosts, Integer> {
 	// Yahoo Roto Leagues
 	List<KeeperCosts> findByYahooRotoTeam(YahooRotoTeam yahooRotoTeam);
 	List<KeeperCosts> findByUserAndYahooRotoLeague(User user, YahooRotoLeague league);
+	List<KeeperCosts> findByPlayerKey(String playerKey);
 	KeeperCosts findByBatterAndYahooRotoLeague(FPProjBatter batter, YahooRotoLeague league);
+	KeeperCosts findByPitcherAndYahooRotoLeague(FPProjPitcher pitcher, YahooRotoLeague league);
+	KeeperCosts findByPlayerKeyAndYahooRotoLeague(String playerKey, YahooRotoLeague league);
+
 
 	// Ottoneu Old School Leagues
 	List<KeeperCosts> findByOttoneuOldSchoolTeam(OttoneuOldSchoolTeam ottoneuOldSchoolTeam);
 	List<KeeperCosts> findByUserAndOttoneuOldSchoolLeague(User user, OttoneuOldSchoolLeague league);
 	KeeperCosts findByBatterAndOttoneuOldSchoolLeague(FPProjBatter batter, OttoneuOldSchoolLeague league);
+	KeeperCosts findByPitcherAndOttoneuOldSchoolLeague(FPProjPitcher pitcher, OttoneuOldSchoolLeague league);
 	
 }

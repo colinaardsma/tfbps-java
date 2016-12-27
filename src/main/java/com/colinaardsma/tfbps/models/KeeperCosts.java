@@ -1,11 +1,9 @@
 package com.colinaardsma.tfbps.models;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -13,11 +11,14 @@ import javax.validation.constraints.NotNull;
 @Table(name = "KeeperCosts")
 public class KeeperCosts extends AbstractEntity {
 	
-	private BigDecimal cost;
+	private int cost;
+	private String playerKey;
 	private Date created;
 	
 	// join variables
 	private User user;
+//	private List<FPProjBatter> batters;
+//	private List<FPProjPitcher> pitchers;
 	private FPProjBatter batter;
 	private FPProjPitcher pitcher;
 	private YahooRotoLeague yahooRotoLeague;
@@ -25,51 +26,73 @@ public class KeeperCosts extends AbstractEntity {
 	private OttoneuOldSchoolLeague ottoneuOldSchoolLeague;
 	private OttoneuOldSchoolTeam ottoneuOldSchoolTeam;
 
-	public KeeperCosts(FPProjBatter batter, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam) {
+	public KeeperCosts(String playerKey, FPProjBatter batter, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam) {
+//		this.batters.add(batter);
+		this.playerKey = playerKey;
 		this.batter = batter;
 		this.yahooRotoLeague = yahooRotoLeague;
+		this.yahooRotoTeam = yahooRotoTeam;
 		if (yahooRotoTeam.getUser() != null) {
 			this.user = yahooRotoTeam.getUser();
 		}
 		this.created = new Date();
 	}
 	
-	public KeeperCosts(FPProjPitcher pitcher, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam) {
+	public KeeperCosts(String playerKey, FPProjPitcher pitcher, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam) {
+//		this.pitchers.add(pitcher);
+		this.playerKey = playerKey;
 		this.pitcher = pitcher;
 		this.yahooRotoLeague = yahooRotoLeague;
+		this.yahooRotoTeam = yahooRotoTeam;
 		if (yahooRotoTeam.getUser() != null) {
 			this.user = yahooRotoTeam.getUser();
 		}
 		this.created = new Date();
 	}
 	
-	public KeeperCosts(FPProjBatter batter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, OttoneuOldSchoolTeam ottoneuOldSchoolTeam) {
+	public KeeperCosts(String playerKey, FPProjBatter batter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, OttoneuOldSchoolTeam ottoneuOldSchoolTeam, int cost) {
+//		this.batters.add(batter);
+		this.playerKey = playerKey;
 		this.batter = batter;
 		this.ottoneuOldSchoolLeague = ottoneuOldSchoolLeague;
 		if (ottoneuOldSchoolTeam.getUser() != null) {
 			this.user = ottoneuOldSchoolTeam.getUser();
 		}
+		this.cost = cost;
 		this.created = new Date();
 	}
 	
-	public KeeperCosts(FPProjPitcher pitcher, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, OttoneuOldSchoolTeam ottoneuOldSchoolTeam) {
+	public KeeperCosts(String playerKey, FPProjPitcher pitcher, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, OttoneuOldSchoolTeam ottoneuOldSchoolTeam, int cost) {
+//		this.pitchers.add(pitcher);
+		this.playerKey = playerKey;
 		this.pitcher = pitcher;
 		this.ottoneuOldSchoolLeague = ottoneuOldSchoolLeague;
 		if (ottoneuOldSchoolTeam.getUser() != null) {
 			this.user = ottoneuOldSchoolTeam.getUser();
 		}
+		this.cost = cost;
 		this.created = new Date();
 	}
 	
 	public KeeperCosts() {}
 	
     @Column(name = "cost")
-	public BigDecimal getCost() {
+	public int getCost() {
 		return cost;
 	}
 
-	public void setCost(BigDecimal cost) {
+	public void setCost(int cost) {
 		this.cost = cost;
+	}
+
+	@NotNull
+    @Column(name = "playerKey")
+	public String getPlayerKey() {
+		return playerKey;
+	}
+
+	public void setPlayerKey(String playerKey) {
+		this.playerKey = playerKey;
 	}
 
 	@NotNull
@@ -82,7 +105,7 @@ public class KeeperCosts extends AbstractEntity {
 		this.created = created;
 	}
 
-	@ManyToOne
+//	@ManyToOne
 	public User getUser() {
 		return user;
 	}
@@ -91,7 +114,7 @@ public class KeeperCosts extends AbstractEntity {
 		this.user = user;
 	}
 
-	@ManyToOne
+//	@ManyToOne
 	public FPProjBatter getBatter() {
 		return batter;
 	}
@@ -100,7 +123,17 @@ public class KeeperCosts extends AbstractEntity {
 		this.batter = batter;
 	}
 
-	@ManyToOne
+//    @ManyToMany
+//    @JoinTable(name="BATTER_KEEPERCOSTS")
+//	public List<FPProjBatter> getBatters() {
+//		return batters;
+//	}
+//
+//	public void setBatters(List<FPProjBatter> batters) {
+//		this.batters = batters;
+//	}
+
+//	@ManyToOne
 	public FPProjPitcher getPitcher() {
 		return pitcher;
 	}
@@ -109,7 +142,17 @@ public class KeeperCosts extends AbstractEntity {
 		this.pitcher = pitcher;
 	}
 
-	@ManyToOne
+//    @ManyToMany
+//    @JoinTable(name="PITCHER_KEEPERCOSTS")
+//	public List<FPProjPitcher> getPitchers() {
+//		return pitchers;
+//	}
+//
+//	public void setPitchers(List<FPProjPitcher> pitchers) {
+//		this.pitchers = pitchers;
+//	}
+
+//	@ManyToOne
 	public YahooRotoLeague getYahooRotoLeague() {
 		return yahooRotoLeague;
 	}
@@ -118,7 +161,7 @@ public class KeeperCosts extends AbstractEntity {
 		this.yahooRotoLeague = yahooRotoLeague;
 	}
 
-	@ManyToOne
+//	@ManyToOne
 	public YahooRotoTeam getYahooRotoTeam() {
 		return yahooRotoTeam;
 	}
@@ -127,7 +170,7 @@ public class KeeperCosts extends AbstractEntity {
 		this.yahooRotoTeam = yahooRotoTeam;
 	}
 
-	@ManyToOne
+//	@ManyToOne
 	public OttoneuOldSchoolLeague getOttoneuOldSchoolLeague() {
 		return ottoneuOldSchoolLeague;
 	}
@@ -136,8 +179,8 @@ public class KeeperCosts extends AbstractEntity {
 		this.ottoneuOldSchoolLeague = ottoneuOldSchoolLeague;
 	}
 
-	@ManyToOne
-   public OttoneuOldSchoolTeam getOttoneuOldSchoolTeam() {
+//	@ManyToOne
+    public OttoneuOldSchoolTeam getOttoneuOldSchoolTeam() {
 		return ottoneuOldSchoolTeam;
 	}
 
