@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org/">
-	<head th:replace="template :: head"></head>
+	<head th:if="${category} == 'batter'" th:replace="template :: head(page='user batter projections')"></head>
+	<head th:unless="${category} == 'pitcher'" th:replace="template :: head(page='user pitcher projections')"></head>
 	<body>
 		<div class="container">
 			<div id="top" th:include="template :: masthead(${currentUser})"></div>

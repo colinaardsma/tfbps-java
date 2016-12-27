@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org/">
-	<head lang="en" th:fragment="head">
+	<head lang="en" th:fragment="head(page)">
     	<meta charset="UTF-8" />
-    	<title th:text="*{title}?: 'tFBPs'"></title>
+    	<title th:text="(${page} == '' ? 'the Fantasy site' : ${page} + ' - the Fantasy site')"></title>
 		<link rel="stylesheet" th:href="@{/css/bootstrap.css}" />
 	    <link th:href="@{/css/bootstrap-theme.min.css}" rel="stylesheet" />
 	    <link th:href="@{/css/styles.css}" rel="stylesheet" />
