@@ -50,6 +50,10 @@ Non-HTML Parsing:
 	X-league number
 	X-league number history
 	X-custom sgp calcs
+	-league customization page:
+		-keeper cost increment
+		-draft position increment
+		-draft position/$ trading
 	-Advanced plans:
 		-some sort of manager performance data?
 		-mock draft simulator
@@ -59,3 +63,6 @@ Non-HTML Parsing:
 	X-Yahoo 2016 standings:
 		X-select * from fantasysports.leagues.standings where league_key='357.l.3091'
 		X-https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20fantasysports.leagues.standings%20where%20league_key%3D'357.l.3091'&diagnostics=true
+		
+Housekeeping:
+-cleanup YahooDataController

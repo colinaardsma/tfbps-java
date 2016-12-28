@@ -41,6 +41,7 @@ import com.colinaardsma.tfbps.models.dao.UserDao;
 import com.colinaardsma.tfbps.models.dao.YahooRotoLeagueDao;
 import com.colinaardsma.tfbps.models.dao.YahooRotoTeamDao;
 import com.colinaardsma.tfbps.models.util.SGPMultCalc;
+import com.colinaardsma.tfbps.models.util.TeamNameNormalization;
 import com.colinaardsma.tfbps.models.util.YahooOAuth;
 
 @Controller
@@ -589,22 +590,34 @@ public class YahooDataController extends AbstractController {
 											firstName = playerNameElement.getElementsByTagName("ascii_first").item(0).getTextContent();
 											lastName = playerNameElement.getElementsByTagName("ascii_last").item(0).getTextContent();
 											fullName = firstName + " " + lastName;
-										}
+											System.out.println("Player Name: " + "_" + fullName + "_");
+											
+											// get player team abbreviation
+											teamAbbr = playerElement.getElementsByTagName("editorial_team_abbr").item(0).getTextContent().toUpperCase();
+											teamAbbr = TeamNameNormalization.Normalize(teamAbbr); // normalize team name
+											System.out.println("Team Abbr: " + "_" + teamAbbr + "_");
+											
+											// get player position type (B or P)
+											String posType = playerElement.getElementsByTagName("position_type").item(0).getTextContent();
 
-										// get player team abbreviation
-										teamAbbr = playerElement.getElementsByTagName("editorial_team_abbr").item(0).getTextContent().toUpperCase();
-
-										// get player position type (B or P)
-										String posType = playerElement.getElementsByTagName("position_type").item(0).getTextContent();
-
-										if (posType.equals("B")) {
-											FPProjBatter batter = fpProjBatterDao.findByNameAndTeam(fullName, teamName);
-											KeeperCosts batterCost = new KeeperCosts(playerKey, batter, league, fantTeam);
-											keeperCostsDao.save(batterCost);
-										} else {
-											FPProjPitcher pitcher = fpProjPitcherDao.findByNameAndTeam(fullName, teamName);
-											KeeperCosts pitcherCost = new KeeperCosts(playerKey, pitcher, league, fantTeam);
-											keeperCostsDao.save(pitcherCost);
+											if (fpProjBatterDao.findByNameAndTeam(fullName, teamAbbr) == null && fpProjPitcherDao.findByNameAndTeam(fullName, teamAbbr) == null) {
+												KeeperCosts batterCost = new KeeperCosts(playerKey, league, fantTeam);
+												keeperCostsDao.save(batterCost);
+											} else {
+												if (posType.equals("B")) {
+													FPProjBatter batter = fpProjBatterDao.findByNameAndTeam(fullName, teamAbbr);
+													System.out.println("FPProj Batter: " + batter.getName());
+													KeeperCosts batterCost = new KeeperCosts(playerKey, batter, league, fantTeam);
+													keeperCostsDao.save(batterCost);
+													System.out.println("Keeper Batter: " + batterCost.getBatter().getName());
+												} else {
+													FPProjPitcher pitcher = fpProjPitcherDao.findByNameAndTeam(fullName, teamAbbr);
+													System.out.println("FPProj Pitcher: " + pitcher.getName());
+													KeeperCosts pitcherCost = new KeeperCosts(playerKey, pitcher, league, fantTeam);
+													keeperCostsDao.save(pitcherCost);
+													System.out.println("Keeper Pitcher: " + pitcherCost.getPitcher().getName());
+												}
+											}
 										}
 									}
 								}
@@ -674,15 +687,23 @@ public class YahooDataController extends AbstractController {
 												if (cost == 1) {
 													oneDollarB++;
 												}
-												FPProjBatter batter = fpProjBatterDao.findByNameAndTeam(fullName, teamAbbr);
-												KeeperCosts batterCost = keeperCostsDao.findByBatterAndYahooRotoLeague(batter, league);
-												String finalTeamKey = batterCost.getYahooRotoTeam().getTeamKey();
-												if (draftTeamKey.equals(finalTeamKey)) { // if player is still on original draft team then add $5 to cost and save
-													batterCost.setCost(cost + 5);
-												} else {
-													batterCost.setCost(0);
+												// TODO: change cost increment to league custom $
+												// TODO: custom FAAB rules
+												if (fpProjBatterDao.findByNameAndTeam(fullName, teamAbbr) != null) { // see if player is in projections
+													FPProjBatter batter = fpProjBatterDao.findByNameAndTeam(fullName, teamAbbr);
+//													System.out.println("FPProjBatter: " + batter.getName());
+													if (keeperCostsDao.findByBatterAndYahooRotoLeague(batter, league) != null) { // see if player is on a final roster
+														KeeperCosts batterCost = keeperCostsDao.findByBatterAndYahooRotoLeague(batter, league);
+//														System.out.println("KeeperBatter: " + batterCost.getPlayerKey());
+														String finalTeamKey = batterCost.getYahooRotoTeam().getTeamKey();
+														if (draftTeamKey.equals(finalTeamKey)) { // if player is still on original draft team then add $5 to cost and save
+															batterCost.setCost(cost + 5);
+														} else {
+															batterCost.setCost(5);
+														}
+														keeperCostsDao.save(batterCost);
+													}
 												}
-												keeperCostsDao.save(batterCost);
 											} else if (playerDocument.getElementsByTagName("position_type").item(0).getTextContent().equals("P")) {
 												draftedP++;
 												int cost = Integer.parseInt(draftResultElement.getElementsByTagName("cost").item(0).getTextContent());
@@ -690,15 +711,19 @@ public class YahooDataController extends AbstractController {
 												if (cost == 1) {
 													oneDollarP++;
 												}
-												FPProjPitcher pitcher = fpProjPitcherDao.findByNameAndTeam(fullName, teamAbbr);
-												KeeperCosts pitcherCost = keeperCostsDao.findByPitcherAndYahooRotoLeague(pitcher, league);
-												String finalTeamKey = pitcherCost.getYahooRotoTeam().getTeamKey();
-												if (draftTeamKey.equals(finalTeamKey)) { // if player is still on original draft team then add $5 to cost and save
-													pitcherCost.setCost(cost + 5);
-												} else {
-													pitcherCost.setCost(0);
+												if (fpProjPitcherDao.findByNameAndTeam(fullName, teamAbbr) != null) { // see if player is in projections
+													FPProjPitcher pitcher = fpProjPitcherDao.findByNameAndTeam(fullName, teamAbbr);
+													if (keeperCostsDao.findByPitcherAndYahooRotoLeague(pitcher, league) != null) { // see if player is on a final roster
+														KeeperCosts pitcherCost = keeperCostsDao.findByPitcherAndYahooRotoLeague(pitcher, league);
+														String finalTeamKey = pitcherCost.getYahooRotoTeam().getTeamKey();
+														if (draftTeamKey.equals(finalTeamKey)) { // if player is still on original draft team then add $5 to cost and save
+															pitcherCost.setCost(cost + 5);
+														} else {
+															pitcherCost.setCost(5);
+														}
+														keeperCostsDao.save(pitcherCost);
+													}
 												}
-												keeperCostsDao.save(pitcherCost);
 										}
 											playerCounter = playerMaxTries; // exit yahoo error while loop
 										} catch (IOException e) { // if yahoo throws a 500 error count it as a B or P at whatever the cost was
@@ -930,6 +955,5 @@ public class YahooDataController extends AbstractController {
 
 		}
 	}
-
 
 }

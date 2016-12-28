@@ -19,6 +19,7 @@ import com.colinaardsma.tfbps.models.FPProjBatter;
 import com.colinaardsma.tfbps.models.FPProjPitcher;
 import com.colinaardsma.tfbps.models.dao.FPProjBatterDao;
 import com.colinaardsma.tfbps.models.dao.FPProjPitcherDao;
+import com.colinaardsma.tfbps.models.util.TeamNameNormalization;
 
 @Controller
 public class DataPullController extends AbstractController {
@@ -63,6 +64,7 @@ public class DataPullController extends AbstractController {
 						pos = posPull[0].replaceAll("[)(]", "");
 						team = "FA";
 					}
+					team = TeamNameNormalization.Normalize(team); // normalize team name
 					String name = a.get(0).text();
 					int ab = Integer.parseInt(tds.get(1).text());
 					int r = Integer.parseInt(tds.get(2).text());
@@ -149,6 +151,7 @@ public class DataPullController extends AbstractController {
 						pos = posPull[0].replaceAll("[)(]", "");
 						team = "FA";
 					}
+					team = TeamNameNormalization.Normalize(team); // normalize team name
 					String name = a.get(0).text();
 					int ip = Integer.parseInt(tds.get(1).text());
 					int k = Integer.parseInt(tds.get(2).text());

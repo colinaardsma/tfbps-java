@@ -25,6 +25,7 @@ import com.colinaardsma.tfbps.models.dao.OttoneuOldSchoolLeagueDao;
 import com.colinaardsma.tfbps.models.dao.OttoneuOldSchoolTeamDao;
 import com.colinaardsma.tfbps.models.dao.UserDao;
 import com.colinaardsma.tfbps.models.util.SGPMultCalc;
+import com.colinaardsma.tfbps.models.util.TeamNameNormalization;
 
 @Controller
 public class OttoneuDataController extends AbstractController {
@@ -250,6 +251,8 @@ public class OttoneuDataController extends AbstractController {
 
 										// team info
 										teamName = tds.get(0).text();
+										teamName = TeamNameNormalization.Normalize(teamName); // normalize team name
+
 										String href = tds.get(0).select("a").attr("href");
 										teamURL = baseUrl + href;
 										teamNumber = Integer.parseInt(href.substring(href.lastIndexOf("=") + 1));

@@ -1,8 +1,12 @@
 package com.colinaardsma.tfbps.models;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -59,6 +63,7 @@ public class YahooRotoTeam extends AbstractEntity {
 	// join variables
 	private YahooRotoLeague yahooRotoLeague;
 	private User user;
+    private List<KeeperCosts> keeperCosts;
 
 	/*
 	 * 60 = h/ab
@@ -521,6 +526,17 @@ public class YahooRotoTeam extends AbstractEntity {
 	
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+    @OneToMany
+    @JoinColumn(name = "yahoo_roto_team_uid")
+	private List<KeeperCosts> getKeeperCosts() {
+		return keeperCosts;
+	}
+
+    @SuppressWarnings("unused")
+	private void setKeeperCosts(List<KeeperCosts> keeperCosts) {
+		this.keeperCosts = keeperCosts;
 	}
 
 }

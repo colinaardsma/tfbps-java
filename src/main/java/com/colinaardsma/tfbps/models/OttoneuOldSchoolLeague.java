@@ -53,10 +53,12 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 	// links to other leagues within this database
 	private int previousYearUID;
 	
+	// join variables
 	private List<User> users;
 	private List<OttoneuOldSchoolTeam> ottoneuTeams;
 	private List<UserCustomRankingsB> userBatterSGP;
     private List<UserCustomRankingsP> userPitcherSGP;
+    private List<KeeperCosts> keeperCosts;
 	
 	public OttoneuOldSchoolLeague(int leagueNumber, String leagueName, String leagueURL, int season) {
 		this.leagueNumber = leagueNumber;
@@ -355,7 +357,7 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
     }
     
     @SuppressWarnings("unused")
-   private void setUserBatterSGP(List<UserCustomRankingsB> userBatterSGP) {
+    private void setUserBatterSGP(List<UserCustomRankingsB> userBatterSGP) {
     	this.userBatterSGP = userBatterSGP;
     }
     
@@ -369,6 +371,17 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
     private void setUserPitcherSGP(List<UserCustomRankingsP> userPitcherSGP) {
     	this.userPitcherSGP = userPitcherSGP;
     }
+
+    @OneToMany
+    @JoinColumn(name = "ottoneu_old_school_league_uid")
+	private List<KeeperCosts> getKeeperCosts() {
+		return keeperCosts;
+	}
+
+    @SuppressWarnings("unused")
+	private void setKeeperCosts(List<KeeperCosts> keeperCosts) {
+		this.keeperCosts = keeperCosts;
+	}
 
 	// calculates historical sgp for league (number of years is based on size of list provided)
 	public void calcHistSGPs(List<OttoneuOldSchoolLeague> leagues) {

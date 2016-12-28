@@ -46,7 +46,9 @@ public class FPProjPitcher extends AbstractEntity {
 	private String category;
 	private Date created;
 	
-	List<UserCustomRankingsP> userCustomRankingsP;
+	// join variables
+	private List<UserCustomRankingsP> userCustomRankingsP;
+    private List<KeeperCosts> keeperCosts;
 
 	public FPProjPitcher(String name, String team, String pos, int ip, int k, int w, int sv, double era, double whip, int er, int h, int bb, int hr, int g, int gs, int l, int cg, String category) {
 		this.name = name;
@@ -343,6 +345,17 @@ public class FPProjPitcher extends AbstractEntity {
     @SuppressWarnings("unused")
     private void setUserPitcherSGP(List<UserCustomRankingsP> userPitcherSGP) {
     	this.userCustomRankingsP = userPitcherSGP;
+    }
+
+    @OneToMany
+    @JoinColumn(name = "pitcher_uid")
+    public List<KeeperCosts> getKeeperCosts() {
+    	return keeperCosts;
+    }
+    
+    @SuppressWarnings("unused")
+    private void setKeeperCosts(List<KeeperCosts> keeperCosts) {
+    	this.keeperCosts = keeperCosts;
     }
 
     protected void calcSgp(double sgpMultW, double sgpMultSV, double sgpMultK, double sgpMultERA, double sgpMultWHIP) {

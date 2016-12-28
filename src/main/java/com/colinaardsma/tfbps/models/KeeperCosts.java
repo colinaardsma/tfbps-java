@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -26,6 +27,8 @@ public class KeeperCosts extends AbstractEntity {
 	private OttoneuOldSchoolLeague ottoneuOldSchoolLeague;
 	private OttoneuOldSchoolTeam ottoneuOldSchoolTeam;
 
+	// TODO: change cost increment to league custom $
+	// yahoo roto batter
 	public KeeperCosts(String playerKey, FPProjBatter batter, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam) {
 //		this.batters.add(batter);
 		this.playerKey = playerKey;
@@ -35,9 +38,11 @@ public class KeeperCosts extends AbstractEntity {
 		if (yahooRotoTeam.getUser() != null) {
 			this.user = yahooRotoTeam.getUser();
 		}
+		this.cost = 5;
 		this.created = new Date();
 	}
 	
+	// yahoo roto pitcher
 	public KeeperCosts(String playerKey, FPProjPitcher pitcher, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam) {
 //		this.pitchers.add(pitcher);
 		this.playerKey = playerKey;
@@ -47,9 +52,23 @@ public class KeeperCosts extends AbstractEntity {
 		if (yahooRotoTeam.getUser() != null) {
 			this.user = yahooRotoTeam.getUser();
 		}
+		this.cost = 5;
 		this.created = new Date();
 	}
 	
+	// yahoo roto player not in projections
+	public KeeperCosts(String playerKey, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam) {
+		this.playerKey = playerKey;
+		this.yahooRotoLeague = yahooRotoLeague;
+		this.yahooRotoTeam = yahooRotoTeam;
+		if (yahooRotoTeam.getUser() != null) {
+			this.user = yahooRotoTeam.getUser();
+		}
+		this.cost = 5;
+		this.created = new Date();
+	}
+	
+// http://www.fangraphs.com/fantasy/auction-values-for-ottoneu-leagues/
 	public KeeperCosts(String playerKey, FPProjBatter batter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, OttoneuOldSchoolTeam ottoneuOldSchoolTeam, int cost) {
 //		this.batters.add(batter);
 		this.playerKey = playerKey;
@@ -105,7 +124,7 @@ public class KeeperCosts extends AbstractEntity {
 		this.created = created;
 	}
 
-//	@ManyToOne
+	@ManyToOne
 	public User getUser() {
 		return user;
 	}
@@ -114,7 +133,7 @@ public class KeeperCosts extends AbstractEntity {
 		this.user = user;
 	}
 
-//	@ManyToOne
+	@ManyToOne
 	public FPProjBatter getBatter() {
 		return batter;
 	}
@@ -133,7 +152,7 @@ public class KeeperCosts extends AbstractEntity {
 //		this.batters = batters;
 //	}
 
-//	@ManyToOne
+	@ManyToOne
 	public FPProjPitcher getPitcher() {
 		return pitcher;
 	}
@@ -152,7 +171,7 @@ public class KeeperCosts extends AbstractEntity {
 //		this.pitchers = pitchers;
 //	}
 
-//	@ManyToOne
+	@ManyToOne
 	public YahooRotoLeague getYahooRotoLeague() {
 		return yahooRotoLeague;
 	}
@@ -161,7 +180,7 @@ public class KeeperCosts extends AbstractEntity {
 		this.yahooRotoLeague = yahooRotoLeague;
 	}
 
-//	@ManyToOne
+	@ManyToOne
 	public YahooRotoTeam getYahooRotoTeam() {
 		return yahooRotoTeam;
 	}
@@ -170,7 +189,7 @@ public class KeeperCosts extends AbstractEntity {
 		this.yahooRotoTeam = yahooRotoTeam;
 	}
 
-//	@ManyToOne
+	@ManyToOne
 	public OttoneuOldSchoolLeague getOttoneuOldSchoolLeague() {
 		return ottoneuOldSchoolLeague;
 	}
@@ -179,7 +198,7 @@ public class KeeperCosts extends AbstractEntity {
 		this.ottoneuOldSchoolLeague = ottoneuOldSchoolLeague;
 	}
 
-//	@ManyToOne
+	@ManyToOne
     public OttoneuOldSchoolTeam getOttoneuOldSchoolTeam() {
 		return ottoneuOldSchoolTeam;
 	}

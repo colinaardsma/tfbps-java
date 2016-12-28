@@ -50,6 +50,7 @@ public class FPProjBatter extends AbstractEntity {
 	
 	// join variables
 	private List<UserCustomRankingsB> userCustomRankingsB;
+    private List<KeeperCosts> keeperCosts;
 	
 	// aav calculation variables
 	// player pool
@@ -320,7 +321,7 @@ public class FPProjBatter extends AbstractEntity {
 		this.avgSGP = avgSGP;
 	}
 
-   @NotNull
+    @NotNull
     @Column(name = "opssgptotal")
 	public double getOpsTotalSGP() {
 		return opsTotalSGP;
@@ -390,7 +391,18 @@ public class FPProjBatter extends AbstractEntity {
     	this.userCustomRankingsB = userBatterSGP;
     }
     
-    protected void calcOpsSgp(double sgpMultR, double sgpMultHR, double sgpMultRBI, double sgpMultSB, double sgpMultOPS) {
+    @OneToMany
+    @JoinColumn(name = "batter_uid")
+    public List<KeeperCosts> getKeeperCosts() {
+    	return keeperCosts;
+    }
+    
+    @SuppressWarnings("unused")
+    private void setKeeperCosts(List<KeeperCosts> keeperCosts) {
+    	this.keeperCosts = keeperCosts;
+    }
+
+   protected void calcOpsSgp(double sgpMultR, double sgpMultHR, double sgpMultRBI, double sgpMultSB, double sgpMultOPS) {
     	BigDecimal r = new BigDecimal(this.r).divide(new BigDecimal(sgpMultR), 4, RoundingMode.HALF_UP);
     	this.rSGP = r.doubleValue();
     	BigDecimal hr = new BigDecimal(this.hr).divide(new BigDecimal(sgpMultHR), 4, RoundingMode.HALF_UP);

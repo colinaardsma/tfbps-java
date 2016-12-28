@@ -1,8 +1,12 @@
 package com.colinaardsma.tfbps.models;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -53,6 +57,7 @@ public class OttoneuOldSchoolTeam extends AbstractEntity {
 	// join variables
 	private OttoneuOldSchoolLeague ottoneuOldSchoolLeague;
 	private User user;
+    private List<KeeperCosts> keeperCosts;
 
 	/*
 	 * 60 = h/ab
@@ -444,6 +449,17 @@ public class OttoneuOldSchoolTeam extends AbstractEntity {
 	
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+    @OneToMany
+    @JoinColumn(name = "ottoneu_old_school_team_uid")
+	private List<KeeperCosts> getKeeperCosts() {
+		return keeperCosts;
+	}
+
+    @SuppressWarnings("unused")
+	private void setKeeperCosts(List<KeeperCosts> keeperCosts) {
+		this.keeperCosts = keeperCosts;
 	}
 
 }

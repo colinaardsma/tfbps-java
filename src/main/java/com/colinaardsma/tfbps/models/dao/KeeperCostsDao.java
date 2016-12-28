@@ -29,10 +29,10 @@ public interface KeeperCostsDao extends CrudRepository<KeeperCosts, Integer> {
 	// Yahoo Roto Leagues
 	List<KeeperCosts> findByYahooRotoTeam(YahooRotoTeam yahooRotoTeam);
 	List<KeeperCosts> findByUserAndYahooRotoLeague(User user, YahooRotoLeague league);
-	List<KeeperCosts> findByPlayerKey(String playerKey);
+//	List<KeeperCosts> findByPlayerKey(String playerKey);
 	KeeperCosts findByBatterAndYahooRotoLeague(FPProjBatter batter, YahooRotoLeague league);
 	KeeperCosts findByPitcherAndYahooRotoLeague(FPProjPitcher pitcher, YahooRotoLeague league);
-	KeeperCosts findByPlayerKeyAndYahooRotoLeague(String playerKey, YahooRotoLeague league);
+//	KeeperCosts findByPlayerKeyAndYahooRotoLeague(String playerKey, YahooRotoLeague league);
 
 
 	// Ottoneu Old School Leagues

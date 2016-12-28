@@ -1,7 +1,10 @@
-# tFBPs (the Fantasy Baseball Projection site)
+# fs (the fantasy site)
 A fantasy baseball projection site.
 
-## What it does
+## Summary
+Registered users are able to link to their Yahoo! or Ottoneu fantasy baseball leagues, extract historical league data and customize projections based on that data.
+
+### What it does
 While still very much a work in progress I have achieved a few of my main goals:
 * Data import/export/analysis:
     * Parse HTML projection (table) data from external sites

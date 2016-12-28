@@ -41,6 +41,7 @@ public class User extends AbstractEntity {
 	private List<OttoneuOldSchoolTeam> ottoneuTeams;
 	private List<UserCustomRankingsB> userBatterSGP;
     private List<UserCustomRankingsP> userPitcherSGP;
+    private List<KeeperCosts> keeperCosts;
 
 //    private Map<String, StockHolding> portfolio; // turn this into custom spreadsheets
         
@@ -212,6 +213,17 @@ public class User extends AbstractEntity {
     @SuppressWarnings("unused")
     private void setUserPitcherSGP(List<UserCustomRankingsP> userPitcherSGP) {
     	this.userPitcherSGP = userPitcherSGP;
+    }
+
+    @OneToMany
+    @JoinColumn(name = "user_uid")
+    public List<KeeperCosts> getKeeperCosts() {
+    	return keeperCosts;
+    }
+    
+    @SuppressWarnings("unused")
+    private void setKeeperCosts(List<KeeperCosts> keeperCosts) {
+    	this.keeperCosts = keeperCosts;
     }
 
 	protected void addPost(Post post) {
