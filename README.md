@@ -2,7 +2,7 @@
 A fantasy baseball projection site.
 
 ## Summary
-Registered users are able to link to their Yahoo! or Ottoneu fantasy baseball leagues, extract historical league data and customize projections based on that data.
+Registered users are able to link to their Yahoo! or Ottoneu fantasy baseball leagues, extract historical league data, and customize projections based on that data.
 
 ### What it does
 While still very much a work in progress I have achieved a few of my main goals:
@@ -20,7 +20,7 @@ While still very much a work in progress I have achieved a few of my main goals:
     * Allow certain users to post to blog
     * Create/Read/Update/Delete blog posts
 
-## What's coming up
+### What's coming up
 * Data import/export/analysis:
     * Store data in memcache/redis to prevent excessive db hits
     * Export data to json

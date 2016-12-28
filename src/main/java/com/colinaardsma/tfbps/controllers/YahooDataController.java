@@ -64,6 +64,9 @@ public class YahooDataController extends AbstractController {
 	
 	@Autowired
 	KeeperCostsDao keeperCostsDao;
+	
+	private List<YahooRotoLeague> linkedLeagues = new ArrayList<YahooRotoLeague>();
+
 
 	// https://developer.yahoo.com/fantasysports/guide/ResourcesAndCollections.html
 
@@ -213,8 +216,6 @@ public class YahooDataController extends AbstractController {
 		String lastName = null;
 		String fullName = null;
 		String teamAbbr = null;
-
-		List<YahooRotoLeague> linkedLeagues = new ArrayList<YahooRotoLeague>();
 
 		leagueHistory = (leagueHistory == null) ? "false" : "true";
 
@@ -952,8 +953,347 @@ public class YahooDataController extends AbstractController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
 		}
+	}
+	
+	public Document getDocument(String standingsURL, User user) throws IOException, ParserConfigurationException, SAXException {
+		// fantasysports.leagues.standings
+		String xmlData = YahooOAuth.oauthGetRequest(standingsURL, user);
+//		System.out.println(xmlData);
+
+		// parse xml data
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		InputSource is = new InputSource(new StringReader(xmlData));
+		Document document = builder.parse(is);
+
+		return document;
+	}
+	
+	public void getLeagues(User user, String leagueKey, String leagueHistory) {
+		// league variables
+		String xmlData = null;
+		String leagueName = null;
+		String leagueURL = null;
+		int auctionBudget = -1;
+		int totalSpent = 0;
+		int oneDollarB = 0;
+		int oneDollarP = 0;
+		//		String leagueScoringType = null;
+		String prevYearKey = null;
+		String nextYearKey = null;
+		int prevYears = 0;
+		int season = 0;
+		int teamCount = 0;
+		
+		// leagues
+		// iterate through the nodes and extract the data.	    
+		NodeList leagueList = document.getElementsByTagName("league");
+		for (int i = 0; i < leagueList.getLength(); i++) {
+			Node leagueNode = leagueList.item(i);
+			if (leagueNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element leagueElement = (Element) leagueNode;						
+				leagueName = leagueElement.getElementsByTagName("name").item(0).getTextContent();
+				leagueURL = leagueElement.getElementsByTagName("url").item(0).getTextContent();
+				teamCount = Integer.parseInt(leagueElement.getElementsByTagName("num_teams").item(0).getTextContent());
+//				leagueScoringType = leagueElement.getElementsByTagName("scoring_type").item(0).getTextContent();
+				prevYearKey = leagueElement.getElementsByTagName("renew").item(0).getTextContent().replace("_", ".l.");
+//				System.out.println("Previous Year Key: " + prevYearKey);
+				nextYearKey = leagueElement.getElementsByTagName("renewed").item(0).getTextContent().replace("_", ".l.");
+				season = Integer.parseInt(leagueElement.getElementsByTagName("season").item(0).getTextContent());
+				Node standingsNode = leagueElement.getElementsByTagName("standings").item(0);
+				Element standingsElement = (Element) standingsNode;
+				Node teamsNode = standingsElement.getElementsByTagName("teams").item(0);
+				Element teamsElement = (Element) teamsNode;
+				NodeList teamList = teamsElement.getElementsByTagName("team");
+				Node teamNode = teamsElement.getElementsByTagName("team").item(0);
+				Element teamElement = (Element) teamNode;
+				if (teamElement.getElementsByTagName("auction_budget_total").item(0) != null) {
+					auctionBudget = Integer.parseInt(teamElement.getElementsByTagName("auction_budget_total").item(0).getTextContent());
+
+					for (int j = 0; j < teamList.getLength(); j++) {
+						Node teamListNode = teamList.item(j);
+						Element teamListElement = (Element) teamListNode;
+						totalSpent += Integer.parseInt(teamListElement.getElementsByTagName("auction_budget_spent").item(0).getTextContent());
+					}
+				}
+			}
+		}
+
+		// if league exists add previous year key as required
+		if (yahooRotoLeagueDao.findByLeagueKey(leagueKey) != null) {
+			YahooRotoLeague existingLeague = yahooRotoLeagueDao.findByLeagueKey(leagueKey);
+
+			// add current user to list of league managers
+			List<User> managers = existingLeague.getUsers();
+			if (!managers.contains(user)) {
+				managers.add(user);
+				existingLeague.setUsers(managers);
+			}
+
+			// link to previous year only if user requested
+			if (prevYears >= 0) {
+				existingLeague.setPreviousYearKey(prevYearKey);
+			}
+			if (yahooRotoLeagueDao.findByLeagueKey(prevYearKey) != null) { // look for previous year's league and link to this league
+				existingLeague.setPreviousYearUID(yahooRotoLeagueDao.findByLeagueKey(prevYearKey).getUid());
+			} else if (yahooRotoLeagueDao.findByLeagueKey(nextYearKey) != null) { // look for next year's legue and link to this league
+				YahooRotoLeague nextYearLeague = yahooRotoLeagueDao.findByLeagueKey(nextYearKey);
+				nextYearLeague.setPreviousYearKey(leagueKey);
+				yahooRotoLeagueDao.save(nextYearLeague);
+			}
+
+			yahooRotoLeagueDao.save(existingLeague);
+			linkedLeagues.add(existingLeague);
+
+			// if league does not already exist create it
+		} else {
+			YahooRotoLeague newLeague = new YahooRotoLeague(leagueKey, leagueName, leagueURL, teamCount, season);
+			newLeague.setAuctionBudget(auctionBudget);
+			newLeague.setTotalSpent(totalSpent);
+
+			// add current user to list of league managers
+			List<User> managers = new ArrayList<User>();
+			managers.add(user);
+			newLeague.setUsers(managers);
+
+			// link to previous year only if user requested
+			if (prevYears >= 0) {
+				newLeague.setPreviousYearKey(prevYearKey);
+				if (yahooRotoLeagueDao.findByLeagueKey(prevYearKey) != null) {
+					newLeague.setPreviousYearUID(yahooRotoLeagueDao.findByLeagueKey(prevYearKey).getUid());
+				}
+
+				yahooRotoLeagueDao.save(newLeague);
+
+				if (yahooRotoLeagueDao.findByLeagueKey(nextYearKey) != null) {
+					YahooRotoLeague nextYearLeague = yahooRotoLeagueDao.findByLeagueKey(nextYearKey);
+					nextYearLeague.setPreviousYearKey(leagueKey);
+					nextYearLeague.setPreviousYearUID(yahooRotoLeagueDao.findByLeagueKey(leagueKey).getUid());
+					yahooRotoLeagueDao.save(nextYearLeague);
+				}
+			} else { // if no request to link to previous years
+				yahooRotoLeagueDao.save(newLeague);
+			}
+
+			linkedLeagues.add(newLeague);
+		}
+	}
+	
+	public void getTeams(User user, String leagueKey) {
+		// team variables
+		String teamKey = null;
+		String teamName = null;
+		String teamURL = null;
+		int teamFAABBalance = 0;
+		int teamMoves = 0;
+		int teamTrades = 0;
+		String teamGUID = null;
+		String teamManagerName = null;
+		int rank = 0;
+		double totalPoints = 0.0;
+		double habStats = 0.0; // stat_id = 60
+		int rStats = 0; // stat_id = 7
+		int hrStats = 0; // stat_id = 12
+		int rbiStats = 0; // stat_id = 13
+		int sbStats = 0; // stat_id = 16
+		double avgStats = 0.0; // stat_id = 3
+		double opsStats = 0.0; // stat_id = 55
+		double ipStats = 0; // stat_id = 50
+		int wStats = 0; // stat_id = 28
+		int svStats = 0; // stat_id = 32
+		int kStats = 0; // stat_id = 42
+		double eraStats = 0.0; // stat_id = 26
+		double whipStats = 0.0; // stat_id = 27
+		double habPoints = 0.0; // stat_id = 60
+		double rPoints = 0.0; // stat_id = 7
+		double hrPoints = 0.0; // stat_id = 12
+		double rbiPoints = 0.0; // stat_id = 13
+		double sbPoints = 0.0; // stat_id = 16
+		double avgPoints = 0.0; // stat_id = 3
+		double opsPoints = 0.0; // stat_id = 55
+		double ipPoints = 0.0; // stat_id = 50
+		double wPoints = 0.0; // stat_id = 28
+		double svPoints = 0.0; // stat_id = 32
+		double kPoints = 0.0; // stat_id = 42
+		double eraPoints = 0.0; // stat_id = 26
+		double whipPoints = 0.0; // stat_id = 27
+
+		// teams
+		// iterate through the nodes and extract the data.	    
+		NodeList teamList = document.getElementsByTagName("team");
+		for (int i = 0; i < teamList.getLength(); i++) {
+
+			// team information
+			Node teamNode = teamList.item(i);
+			if (teamNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element teamElement = (Element) teamNode;
+				teamKey = teamElement.getElementsByTagName("team_key").item(0).getTextContent();
+				teamName = teamElement.getElementsByTagName("name").item(0).getTextContent();
+				teamURL = teamElement.getElementsByTagName("url").item(0).getTextContent();
+				teamFAABBalance = teamElement.getElementsByTagName("faab_balance").item(0) != null ? Integer.parseInt(teamElement.getElementsByTagName("faab_balance").item(0).getTextContent()) : -1;
+				teamMoves = Integer.parseInt(teamElement.getElementsByTagName("number_of_moves").item(0).getTextContent());
+				teamTrades = Integer.parseInt(teamElement.getElementsByTagName("number_of_trades").item(0).getTextContent());
+				teamGUID = teamElement.getElementsByTagName("guid").item(0).getTextContent();
+				teamManagerName = teamElement.getElementsByTagName("nickname").item(0).getTextContent().replace("_", ".l.");
+//				System.out.println("GOT TEAM DATA");
+
+				// check to see if this user exists, if so skip to next
+				if (yahooRotoTeamDao.findByTeamKey(teamKey) != null) {
+					YahooRotoTeam existingTeam = yahooRotoTeamDao.findByTeamKey(teamKey);
+					if (existingTeam.getTeamGUID().equals(user.getYahooGUID())) {
+						existingTeam.setUser(user);
+					}
+					continue;
+				}
+
+				// stat values
+				Node teamStatNode = teamElement.getElementsByTagName("team_stats").item(0);
+				Element teamStatElement = (Element) teamStatNode;
+				Node statsNode = teamStatElement.getElementsByTagName("stats").item(0);
+				Element statsElement = (Element) statsNode;
+				NodeList statList = statsElement.getElementsByTagName("stat");
+				for(int j = 0; j < statList.getLength(); j++) {
+					Node statNode = statList.item(j);
+					Element statElement = (Element) statNode;
+
+					int statCategory = Integer.parseInt(statElement.getElementsByTagName("stat_id").item(0).getTextContent());
+
+					switch (statCategory) {
+//					// hab
+//					case 60 : habStats = Double.parseDouble(statElement.getElementsByTagName("value").item(0).getTextContent());
+//					break;
+					// r
+					case 7 : rStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+					// hr
+					case 12 : hrStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+					// rbi
+					case 13 : rbiStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+					// sb
+					case 16 : sbStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+//					// avg
+//					case 3 : avgStats = Double.parseDouble(statElement.getElementsByTagName("value").item(0).getTextContent());
+//					break;
+					// ops
+					case 55 : opsStats = Double.parseDouble(statElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+					// ip
+					case 50 : ipStats = Double.parseDouble(statElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+					// w
+					case 28 : wStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+					// sv
+					case 32 : svStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+					// k
+					case 42 : kStats = Integer.parseInt(statElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+					// era
+					case 26 : eraStats = Double.parseDouble(statElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+					// whip
+					case 27 : whipStats = Double.parseDouble(statElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+
+					default : break;
+					}
+				}
+		
+				// stat points
+				Node teamPointNode = teamElement.getElementsByTagName("team_points").item(0);
+				Element teamPointElement = (Element) teamPointNode;
+				Node pointsNode = teamPointElement.getElementsByTagName("stats").item(0);
+				Element pointsElement = (Element) pointsNode;
+				NodeList pointList = pointsElement.getElementsByTagName("stat");
+				for(int k = 0; k < pointList.getLength(); k++) {
+					Node pointNode = pointList.item(k);
+					Element pointElement = (Element) pointNode;
+
+					int pointCategory = Integer.parseInt(pointElement.getElementsByTagName("stat_id").item(0).getTextContent());
+
+					switch (pointCategory) {
+//					// hab
+//					case 60 : habPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+//					break;
+					// r
+					case 7 : rPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+					// hr
+					case 12 : hrPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+					// rbi
+					case 13 : rbiPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+					// sb
+					case 16 : sbPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+//					// avg
+//					case 3 : avgPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+//					break;
+					// ops
+					case 55 : opsPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+//					// ip
+//					case 50 : ipPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+//					break;
+					// w
+					case 28 : wPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+					// sv
+					case 32 : svPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+					// k
+					case 42 : kPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+					// era
+					case 26 : eraPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+					// whip
+					case 27 : whipPoints = Double.parseDouble(pointElement.getElementsByTagName("value").item(0).getTextContent());
+					break;
+
+					default : break;
+					}
+				}
+
+				// stat points
+				NodeList teamStandingList = teamElement.getElementsByTagName("team_standings");
+				for(int l = 0; l < teamStandingList.getLength(); l++) {
+					Node teamStandingNode = teamStandingList.item(l);
+					if (teamStandingNode.getNodeType() == Node.ELEMENT_NODE) {
+						Element teamStandingElement = (Element) teamStandingNode;
+						rank = Integer.parseInt(teamStandingElement.getElementsByTagName("rank").item(0).getTextContent());
+						totalPoints = Double.parseDouble(teamStandingElement.getElementsByTagName("points_for").item(0).getTextContent());
+					}
+				}
+			}
+
+			YahooRotoTeam newTeam = new YahooRotoTeam(teamKey, teamName, teamURL, teamFAABBalance, teamMoves, teamTrades, teamGUID, teamManagerName, leagueKey, habStats, 
+					rStats, hrStats, rbiStats, sbStats, avgStats, opsStats, ipStats, wStats, svStats, kStats, eraStats, whipStats, habPoints, rPoints, hrPoints, rbiPoints, 
+					sbPoints, avgPoints, opsPoints, ipPoints, wPoints, svPoints, kPoints, eraPoints, whipPoints, rank, totalPoints);
+
+			if (newTeam.getTeamGUID().equals(user.getYahooGUID())) {
+				newTeam.setUser(user);
+			}
+			newTeam.setYahooRotoLeague(yahooRotoLeagueDao.findByLeagueKey(leagueKey));
+			yahooRotoTeamDao.save(newTeam);
+		}
+	}
+	
+	public void getPlayers() {
+		// player variables
+		String playerKey = null;
+		String firstName = null;
+		String lastName = null;
+		String fullName = null;
+		String teamAbbr = null;
+
+		
 	}
 
 }
