@@ -93,7 +93,7 @@ public class YahooOAuth {
 		// send the request and read the output
 		String oauth_response_token = new String();
 		try {
-			System.out.println("Connecting to: " + url.toString());
+//			System.out.println("Connecting to: " + url.toString());
 			System.out.println("Response: " + urlConnection.getResponseCode() + " " + urlConnection.getResponseMessage());
 			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 			Scanner scanner = new Scanner(in,"UTF-8");
@@ -174,7 +174,7 @@ public class YahooOAuth {
 		// send the request and read the output
 		String access_token = new String();
 		try {
-			System.out.println("Connecting to: " + url.toString());
+//			System.out.println("Connecting to: " + url.toString());
 			System.out.println("Response: " + urlConnection.getResponseCode() + " " + urlConnection.getResponseMessage());
 			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 			Scanner scanner = new Scanner(in,"UTF-8");
@@ -252,7 +252,7 @@ public class YahooOAuth {
 		// send the request and read the output
 		String access_token = new String();
 		try {
-			System.out.println("Connecting to: " + url.toString());
+//			System.out.println("Connecting to: " + url.toString());
 			System.out.println("Response: " + urlConnection.getResponseCode() + " " + urlConnection.getResponseMessage());
 			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 			Scanner scanner = new Scanner(in,"UTF-8");
@@ -331,7 +331,7 @@ public class YahooOAuth {
 		// send the request and read the output
 		String html = new String();
 		try {
-			System.out.println("Connecting to: " + url.toString());
+//			System.out.println("Connecting to: " + url.toString());
 			System.out.println("Response: " + urlConnection.getResponseCode() + " " + urlConnection.getResponseMessage());
 			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 			Scanner scanner = new Scanner(in,"UTF-8");
