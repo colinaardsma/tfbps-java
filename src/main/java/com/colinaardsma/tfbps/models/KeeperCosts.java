@@ -29,7 +29,7 @@ public class KeeperCosts extends AbstractEntity {
 
 	// TODO: change cost increment to league custom $
 	// yahoo roto batter
-	public KeeperCosts(String playerKey, FPProjBatter batter, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam) {
+	public KeeperCosts(String playerKey, FPProjBatter batter, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam, int cost) {
 //		this.batters.add(batter);
 		this.playerKey = playerKey;
 		this.batter = batter;
@@ -38,12 +38,12 @@ public class KeeperCosts extends AbstractEntity {
 		if (yahooRotoTeam.getUser() != null) {
 			this.user = yahooRotoTeam.getUser();
 		}
-		this.cost = 5;
+		this.cost = cost;
 		this.created = new Date();
 	}
 	
 	// yahoo roto pitcher
-	public KeeperCosts(String playerKey, FPProjPitcher pitcher, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam) {
+	public KeeperCosts(String playerKey, FPProjPitcher pitcher, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam, int cost) {
 //		this.pitchers.add(pitcher);
 		this.playerKey = playerKey;
 		this.pitcher = pitcher;
@@ -52,19 +52,19 @@ public class KeeperCosts extends AbstractEntity {
 		if (yahooRotoTeam.getUser() != null) {
 			this.user = yahooRotoTeam.getUser();
 		}
-		this.cost = 5;
+		this.cost = cost;
 		this.created = new Date();
 	}
 	
 	// yahoo roto player not in projections
-	public KeeperCosts(String playerKey, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam) {
+	public KeeperCosts(String playerKey, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam, int cost) {
 		this.playerKey = playerKey;
 		this.yahooRotoLeague = yahooRotoLeague;
 		this.yahooRotoTeam = yahooRotoTeam;
 		if (yahooRotoTeam.getUser() != null) {
 			this.user = yahooRotoTeam.getUser();
 		}
-		this.cost = 5;
+		this.cost = cost;
 		this.created = new Date();
 	}
 	

@@ -49,6 +49,8 @@ public class YahooRotoLeague extends AbstractEntity {
 	private int totalSpent;
 	private int oneDollarB;
 	private int oneDollarP;
+	private int costIncrement;
+	private int faCost;
 	
 	// historical sgp variables
 	private double rHistSGPMult;
@@ -88,6 +90,8 @@ public class YahooRotoLeague extends AbstractEntity {
 		this.leagueURL = leagueURL;
 		this.teamCount = teamCount;
 		this.season = season;
+		this.costIncrement = 5;
+		this.faCost = 5;
 	}
 	
 	public YahooRotoLeague() {}
@@ -338,6 +342,24 @@ public class YahooRotoLeague extends AbstractEntity {
 
 	public void setOneDollarP(int oneDollarP) {
 		this.oneDollarP = oneDollarP;
+	}
+
+	@Column(name = "costIncrement")
+	public int getCostIncrement() {
+		return costIncrement;
+	}
+
+	public void setCostIncrement(int costIncrement) {
+		this.costIncrement = costIncrement;
+	}
+
+	@Column(name = "faCost")
+	public int getFaCost() {
+		return faCost;
+	}
+
+	public void setFaCost(int faCost) {
+		this.faCost = faCost;
 	}
 
 	@Column(name = "rHistSGPMult")
