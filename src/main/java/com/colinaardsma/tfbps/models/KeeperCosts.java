@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -29,6 +30,8 @@ public class KeeperCosts extends AbstractEntity {
 	private YahooRotoTeam yahooRotoTeam;
 	private OttoneuOldSchoolLeague ottoneuOldSchoolLeague;
 	private OttoneuOldSchoolTeam ottoneuOldSchoolTeam;
+	private UserCustomRankingsB userCustomRankingsB;
+	private UserCustomRankingsP userCustomRankingsP;
 
 	// TODO: change cost increment to league custom $
 	// yahoo roto batter
@@ -197,16 +200,6 @@ public class KeeperCosts extends AbstractEntity {
 		this.batter = batter;
 	}
 
-//    @ManyToMany
-//    @JoinTable(name="BATTER_KEEPERCOSTS")
-//	public List<FPProjBatter> getBatters() {
-//		return batters;
-//	}
-//
-//	public void setBatters(List<FPProjBatter> batters) {
-//		this.batters = batters;
-//	}
-
 	@ManyToOne
 	public FPProjPitcher getPitcher() {
 		return pitcher;
@@ -215,16 +208,6 @@ public class KeeperCosts extends AbstractEntity {
 	public void setPitcher(FPProjPitcher pitcher) {
 		this.pitcher = pitcher;
 	}
-
-//    @ManyToMany
-//    @JoinTable(name="PITCHER_KEEPERCOSTS")
-//	public List<FPProjPitcher> getPitchers() {
-//		return pitchers;
-//	}
-//
-//	public void setPitchers(List<FPProjPitcher> pitchers) {
-//		this.pitchers = pitchers;
-//	}
 
 	@ManyToOne
 	public YahooRotoLeague getYahooRotoLeague() {
@@ -260,6 +243,24 @@ public class KeeperCosts extends AbstractEntity {
 
 	public void setOttoneuOldSchoolTeam(OttoneuOldSchoolTeam ottoneuOldSchoolTeam) {
 		this.ottoneuOldSchoolTeam = ottoneuOldSchoolTeam;
+	}
+
+	@OneToOne
+	public UserCustomRankingsB getUserCustomRankingsB() {
+		return userCustomRankingsB;
+	}
+
+	public void setUserCustomRankingsB(UserCustomRankingsB userCustomRankingsB) {
+		this.userCustomRankingsB = userCustomRankingsB;
+	}
+
+	@OneToOne
+	public UserCustomRankingsP getUserCustomRankingsP() {
+		return userCustomRankingsP;
+	}
+
+	public void setUserCustomRankingsP(UserCustomRankingsP userCustomRankingsP) {
+		this.userCustomRankingsP = userCustomRankingsP;
 	}
 
 }

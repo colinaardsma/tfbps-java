@@ -21,6 +21,7 @@ public interface UserCustomRankingsPDao extends CrudRepository<UserCustomRanking
 	List<UserCustomRankingsP> findAllByOrderByHistSGPDesc();
 	List<UserCustomRankingsP> findByUser(User user);
 	UserCustomRankingsP findByPitcher_uid(int pitcher_uid);
+	UserCustomRankingsP findByPitcher(FPProjPitcher pitcher);
 	
 	// Yahoo Roto Leagues
 	List<UserCustomRankingsP> findByUserAndYahooRotoLeague(User user, YahooRotoLeague league);

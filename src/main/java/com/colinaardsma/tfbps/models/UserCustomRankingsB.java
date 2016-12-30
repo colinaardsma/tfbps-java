@@ -7,7 +7,10 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -24,6 +27,7 @@ public class UserCustomRankingsB extends AbstractEntity {
 	private FPProjBatter batter;
 	private YahooRotoLeague yahooRotoLeague;
 	private OttoneuOldSchoolLeague ottoneuOldSchoolLeague;
+	private KeeperCosts keeperCost;
 	
 	public UserCustomRankingsB(FPProjBatter batter, YahooRotoLeague yahooRotoLeague, User user) {
 		this.batter = batter;
@@ -108,7 +112,16 @@ public class UserCustomRankingsB extends AbstractEntity {
 		this.ottoneuOldSchoolLeague = ottoneuOldSchoolLeague;
 	}
 
-    public double calcLeagueHistSGP(FPProjBatter batter, YahooRotoLeague yahooRotoLeague) {
+	@OneToOne
+	public KeeperCosts getKeeperCost() {
+		return keeperCost;
+	}
+
+	public void setKeeperCost(KeeperCosts keeperCost) {
+		this.keeperCost = keeperCost;
+	}
+
+  public double calcLeagueHistSGP(FPProjBatter batter, YahooRotoLeague yahooRotoLeague) {
     	BigDecimal r = new BigDecimal(batter.getR()).divide(new BigDecimal(yahooRotoLeague.getRHistSGPMult()), 4, RoundingMode.HALF_UP);
     	BigDecimal hr = new BigDecimal(batter.getHr()).divide(new BigDecimal(yahooRotoLeague.getHrHistSGPMult()), 4, RoundingMode.HALF_UP);
     	BigDecimal rbi = new BigDecimal(batter.getRbi()).divide(new BigDecimal(yahooRotoLeague.getRbiHistSGPMult()), 4, RoundingMode.HALF_UP);

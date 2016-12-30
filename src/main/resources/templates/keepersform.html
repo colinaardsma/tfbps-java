@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+	<head th:replace="template :: head(page='user yahoo leagues')"></head>
+	<body>
+		<div class="container">
+			<div id="top" th:include="template :: masthead(${currentUser})"></div>
+			<div id="middle">
+				<h4>View Potential Keepers for your League</h4>
+				<br/>
+				<form style="width:80%; margin:auto" method="post">
+	    			<select name="league">
+						<option th:each="league : ${keeperLeagues}" th:value="${league.leagueKey}" th:text="${league.leagueName} + ' - ' + ${league.season}"></option>
+					</select>
+					<br/>
+	    			<div class="error" th:text="${error}"></div>
+	    			<br/>
+	    			<label>
+	    				<input type="submit" />
+	    			</label>
+				</form>
+				<br/>
+			</div>
+			<div th:replace="template :: footer"></div>
+		</div>
+	</body>
+</html>

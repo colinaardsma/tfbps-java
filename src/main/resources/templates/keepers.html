@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+	<head th:if="${category} == 'batter'" th:replace="template :: head(page='batter projections')"></head>
+	<head th:unless="${category} == 'pitcher'" th:replace="template :: head(page='pitcher projections')"></head>
+	<body>
+		<div class="container">
+			<div id="top" th:include="template :: masthead(${currentUser})"></div>
+    		<div id="middle">
+        		<!-- <p th:text="'Date of last pull: ' + ${#dates.format(lastPullDate, 'MM.dd.yy')}"></p> -->
+        		<table style="margin: auto">
+					<tr>
+						<th style="padding-right: 2em">Name</th>
+						<th style="padding-right: 2em">Team</th>
+						<th style="padding-right: 2em">Pos</th>
+						<th style="padding-right: 2em">Cost</th>
+						<th style="padding-right: 2em">Value</th>
+						<th style="padding-right: 2em">Profit</th>
+						<!-- <th style="padding-right: 2em" th:text="(${category} == 'batter' ? 'AVG SGP' : 'SGP')"></th>
+						<th style="padding-right: 2em" th:text="(${category} == 'batter' ? 'AVG AAV' : 'AAV')"></th>
+						<th style="padding-right: 2em" th:text="(${category} == 'batter' ? 'AB' : 'IP')"></th>
+						<th style="padding-right: 2em" th:text="(${category} == 'batter' ? 'R' : 'W')"></th>
+						<th style="padding-right: 2em" th:text="(${category} == 'batter' ? 'HR' : 'SV')"></th>
+						<th style="padding-right: 2em" th:text="(${category} == 'batter' ? 'RBI' : 'K')"></th>
+						<th style="padding-right: 2em" th:text="(${category} == 'batter' ? 'SB' : 'ERA')"></th>
+						<th th:text="(${category} == 'batter' ? 'OPS' : 'WHIP')"></th>
+						<th style="padding-right: 2em" th:if="${category} == 'batter'">AVG</th> -->
+						
+					</tr>
+					<tr th:each="player : ${potentialKeepers}">
+        				<td style="padding-right: 2em" th:text="${player.name}"></td>
+ 			   	    	<td style="padding-right: 2em" th:text="${player.team}"></td>
+       			 		<td style="padding-right: 2em" th:text="${player.pos}"></td>
+       			 		<td style="padding-right: 2em" th:text="${player.cost}"></td>
+        			 	<!-- <td style="padding-right: 2em" th:text="${player.user}"></td>
+       			 		
+       		 			<td style="padding-right: 2em" th:if="${category} == 'batter'" th:text="${player.opsTotalSGP}"></td>
+       		 			<td style="padding-right: 2em" th:if="${category} == 'batter'" th:text="'$' + ${player.opsTotalAAV}"></td>
+        				<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.avgTotalSGP} : ${player.sgp})"></td>
+        				<td style="padding-right: 2em" th:text="(${category} == 'batter' ? '$' + ${player.avgTotalAAV} : '$' + ${player.aav})"></td>
+        				<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.ab} : ${player.ip})"></td>
+		        		<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.r} : ${player.w})"></td>
+      			  		<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.hr} : ${player.sv})"></td>
+	    	    		<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.rbi} : ${player.k})"></td>
+    		    		<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.sb} : ${player.era})"></td>
+        				<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.ops} : ${player.whip})"></td>
+        				<td style="padding-right: 2em" th:if="${category} == 'batter'" th:text="${player.avg}"></td> -->
+					</tr>
+				</table>
+    		</div>
+    		<div th:replace="template :: footer"></div>
+		</div>
+	</body>
+</html>
