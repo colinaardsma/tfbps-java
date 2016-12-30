@@ -12,14 +12,17 @@ import javax.validation.constraints.NotNull;
 @Table(name = "KeeperCosts")
 public class KeeperCosts extends AbstractEntity {
 	
-	private int cost;
+	private String name;
+	private String team;
+	private String pos;
 	private String playerKey;
+	private int cost;
+	private String posType;
+
 	private Date created;
 	
 	// join variables
 	private User user;
-//	private List<FPProjBatter> batters;
-//	private List<FPProjPitcher> pitchers;
 	private FPProjBatter batter;
 	private FPProjPitcher pitcher;
 	private YahooRotoLeague yahooRotoLeague;
@@ -29,8 +32,10 @@ public class KeeperCosts extends AbstractEntity {
 
 	// TODO: change cost increment to league custom $
 	// yahoo roto batter
-	public KeeperCosts(String playerKey, FPProjBatter batter, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam, int cost) {
-//		this.batters.add(batter);
+	public KeeperCosts(String name, String team, String pos, String playerKey, FPProjBatter batter, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam, int cost, String posType) {
+		this.name = name;
+		this.team = team;
+		this.pos = pos;
 		this.playerKey = playerKey;
 		this.batter = batter;
 		this.yahooRotoLeague = yahooRotoLeague;
@@ -39,12 +44,15 @@ public class KeeperCosts extends AbstractEntity {
 			this.user = yahooRotoTeam.getUser();
 		}
 		this.cost = cost;
+		this.posType = posType;
 		this.created = new Date();
 	}
 	
 	// yahoo roto pitcher
-	public KeeperCosts(String playerKey, FPProjPitcher pitcher, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam, int cost) {
-//		this.pitchers.add(pitcher);
+	public KeeperCosts(String name, String team, String pos, String playerKey, FPProjPitcher pitcher, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam, int cost, String posType) {
+		this.name = name;
+		this.team = team;
+		this.pos = pos;
 		this.playerKey = playerKey;
 		this.pitcher = pitcher;
 		this.yahooRotoLeague = yahooRotoLeague;
@@ -53,11 +61,15 @@ public class KeeperCosts extends AbstractEntity {
 			this.user = yahooRotoTeam.getUser();
 		}
 		this.cost = cost;
+		this.posType = posType;
 		this.created = new Date();
 	}
 	
 	// yahoo roto player not in projections
-	public KeeperCosts(String playerKey, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam, int cost) {
+	public KeeperCosts(String name, String team, String pos, String playerKey, YahooRotoLeague yahooRotoLeague, YahooRotoTeam yahooRotoTeam, int cost, String posType) {
+		this.name = name;
+		this.team = team;
+		this.pos = pos;
 		this.playerKey = playerKey;
 		this.yahooRotoLeague = yahooRotoLeague;
 		this.yahooRotoTeam = yahooRotoTeam;
@@ -65,12 +77,15 @@ public class KeeperCosts extends AbstractEntity {
 			this.user = yahooRotoTeam.getUser();
 		}
 		this.cost = cost;
+		this.posType = posType;
 		this.created = new Date();
 	}
 	
 // http://www.fangraphs.com/fantasy/auction-values-for-ottoneu-leagues/
-	public KeeperCosts(String playerKey, FPProjBatter batter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, OttoneuOldSchoolTeam ottoneuOldSchoolTeam, int cost) {
-//		this.batters.add(batter);
+	public KeeperCosts(String name, String team, String pos, String playerKey, FPProjBatter batter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, OttoneuOldSchoolTeam ottoneuOldSchoolTeam, int cost, String posType) {
+		this.name = name;
+		this.team = team;
+		this.pos = pos;
 		this.playerKey = playerKey;
 		this.batter = batter;
 		this.ottoneuOldSchoolLeague = ottoneuOldSchoolLeague;
@@ -78,11 +93,14 @@ public class KeeperCosts extends AbstractEntity {
 			this.user = ottoneuOldSchoolTeam.getUser();
 		}
 		this.cost = cost;
+		this.posType = posType;
 		this.created = new Date();
 	}
 	
-	public KeeperCosts(String playerKey, FPProjPitcher pitcher, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, OttoneuOldSchoolTeam ottoneuOldSchoolTeam, int cost) {
-//		this.pitchers.add(pitcher);
+	public KeeperCosts(String name, String team, String pos, String playerKey, FPProjPitcher pitcher, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, OttoneuOldSchoolTeam ottoneuOldSchoolTeam, int cost, String posType) {
+		this.name = name;
+		this.team = team;
+		this.pos = pos;
 		this.playerKey = playerKey;
 		this.pitcher = pitcher;
 		this.ottoneuOldSchoolLeague = ottoneuOldSchoolLeague;
@@ -90,18 +108,55 @@ public class KeeperCosts extends AbstractEntity {
 			this.user = ottoneuOldSchoolTeam.getUser();
 		}
 		this.cost = cost;
+		this.posType = posType;
 		this.created = new Date();
 	}
 	
 	public KeeperCosts() {}
 	
-    @Column(name = "cost")
+	@Column(name = "name")
+    public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Column(name = "team")
+	public String getTeam() {
+		return team;
+	}
+
+	public void setTeam(String team) {
+		this.team = team;
+	}
+
+	@Column(name = "pos")
+	public String getPos() {
+		return pos;
+	}
+
+	public void setPos(String pos) {
+		this.pos = pos;
+	}
+
+	@Column(name = "cost")
 	public int getCost() {
 		return cost;
 	}
 
 	public void setCost(int cost) {
 		this.cost = cost;
+	}
+
+    @Column(name = "posType")
+	public String getPosType() {
+		return posType;
+	}
+
+	public void setPosType(String posType) {
+		this.posType = posType;
 	}
 
 	@NotNull
