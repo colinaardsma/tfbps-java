@@ -51,6 +51,7 @@ public class OttoneuDataController extends AbstractController {
 		return "ottoneuleagueentryform";
 	}
 	
+	// https://ottoneu.fangraphs.com/642/draftresults?season=2016
 	// http://www.smartfantasybaseball.com/e-book-using-standings-gain-points-to-rank-players-and-create-dollar-values/
 	// https://ottoneu.fangraphs.com/642/rosterexport
 	// https://jsoup.org/cookbook/extracting-data/selector-syntax

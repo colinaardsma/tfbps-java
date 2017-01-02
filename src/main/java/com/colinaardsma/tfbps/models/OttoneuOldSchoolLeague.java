@@ -50,6 +50,15 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 	private double eraHistSGPMult;
 	private double whipHistSGPMult;
 	
+	// historical auction value variables
+	private double histBudgetPctB;
+	private double histBudgetPctP;
+	private double histDraftedB;
+	private double histDraftedP;
+	private double histTotalSpent;
+	private double histOneDollarB;
+	private double histOneDollarP;
+	
 	// links to other leagues within this database
 	private int previousYearUID;
 	
@@ -321,7 +330,70 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 		this.whipHistSGPMult = whipHistSGPMult;
 	}
 
-    @Column(name = "prevyearUID")
+    @Column(name = "histBudgetPctB")
+    public double getHistBudgetPctB() {
+		return histBudgetPctB;
+	}
+
+	public void setHistBudgetPctB(double histBudgetPctB) {
+		this.histBudgetPctB = histBudgetPctB;
+	}
+
+    @Column(name = "histBudgetPctP")
+	public double getHistBudgetPctP() {
+		return histBudgetPctP;
+	}
+
+	public void setHistBudgetPctP(double histBudgetPctP) {
+		this.histBudgetPctP = histBudgetPctP;
+	}
+
+    @Column(name = "histDraftedB")
+	public double getHistDraftedB() {
+		return histDraftedB;
+	}
+
+	public void setHistDraftedB(double histDraftedB) {
+		this.histDraftedB = histDraftedB;
+	}
+
+    @Column(name = "histDraftedP")
+	public double getHistDraftedP() {
+		return histDraftedP;
+	}
+
+	public void setHistDraftedP(double histDraftedP) {
+		this.histDraftedP = histDraftedP;
+	}
+
+    @Column(name = "histTotalSpent")
+	public double getHistTotalSpent() {
+		return histTotalSpent;
+	}
+
+	public void setHistTotalSpent(double histTotalSpent) {
+		this.histTotalSpent = histTotalSpent;
+	}
+
+    @Column(name = "getHistOneDollarB")
+	public double getHistOneDollarB() {
+		return histOneDollarB;
+	}
+
+	public void setHistOneDollarB(double histOneDollarB) {
+		this.histOneDollarB = histOneDollarB;
+	}
+
+    @Column(name = "getHistOneDollarP")
+	public double getHistOneDollarP() {
+		return histOneDollarP;
+	}
+
+	public void setHistOneDollarP(double histOneDollarP) {
+		this.histOneDollarP = histOneDollarP;
+	}
+
+	@Column(name = "prevyearUID")
 	public int getPreviousYearUID() {
 		return previousYearUID;
 	}

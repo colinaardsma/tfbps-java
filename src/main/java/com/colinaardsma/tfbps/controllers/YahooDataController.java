@@ -1014,6 +1014,10 @@ public class YahooDataController extends AbstractController {
 		return cost;
 	}
 	
+	public void setKeepers() {
+		
+	}
+	
 	public void setSGP(YahooRotoLeague league, String leagueKey, String requestedLeagueKey) {
 		// calculate league SGP and save to db
 		List<YahooRotoTeam> teams = yahooRotoTeamDao.findByLeagueKey(leagueKey); // pull list of teams in league

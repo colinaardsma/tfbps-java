@@ -348,80 +348,170 @@ public class ProjectionController extends AbstractController {
 	@RequestMapping(value = "/user_ottoneu_old_school_fpprojb", method = RequestMethod.POST)
     public String userottoneuoldschoolfpprojb(Model model, HttpServletRequest request){
 		// check for user in session
-		String currentUser = this.getUsernameFromSession(request);
-		User user = this.getUserFromSession(request);
-		
-		// get league and leaguekey from user selection in get
-		String leagueKey = request.getParameter("league");
-		OttoneuOldSchoolLeague league = ottoneuOldSchoolLeagueDao.findByLeagueKey(leagueKey);
-		
-		// pull player list
-		List<FPProjBatter> batters = fpProjBatterDao.findAllByOrderByOpsTotalSGPDesc();
-		
-		// if histsgp has not been calculated for this league/user then calculate, otherwise continue
-		if (userCustomRankingsBDao.findByUserAndOttoneuOldSchoolLeague(user, league).size() == 0) {
-			for (FPProjBatter batter : batters) {
-				UserCustomRankingsB userBatterSGP = new UserCustomRankingsB(batter, league, user);
-				userCustomRankingsBDao.save(userBatterSGP);
-			}
-		}
-
-		// create and populate list with players and user's custom sgp
-		List<FPProjBatter> sgpBatters = new ArrayList<FPProjBatter>();
-		
-		for (FPProjBatter batter : batters) {
-			String name = batter.getName();
-			String team = batter.getTeam();
-			String pos = batter.getPos();
-			int ab = batter.getAb();
-			int r = batter.getR();
-			int hr = batter.getHr();
-			int rbi = batter.getRbi();
-			int sb = batter.getSb();
-			double avg = batter.getAvg();
-			double obp = batter.getObp();
-			int h = batter.getH();
-			int dbl = batter.getDbl();
-			int tpl = batter.getTpl();
-			int bb = batter.getBb();
-			int k = batter.getK();
-			double slg = batter.getSlg();
-			double ops = batter.getOps();
-			String category = batter.getCategory();
-			UserCustomRankingsB userBatterSGP = userCustomRankingsBDao.findByBatterAndUserAndOttoneuOldSchoolLeague(batter, user, league);
-			double customSGP = userBatterSGP.getHistSGP();
-
-			FPProjBatter sgpBatter = new FPProjBatter(name, team, pos, ab, r, hr, rbi, sb, avg, obp, h, dbl, tpl, bb, k, slg, ops, category);
-			sgpBatter.setAvgTotalSGP(customSGP);
-			sgpBatters.add(sgpBatter);
-		}
-		
-		// sort list by user's custom sgp calculation (desc)
-		Collections.sort(sgpBatters, new Comparator<FPProjBatter>() {
-			@Override
-			public int compare(FPProjBatter b1, FPProjBatter b2) {
-				if (b1.getAvgTotalSGP() < b2.getAvgTotalSGP()) return 1;
-				if (b1.getAvgTotalSGP() > b2.getAvgTotalSGP()) return -1;
-				return 0;
-			}
-		});
-		
-		// get date of last data pull
-		Date lastPullDate = batters.get(0).getCreated();
-		// set category of data
-		String category = "batter";
-		String leagueType = "Ottoneu Old School";
+				String currentUser = this.getUsernameFromSession(request);
+				User user = this.getUserFromSession(request);
 				
-    	model.addAttribute("currentUser", currentUser);
-		model.addAttribute("players", sgpBatters);
-		model.addAttribute("lastPullDate", lastPullDate);
-		model.addAttribute("leagueType", leagueType);
-		model.addAttribute("category", category);
-        model.addAttribute("user", user);
+				// get league and leaguekey from user selection in get
+				String leagueKey = request.getParameter("league");
+				OttoneuOldSchoolLeague league = ottoneuOldSchoolLeagueDao.findByLeagueKey(leagueKey);
+				
+				// pull player list
+				List<FPProjBatter> batters = fpProjBatterDao.findAllByOrderByOpsTotalSGPDesc();
+				
+				// if hist sgp has not been calculated for this league/user then calculate, otherwise continue
+				if (userCustomRankingsBDao.findByUserAndOttoneuOldSchoolLeague(user, league).size() == 0) {
+					for (FPProjBatter batter : batters) {
+						UserCustomRankingsB userBatterSGP = new UserCustomRankingsB(batter, league, user);
+						userCustomRankingsBDao.save(userBatterSGP);
+					}
+				}
+				
+				List<UserCustomRankingsB> userBatterList = userCustomRankingsBDao.findByUserAndOttoneuOldSchoolLeague(user, league);
 
-        return "projections";
+				// sort list by user's custom sgp calculation (desc)
+				Collections.sort(userBatterList, new Comparator<UserCustomRankingsB>() {
+					@Override
+					public int compare(UserCustomRankingsB b1, UserCustomRankingsB b2) {
+						if (b1.getHistSGP() < b2.getHistSGP()) return 1;
+						if (b1.getHistSGP() > b2.getHistSGP()) return -1;
+						return 0;
+					}
+				});
+				
+				// create secondary list for use in AAV calculation
+				List<UserCustomRankingsB> userCustomList = new ArrayList<UserCustomRankingsB>();
+				userCustomList.addAll(userBatterList);
+				
+				for (UserCustomRankingsB userBatter : userBatterList) {
+					userBatter.calcLeagueHistAAV(userCustomList, league);
+					userCustomRankingsBDao.save(userBatter);
+				}
+				
+				// create and populate list with players and user's custom sgp
+				List<FPProjBatter> customBatterRankings = new ArrayList<FPProjBatter>();
+				
+				for (UserCustomRankingsB userBatter : userBatterList) {
+					FPProjBatter batter = userBatter.getBatter();
+					
+					String name = batter.getName();
+					String team = batter.getTeam();
+					String pos = batter.getPos();
+					int ab = batter.getAb();
+					int r = batter.getR();
+					int hr = batter.getHr();
+					int rbi = batter.getRbi();
+					int sb = batter.getSb();
+					double avg = batter.getAvg();
+					double obp = batter.getObp();
+					int h = batter.getH();
+					int dbl = batter.getDbl();
+					int tpl = batter.getTpl();
+					int bb = batter.getBb();
+					int k = batter.getK();
+					double slg = batter.getSlg();
+					double ops = batter.getOps();
+					String category = batter.getCategory();
+					double customSGP = userBatter.getHistSGP();
+					BigDecimal customAAV = userBatter.getHistAAV();
+					
+					FPProjBatter customBatter = new FPProjBatter(name, team, pos, ab, r, hr, rbi, sb, avg, obp, h, dbl, tpl, bb, k, slg, ops, category);
+					customBatter.setOpsTotalSGP(customSGP);
+					customBatter.setOpsTotalAAV(customAAV);
+					customBatterRankings.add(customBatter);
+				}
+				
+				// get date of last data pull
+				Date lastPullDate = batters.get(0).getCreated();
+				// set category of data
+				String category = "batter";
+				String leagueType = "Yahoo Roto";
+						
+		    	model.addAttribute("currentUser", currentUser);
+				model.addAttribute("players", customBatterRankings);
+				model.addAttribute("lastPullDate", lastPullDate);
+				model.addAttribute("leagueType", leagueType);
+				model.addAttribute("category", category);
+		        model.addAttribute("user", user);
+
+		        return "projections";
     }
 
+//	@RequestMapping(value = "/user_ottoneu_old_school_fpprojb", method = RequestMethod.POST)
+//    public String userottoneuoldschoolfpprojb(Model model, HttpServletRequest request){
+//		// check for user in session
+//		String currentUser = this.getUsernameFromSession(request);
+//		User user = this.getUserFromSession(request);
+//		
+//		// get league and leaguekey from user selection in get
+//		String leagueKey = request.getParameter("league");
+//		OttoneuOldSchoolLeague league = ottoneuOldSchoolLeagueDao.findByLeagueKey(leagueKey);
+//		
+//		// pull player list
+//		List<FPProjBatter> batters = fpProjBatterDao.findAllByOrderByOpsTotalSGPDesc();
+//		
+//		// if histsgp has not been calculated for this league/user then calculate, otherwise continue
+//		if (userCustomRankingsBDao.findByUserAndOttoneuOldSchoolLeague(user, league).size() == 0) {
+//			for (FPProjBatter batter : batters) {
+//				UserCustomRankingsB userBatterSGP = new UserCustomRankingsB(batter, league, user);
+//				userCustomRankingsBDao.save(userBatterSGP);
+//			}
+//		}
+//
+//		// create and populate list with players and user's custom sgp
+//		List<FPProjBatter> sgpBatters = new ArrayList<FPProjBatter>();
+//		
+//		for (FPProjBatter batter : batters) {
+//			String name = batter.getName();
+//			String team = batter.getTeam();
+//			String pos = batter.getPos();
+//			int ab = batter.getAb();
+//			int r = batter.getR();
+//			int hr = batter.getHr();
+//			int rbi = batter.getRbi();
+//			int sb = batter.getSb();
+//			double avg = batter.getAvg();
+//			double obp = batter.getObp();
+//			int h = batter.getH();
+//			int dbl = batter.getDbl();
+//			int tpl = batter.getTpl();
+//			int bb = batter.getBb();
+//			int k = batter.getK();
+//			double slg = batter.getSlg();
+//			double ops = batter.getOps();
+//			String category = batter.getCategory();
+//			UserCustomRankingsB userBatterSGP = userCustomRankingsBDao.findByBatterAndUserAndOttoneuOldSchoolLeague(batter, user, league);
+//			double customSGP = userBatterSGP.getHistSGP();
+//
+//			FPProjBatter sgpBatter = new FPProjBatter(name, team, pos, ab, r, hr, rbi, sb, avg, obp, h, dbl, tpl, bb, k, slg, ops, category);
+//			sgpBatter.setAvgTotalSGP(customSGP);
+//			sgpBatters.add(sgpBatter);
+//		}
+//		
+//		// sort list by user's custom sgp calculation (desc)
+//		Collections.sort(sgpBatters, new Comparator<FPProjBatter>() {
+//			@Override
+//			public int compare(FPProjBatter b1, FPProjBatter b2) {
+//				if (b1.getAvgTotalSGP() < b2.getAvgTotalSGP()) return 1;
+//				if (b1.getAvgTotalSGP() > b2.getAvgTotalSGP()) return -1;
+//				return 0;
+//			}
+//		});
+//		
+//		// get date of last data pull
+//		Date lastPullDate = batters.get(0).getCreated();
+//		// set category of data
+//		String category = "batter";
+//		String leagueType = "Ottoneu Old School";
+//				
+//    	model.addAttribute("currentUser", currentUser);
+//		model.addAttribute("players", sgpBatters);
+//		model.addAttribute("lastPullDate", lastPullDate);
+//		model.addAttribute("leagueType", leagueType);
+//		model.addAttribute("category", category);
+//        model.addAttribute("user", user);
+//
+//        return "projections";
+//    }
 	// OTTONEU OLD SCHOOL PITCHER
 	@RequestMapping(value = "/user_ottoneu_old_school_fpprojp", method = RequestMethod.GET)
 	public String userottoneuoldschoolfpprojpform(Model model, HttpServletRequest request){
