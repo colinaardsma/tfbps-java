@@ -50,6 +50,16 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 	private double eraHistSGPMult;
 	private double whipHistSGPMult;
 	
+	// yearly auction value variables
+	private double budgetPctB;
+	private double budgetPctP;
+	private int draftedB;
+	private int draftedP;
+	private int totalSpent;
+	private int oneDollarB;
+	private int oneDollarP;
+	private int seasonBudget;
+	
 	// historical auction value variables
 	private double histBudgetPctB;
 	private double histBudgetPctP;
@@ -58,6 +68,8 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 	private double histTotalSpent;
 	private double histOneDollarB;
 	private double histOneDollarP;
+	private double histSeasonBudget;
+
 	
 	// links to other leagues within this database
 	private int previousYearUID;
@@ -330,7 +342,79 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 		this.whipHistSGPMult = whipHistSGPMult;
 	}
 
-    @Column(name = "histBudgetPctB")
+	@Column(name = "budgetPctB")
+    public double getBudgetPctB() {
+		return budgetPctB;
+	}
+
+	public void setBudgetPctB(double budgetPctB) {
+		this.budgetPctB = budgetPctB;
+	}
+
+	@Column(name = "budgetPctP")
+	public double getBudgetPctP() {
+		return budgetPctP;
+	}
+
+	public void setBudgetPctP(double budgetPctP) {
+		this.budgetPctP = budgetPctP;
+	}
+
+	@Column(name = "draftedB")
+	public int getDraftedB() {
+		return draftedB;
+	}
+
+	public void setDraftedB(int draftedB) {
+		this.draftedB = draftedB;
+	}
+
+	@Column(name = "draftedP")
+	public int getDraftedP() {
+		return draftedP;
+	}
+
+	public void setDraftedP(int draftedP) {
+		this.draftedP = draftedP;
+	}
+
+	@Column(name = "totalSpent")
+	public int getTotalSpent() {
+		return totalSpent;
+	}
+
+	public void setTotalSpent(int totalSpent) {
+		this.totalSpent = totalSpent;
+	}
+
+	@Column(name = "oneDollarB")
+	public int getOneDollarB() {
+		return oneDollarB;
+	}
+
+	public void setOneDollarB(int oneDollarB) {
+		this.oneDollarB = oneDollarB;
+	}
+
+	@Column(name = "oneDollarP")
+	public int getOneDollarP() {
+		return oneDollarP;
+	}
+
+	public void setOneDollarP(int oneDollarP) {
+		this.oneDollarP = oneDollarP;
+	}
+
+    @Column(name = "seasonBudget")
+	public int getSeasonBudget() {
+		return seasonBudget;
+	}
+
+	public void setSeasonBudget(int seasonBudget) {
+		this.seasonBudget = seasonBudget;
+	}
+
+	@Column(name = "histBudgetPctB")
     public double getHistBudgetPctB() {
 		return histBudgetPctB;
 	}
@@ -391,6 +475,15 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 
 	public void setHistOneDollarP(double histOneDollarP) {
 		this.histOneDollarP = histOneDollarP;
+	}
+
+    @Column(name = "histSeasonBudget")
+	public double getHistSeasonBudget() {
+		return histSeasonBudget;
+	}
+
+	public void setHistSeasonBudget(double histSeasonBudget) {
+		this.histSeasonBudget = histSeasonBudget;
 	}
 
 	@Column(name = "prevyearUID")
@@ -508,4 +601,64 @@ public class OttoneuOldSchoolLeague extends AbstractEntity {
 		
 	}
 	
+	// calculates historical aav for league (number of years is based on size of list provided)
+	public void calcHistAAVs(List<OttoneuOldSchoolLeague> leagues) {
+		
+		// BigDecimal variables used since double is not accurate when dividing small decimals
+		BigDecimal budgetPctBSum = new BigDecimal(0);
+		BigDecimal budgetPctPSum = new BigDecimal(0);
+		BigDecimal draftedBSum = new BigDecimal(0);
+		BigDecimal draftedPSum = new BigDecimal(0);
+		BigDecimal totalSpentSum = new BigDecimal(0);
+		
+		// loop through list and pull out relevant data
+		int counter = 0;
+		for (OttoneuOldSchoolLeague league : leagues) {
+			budgetPctBSum = budgetPctBSum.add(BigDecimal.valueOf(league.getBudgetPctB()));
+			budgetPctPSum = budgetPctPSum.add(BigDecimal.valueOf(league.getBudgetPctP()));
+			draftedBSum = draftedBSum.add(BigDecimal.valueOf(league.getDraftedB()));
+			draftedPSum = draftedPSum.add(BigDecimal.valueOf(league.getDraftedP()));
+			totalSpentSum = totalSpentSum.add(BigDecimal.valueOf(league.getTotalSpent()));
+			counter++;
+		}
+		
+		// calculate averages and set to respective variables
+		if (counter > 0) {
+			BigDecimal budgetPctBAvg = budgetPctBSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_UP);
+			this.histBudgetPctB = Double.parseDouble(budgetPctBAvg.toString());	
+			BigDecimal budgetPctPAvg = budgetPctPSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_UP);
+			this.histBudgetPctP = Double.parseDouble(budgetPctPAvg.toString());	
+			BigDecimal draftedBAvg = draftedBSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_UP);
+			this.histDraftedB = Double.parseDouble(draftedBAvg.toString());	
+			BigDecimal draftedPAvg = draftedPSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_UP);
+			this.histDraftedP = Double.parseDouble(draftedPAvg.toString());	
+			BigDecimal totalSpentAvg = totalSpentSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_UP);
+			this.histTotalSpent = Double.parseDouble(totalSpentAvg.toString());	
+		}
+	}
+
+	// calculates historical dollar players for league (number of years is based on size of list provided)
+	public void calcHistDollarPlayers(List<OttoneuOldSchoolLeague> leagues) {
+		
+		// BigDecimal variables used since double is not accurate when dividing small decimals
+		BigDecimal dollarBSum = new BigDecimal(0);
+		BigDecimal dollarPSum = new BigDecimal(0);
+		
+		// loop through list and pull out relevant data
+		int counter = 0;
+		for (OttoneuOldSchoolLeague league : leagues) {
+			dollarBSum = dollarBSum.add(BigDecimal.valueOf(league.getOneDollarB()));
+			dollarPSum = dollarPSum.add(BigDecimal.valueOf(league.getOneDollarP()));
+			counter++;
+		}
+		
+		// calculate averages and set to respective variables
+		if (counter > 0) {
+			BigDecimal dollarBAvg = dollarBSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_UP);
+			this.histOneDollarB = Double.parseDouble(dollarBAvg.toString());	
+			BigDecimal dollarPAvg = dollarPSum.divide(new BigDecimal(counter), 4, RoundingMode.HALF_UP);
+			this.histOneDollarP = Double.parseDouble(dollarPAvg.toString());	
+		}
+	}
+
 }

@@ -20,14 +20,14 @@ public interface UserCustomRankingsBDao extends CrudRepository<UserCustomRanking
 	List<UserCustomRankingsB> findAll(); // get all players
 	List<UserCustomRankingsB> findAllByOrderByHistSGPDesc();
 	List<UserCustomRankingsB> findByUser(User user);
-	UserCustomRankingsB findByBatter(FPProjBatter batter);
+	UserCustomRankingsB findByFpBatter(FPProjBatter fpBatter);
 	
 	// Yahoo Roto Leagues
 	List<UserCustomRankingsB> findByUserAndYahooRotoLeague(User user, YahooRotoLeague league);
-	UserCustomRankingsB findByBatterAndUserAndYahooRotoLeague(FPProjBatter batter, User user, YahooRotoLeague league);
+	UserCustomRankingsB findByFpBatterAndUserAndYahooRotoLeague(FPProjBatter fpBatter, User user, YahooRotoLeague league);
 
 	// Ottoneu Old School Leagues
 	List<UserCustomRankingsB> findByUserAndOttoneuOldSchoolLeague(User user, OttoneuOldSchoolLeague league);
-	UserCustomRankingsB findByBatterAndUserAndOttoneuOldSchoolLeague(FPProjBatter batter, User user, OttoneuOldSchoolLeague league);
+	UserCustomRankingsB findByFpBatterAndUserAndOttoneuOldSchoolLeague(FPProjBatter fpBatter, User user, OttoneuOldSchoolLeague league);
 	
 }

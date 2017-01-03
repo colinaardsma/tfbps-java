@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.colinaardsma.tfbps.models.FPProjBatter;
 import com.colinaardsma.tfbps.models.FPProjPitcher;
 import com.colinaardsma.tfbps.models.OttoneuOldSchoolLeague;
+import com.colinaardsma.tfbps.models.SteamerBatter;
 import com.colinaardsma.tfbps.models.User;
 import com.colinaardsma.tfbps.models.UserCustomRankingsB;
 import com.colinaardsma.tfbps.models.UserCustomRankingsP;
@@ -25,6 +26,7 @@ import com.colinaardsma.tfbps.models.YahooRotoLeague;
 import com.colinaardsma.tfbps.models.dao.FPProjBatterDao;
 import com.colinaardsma.tfbps.models.dao.FPProjPitcherDao;
 import com.colinaardsma.tfbps.models.dao.OttoneuOldSchoolLeagueDao;
+import com.colinaardsma.tfbps.models.dao.SteamerBatterDao;
 import com.colinaardsma.tfbps.models.dao.UserCustomRankingsBDao;
 import com.colinaardsma.tfbps.models.dao.UserCustomRankingsPDao;
 import com.colinaardsma.tfbps.models.dao.YahooRotoLeagueDao;
@@ -50,6 +52,10 @@ public class ProjectionController extends AbstractController {
 	@Autowired
 	UserCustomRankingsBDao userCustomRankingsBDao;
 	
+	@Autowired
+	SteamerBatterDao steamerBatterDao;
+	
+	// FANTASY PROS
 	@RequestMapping(value = "/fpprojb")
     public String fpprojb(Model model, HttpServletRequest request){
 		// check for user in session
@@ -95,6 +101,32 @@ public class ProjectionController extends AbstractController {
 
         return "projections";
     }
+	
+	// STEAMER
+	@RequestMapping(value = "/steamerb")
+    public String steamerB(Model model, HttpServletRequest request){
+		// check for user in session
+		String currentUser = this.getUsernameFromSession(request);
+		User user = this.getUserFromSession(request);
+		
+		// populate html table
+		List<SteamerBatter> players = steamerBatterDao.findAllByOrderByOpsTotalSGPDesc();
+		
+		// get date of last data pull
+		Date lastPullDate = players.get(0).getCreated();
+		// set category of data
+		String category = "batter";
+				
+    	model.addAttribute("currentUser", currentUser);
+		model.addAttribute("players", players);
+		model.addAttribute("lastPullDate", lastPullDate);
+		model.addAttribute("category", category);
+        model.addAttribute("user", user);
+
+        return "projections";
+    }
+	
+
 
 	// YAHOO ROTO LEAGUE BATTER
 	@RequestMapping(value = "/user_yahoo_roto_fpprojb", method = RequestMethod.GET)
@@ -164,7 +196,7 @@ public class ProjectionController extends AbstractController {
 		List<FPProjBatter> customBatterRankings = new ArrayList<FPProjBatter>();
 		
 		for (UserCustomRankingsB userBatter : userBatterList) {
-			FPProjBatter batter = userBatter.getBatter();
+			FPProjBatter batter = userBatter.getFpBatter();
 			
 			String name = batter.getName();
 			String team = batter.getTeam();
@@ -356,7 +388,7 @@ public class ProjectionController extends AbstractController {
 				OttoneuOldSchoolLeague league = ottoneuOldSchoolLeagueDao.findByLeagueKey(leagueKey);
 				
 				// pull player list
-				List<FPProjBatter> batters = fpProjBatterDao.findAllByOrderByOpsTotalSGPDesc();
+				List<FPProjBatter> batters = fpProjBatterDao.findAllByOrderByAvgTotalSGPDesc();
 				
 				// if hist sgp has not been calculated for this league/user then calculate, otherwise continue
 				if (userCustomRankingsBDao.findByUserAndOttoneuOldSchoolLeague(user, league).size() == 0) {
@@ -391,7 +423,7 @@ public class ProjectionController extends AbstractController {
 				List<FPProjBatter> customBatterRankings = new ArrayList<FPProjBatter>();
 				
 				for (UserCustomRankingsB userBatter : userBatterList) {
-					FPProjBatter batter = userBatter.getBatter();
+					FPProjBatter batter = userBatter.getFpBatter();
 					
 					String name = batter.getName();
 					String team = batter.getTeam();
@@ -424,7 +456,7 @@ public class ProjectionController extends AbstractController {
 				Date lastPullDate = batters.get(0).getCreated();
 				// set category of data
 				String category = "batter";
-				String leagueType = "Yahoo Roto";
+				String leagueType = "Ottoneu Old School";
 						
 		    	model.addAttribute("currentUser", currentUser);
 				model.addAttribute("players", customBatterRankings);

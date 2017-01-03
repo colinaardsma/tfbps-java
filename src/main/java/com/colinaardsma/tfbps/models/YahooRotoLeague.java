@@ -677,7 +677,7 @@ public class YahooRotoLeague extends AbstractEntity {
 		}
 	}
 
-	// calculates historical aav for league (number of years is based on size of list provided)
+	// calculates historical dollar players for league (number of years is based on size of list provided)
 	public void calcHistDollarPlayers(List<YahooRotoLeague> leagues) {
 		
 		// BigDecimal variables used since double is not accurate when dividing small decimals

@@ -24,25 +24,26 @@ public class UserCustomRankingsB extends AbstractEntity {
 	
 	// join variables
 	private User user;
-	private FPProjBatter batter;
+	private FPProjBatter fpBatter;
+	private SteamerBatter steamerBatter;
 	private YahooRotoLeague yahooRotoLeague;
 	private OttoneuOldSchoolLeague ottoneuOldSchoolLeague;
 	private KeeperCosts keeperCost;
 	
-	public UserCustomRankingsB(FPProjBatter batter, YahooRotoLeague yahooRotoLeague, User user) {
-		this.batter = batter;
+	public UserCustomRankingsB(FPProjBatter fpBatter, YahooRotoLeague yahooRotoLeague, User user) {
+		this.fpBatter = fpBatter;
 		this.yahooRotoLeague = yahooRotoLeague;
 		this.user = user;
 		this.created = new Date();
-		this.histSGP = calcLeagueHistSGP(batter, yahooRotoLeague);
+		this.histSGP = calcLeagueHistSGP(fpBatter, yahooRotoLeague);
 	}
 	
-	public UserCustomRankingsB(FPProjBatter batter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, User user) {
-		this.batter = batter;
+	public UserCustomRankingsB(FPProjBatter fpBatter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, User user) {
+		this.fpBatter = fpBatter;
 		this.ottoneuOldSchoolLeague = ottoneuOldSchoolLeague;
 		this.user = user;
 		this.created = new Date();
-		this.histSGP = calcLeagueHistSGP(batter, ottoneuOldSchoolLeague);
+		this.histSGP = calcLeagueHistSGP(fpBatter, ottoneuOldSchoolLeague);
 	}
 	
 	public UserCustomRankingsB() {}
@@ -86,12 +87,21 @@ public class UserCustomRankingsB extends AbstractEntity {
 	}
 
 	@ManyToOne
-	public FPProjBatter getBatter() {
-		return batter;
+	public FPProjBatter getFpBatter() {
+		return fpBatter;
 	}
 
-	public void setBatter(FPProjBatter batter) {
-		this.batter = batter;
+	public void setFpBatter(FPProjBatter fpBatter) {
+		this.fpBatter = fpBatter;
+	}
+
+	@ManyToOne
+	public SteamerBatter getSteamerBatter() {
+		return steamerBatter;
+	}
+
+	public void setSteamerBatter(SteamerBatter steamerBatter) {
+		this.steamerBatter = steamerBatter;
 	}
 
 	@ManyToOne
@@ -185,7 +195,7 @@ public class UserCustomRankingsB extends AbstractEntity {
     	// check to see if this batter is a $1 batter, if so set value to $1
        	int counter = 0;
     	for (UserCustomRankingsB b : batterList) {
-    		if (this.batter == b.getBatter()) {
+    		if (this.fpBatter == b.getFpBatter()) {
     			if (counter < draftedBOverOneDollar) {
     		    	this.histAAV = dollarsPerSGP.multiply(new BigDecimal(this.histSGP).subtract(oneDollarSGP)).setScale(2, BigDecimal.ROUND_HALF_UP);
     		    	break;
@@ -231,7 +241,7 @@ public class UserCustomRankingsB extends AbstractEntity {
     	// check to see if this batter is a $1 batter, if so set value to $1
        	int counter = 0;
     	for (UserCustomRankingsB b : batterList) {
-    		if (this.batter == b.getBatter()) {
+    		if (this.fpBatter == b.getFpBatter()) {
     			if (counter < draftedBOverOneDollar) {
     		    	this.histAAV = dollarsPerSGP.multiply(new BigDecimal(this.histSGP).subtract(oneDollarSGP)).setScale(2, BigDecimal.ROUND_HALF_UP);
     		    	break;

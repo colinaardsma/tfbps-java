@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+	<head th:replace="template :: head(page='ottoneu league entry')"></head>
+	<body>
+		<div class="container">
+			<div id="top" th:include="template :: masthead(${currentUser})"></div>
+			<div id="middle">
+				<h4>Import Steamer CSV Data</h4>
+				<form style="width:80%; margin:auto" method="post">
+				    <label>Steamer CSV File<br/>
+			    	    <input style="width:20em" type="text" name="file" th:value="${file}"></input>
+	    			</label>
+	    			<br/>
+	    			<div class="error" th:text="${error}"></div>
+	    			<label>
+	    				<button type="submit">Import</button>
+	    			</label>
+				</form>
+				<br/>
+			</div>
+			<div th:replace="template :: footer"></div>
+		</div>
+	</body>
+</html>

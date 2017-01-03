@@ -1,6 +1,8 @@
 package com.colinaardsma.tfbps.controllers;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -373,6 +375,9 @@ public class OttoneuDataController extends AbstractController {
 						// calculate league SGP and save to db
 						OttoneuOldSchoolLeague league = ottoneuOldSchoolLeagueDao.findByLeagueNumberAndSeason(leagueNumber, season); // pull league to add and save data
 						List<OttoneuOldSchoolTeam> teams = ottoneuTeamDao.findByLeagueNumberAndSeason(leagueNumber, season); // pull list of teams in league
+						
+						// pull auction results
+						getAuctionResults(league);
 
 						// add runs
 						List<Integer> rs = new ArrayList<Integer>();
@@ -491,18 +496,39 @@ public class OttoneuDataController extends AbstractController {
 						
 		} while (prevYears >= 0);
 		
-		// calculate historical sgp for each year (change value in years variable to change the number of years)
+		
+		
+		// calculate historical sgp and aav for each year (change value in years variable to change the number of years)
+		int years = 3;
 		for (int i = 0; i < linkedLeagues.size(); i++) {
 			OttoneuOldSchoolLeague league = ottoneuOldSchoolLeagueDao.findByLeagueKey(linkedLeagues.get(i).getLeagueKey());
-			int years = 3;
 			List<OttoneuOldSchoolLeague> leagueHist = new ArrayList<OttoneuOldSchoolLeague>();
 			// add league plus 2 years prior to new leagueHist list (total of 3 years)
 			for (int j = i; ((j < i + years) && (j < linkedLeagues.size())); j++) {
 				leagueHist.add(linkedLeagues.get(j));
 			}
 			league.calcHistSGPs(leagueHist); // calculate historical SGPs
+			league.calcHistAAVs(leagueHist); // calculate historical AAVs
+			league.calcHistDollarPlayers(leagueHist); // calculate historical $1 players
 			ottoneuOldSchoolLeagueDao.save(league); // save
 		}
+
+		
+		
+		
+		
+//		// calculate historical sgp for each year (change value in years variable to change the number of years)
+//		for (int i = 0; i < linkedLeagues.size(); i++) {
+//			OttoneuOldSchoolLeague league = ottoneuOldSchoolLeagueDao.findByLeagueKey(linkedLeagues.get(i).getLeagueKey());
+//			int years = 3;
+//			List<OttoneuOldSchoolLeague> leagueHist = new ArrayList<OttoneuOldSchoolLeague>();
+//			// add league plus 2 years prior to new leagueHist list (total of 3 years)
+//			for (int j = i; ((j < i + years) && (j < linkedLeagues.size())); j++) {
+//				leagueHist.add(linkedLeagues.get(j));
+//			}
+//			league.calcHistSGPs(leagueHist); // calculate historical SGPs
+//			ottoneuOldSchoolLeagueDao.save(league); // save
+//		}
 
 		model.addAttribute("seasonStandingsUrl", seasonStandingsUrl);
 		model.addAttribute("teamList", teamMasterList);
@@ -554,6 +580,71 @@ public class OttoneuDataController extends AbstractController {
 		return "ottoneuleagueentry";
 	}
 	
+	public void getAuctionResults(OttoneuOldSchoolLeague league) throws IOException {
 
+		// url variables
+		String baseUrl = "http://ottoneu.fangraphs.com";
+		int leagueNumber = league.getLeagueNumber();
+		int season = league.getSeason();
+		String auctionResultsURL = baseUrl + "/" + leagueNumber + "/draftresults?season=" + season;
+
+		// auction variables
+		int draftedB = 0;
+		int draftedP = 0;
+		int dollarsB = 0;
+		int dollarsP = 0;
+		int oneDollarB = 0;
+		int oneDollarP = 0;
+
+
+		Document auctionResults = Jsoup.connect(auctionResultsURL).get();
+
+		for (Element div : auctionResults.select("div[id=content]")) {
+			for (Element table : div.select("table")) {
+				for (Element tr : table.select("tr")) {
+					if (tr.select("th").size() == 0) { // skip headers
+						Elements tds = tr.select("td");
+//						String fantTeam = tds.get(0).text();
+//						String player = tds.get(1).text();
+						int playerCost = Integer.parseInt(tds.get(2).text().replace("$", ""));
+
+						// deternine if batter or pitcher
+						String playerURL = baseUrl + tds.get(1).select("a").attr("href");
+						Document playerData = Jsoup.connect(playerURL).get();
+
+						for (Element playerDiv : playerData.select("div[id=bio-and-status]")) {
+							Elements h3s = playerDiv.select("h3");
+							String position = h3s.get(1).text();
+							if (position.contains("SP") || position.contains("RP")) {
+								draftedP++;
+								dollarsP += playerCost;
+								if (playerCost == 1) {
+									oneDollarP++;
+								}
+							} else {
+								draftedB++;
+								dollarsB += playerCost;
+								if (playerCost == 1) {
+									oneDollarB++;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		int totalSpent = dollarsB + dollarsP;
+		double budgetPctB = new BigDecimal(dollarsB).divide(new BigDecimal(totalSpent), 4, RoundingMode.HALF_UP).doubleValue();
+		double budgetPctP = new BigDecimal(dollarsP).divide(new BigDecimal(totalSpent), 4, RoundingMode.HALF_UP).doubleValue();
+
+		league.setDraftedB(draftedB);
+		league.setDraftedP(draftedP);
+		league.setTotalSpent(dollarsB + dollarsP);
+		league.setSeasonBudget((400 * 12) - totalSpent);
+		league.setBudgetPctB(budgetPctB);
+		league.setBudgetPctP(budgetPctP);
+		league.setOneDollarB(oneDollarB);
+		league.setOneDollarP(oneDollarP);
+	}
 
 }
