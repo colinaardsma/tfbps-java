@@ -8,7 +8,7 @@
 				<h4>View Potential Keepers for your League</h4>
 				<br/>
 				<form style="width:80%; margin:auto" method="post">
-	    			<select name="league">
+	    			<select name="leagueKey">
 						<option th:each="league : ${keeperLeagues}" th:value="${league.leagueKey}" th:text="${league.leagueName} + ' - ' + ${league.season}"></option>
 					</select>
 					<br/>

@@ -34,6 +34,7 @@ X-reuse code from blog
 -update memcache upon delete/edit post
 X-add "blogger" user group (with permissions)
 -memcache pagination instead of db pagination (will save multiple db hits)
+	-https://stackoverflow.com/questions/18490820/spring-thymeleaf-how-to-implement-pagination-for-a-list
 -change from blog to link/reddit style short post submission?
 -add voting?
 
@@ -54,6 +55,8 @@ Non-HTML Parsing:
 		-keeper cost increment
 		-draft position increment
 		-draft position/$ trading
+	-keepers:
+		-fix missing keepers (ie Chris Sales)
 	-Advanced plans:
 		-some sort of manager performance data?
 		-mock draft simulator

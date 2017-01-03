@@ -15,6 +15,7 @@
 						<th style="padding-right: 2em">Cost</th>
 						<th style="padding-right: 2em">Value</th>
 						<th style="padding-right: 2em">Profit</th>
+						<th style="padding-right: 2em">Fantasy Team</th>
 						<!-- <th style="padding-right: 2em" th:text="(${category} == 'batter' ? 'AVG SGP' : 'SGP')"></th>
 						<th style="padding-right: 2em" th:text="(${category} == 'batter' ? 'AVG AAV' : 'AAV')"></th>
 						<th style="padding-right: 2em" th:text="(${category} == 'batter' ? 'AB' : 'IP')"></th>
@@ -27,13 +28,25 @@
 						
 					</tr>
 					<tr th:each="player : ${potentialKeepers}">
-        				<td style="padding-right: 2em" th:text="${player.name}"></td>
- 			   	    	<td style="padding-right: 2em" th:text="${player.team}"></td>
-       			 		<td style="padding-right: 2em" th:text="${player.pos}"></td>
-       			 		<td style="padding-right: 2em" th:text="${player.cost}"></td>
-        			 	<!-- <td style="padding-right: 2em" th:text="${player.user}"></td>
+						<div th:with="playerCost=${player.cost},playerValue=(${player.posType} == 'B' ? (${player.userCustomRankingsB} == null ? 0 : ${player.userCustomRankingsB.getHistAAV()}) : (${player.userCustomRankingsP} == null ? 0 : ${player.userCustomRankingsP.getHistAAV()}))">
+        					<div th:with="profit=${playerValue - playerCost}">
+        						<div th:if="${profit} >= -1">
+        							<td style="padding-right: 2em" th:text="${player.name}"></td>
+ 			   	    				<td style="padding-right: 2em" th:text="${player.team}"></td>
+       			 					<td style="padding-right: 2em" th:text="${player.pos}"></td>
+       			 					<td style="padding-right: 2em" th:text="${new java.text.DecimalFormat('$#,##0.00;$-#,##0.00').format(playerCost)}"></td>
+       			 					<td style="padding-right: 2em" th:text="${new java.text.DecimalFormat('$#,##0.00;$-#,##0.00').format(playerValue)}"></td>
        			 		
-       		 			<td style="padding-right: 2em" th:if="${category} == 'batter'" th:text="${player.opsTotalSGP}"></td>
+        			 	<!-- <td style="padding-right: 2em" th:text="(${player.posType} == 'B' ? (${player.userCustomRankingsB} == null ? '$' + 0 : '$' + ${player.userCustomRankingsB.getHistAAV()}) : (${player.userCustomRankingsP} == null ? '$' + 0 : '$' + ${player.userCustomRankingsP.getHistAAV()}))"></td> -->
+       			 				<!-- <td style="padding-right: 2em" th:text="${new java.text.DecimalFormat('$#,##0.00;\'<span style=\'color:#FF0000\'>\'($-#,##0.00)\'</span>\'').format(profit)}"></td> -->
+       			 					<td style="padding-right: 2em" th:text="${new java.text.DecimalFormat('$#,##0.00;$-#,##0.00').format(profit)}"></td>
+		       			 			<td style="padding-right: 2em" th:text="${player.yahooRotoTeam.getTeamName()}"></td>
+		       			 		</div>
+		       			 	</div>
+       			 		</div>
+
+       			 		
+       		 			<!-- <td style="padding-right: 2em" th:if="${category} == 'batter'" th:text="${player.opsTotalSGP}"></td>
        		 			<td style="padding-right: 2em" th:if="${category} == 'batter'" th:text="'$' + ${player.opsTotalAAV}"></td>
         				<td style="padding-right: 2em" th:text="(${category} == 'batter' ? ${player.avgTotalSGP} : ${player.sgp})"></td>
         				<td style="padding-right: 2em" th:text="(${category} == 'batter' ? '$' + ${player.avgTotalAAV} : '$' + ${player.aav})"></td>
