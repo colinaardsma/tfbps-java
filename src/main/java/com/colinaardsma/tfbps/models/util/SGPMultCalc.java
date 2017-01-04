@@ -10,6 +10,7 @@ public class SGPMultCalc {
 
 	// http://www.smartfantasybaseball.com/tag/standings-gain-points/
 	// http://www.smartfantasybaseball.com/2013/03/create-your-own-fantasy-baseball-rankings-part-5-understanding-standings-gain-points/
+	// http://www.smartfantasybaseball.com/2014/03/calculating-standings-gain-points-for-ops/
 	// generic multipliers
 	public static double sgpMultR() {
 		double sgpMultR = 18.23;
