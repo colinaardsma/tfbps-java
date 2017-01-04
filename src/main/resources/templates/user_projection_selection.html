@@ -17,7 +17,7 @@
 	    				<input type="submit" />
 	    			</label>
 				</form>
-    			<form th:case="'Ottoneu Old School'" style="width:80%; margin:auto" th:action="(${category} == 'batter' ? '/user_ottoneu_old_school_fpprojb' : '/user_ottoneu_old_school_fpprojp')" method="post">
+    			<form th:case="'Ottoneu Old School'" style="width:80%; margin:auto" th:action="(${category} == 'batter' ? '/user_ottoneu_old_school_steamerb' : '/user_ottoneu_old_school_steamerp')" method="post">
 	    			<select name="league" style="text-align:left">
 						<option th:each="league : ${leagues}" th:value="${league.leagueKey}" th:text="${league.season} + ' - ' + ${league.leagueName}"></option>
 					</select>

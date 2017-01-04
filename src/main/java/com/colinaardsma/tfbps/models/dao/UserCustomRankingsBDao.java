@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.colinaardsma.tfbps.models.FPProjBatter;
 import com.colinaardsma.tfbps.models.OttoneuOldSchoolLeague;
+import com.colinaardsma.tfbps.models.SteamerBatter;
 import com.colinaardsma.tfbps.models.User;
 import com.colinaardsma.tfbps.models.UserCustomRankingsB;
 import com.colinaardsma.tfbps.models.YahooRotoLeague;
@@ -21,6 +22,7 @@ public interface UserCustomRankingsBDao extends CrudRepository<UserCustomRanking
 	List<UserCustomRankingsB> findAllByOrderByHistSGPDesc();
 	List<UserCustomRankingsB> findByUser(User user);
 	UserCustomRankingsB findByFpBatter(FPProjBatter fpBatter);
+	UserCustomRankingsB findBySteamerBatter(SteamerBatter steamerBatter);
 	
 	// Yahoo Roto Leagues
 	List<UserCustomRankingsB> findByUserAndYahooRotoLeague(User user, YahooRotoLeague league);

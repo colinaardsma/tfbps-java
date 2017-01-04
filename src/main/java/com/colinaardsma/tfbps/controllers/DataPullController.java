@@ -1,13 +1,10 @@
 package com.colinaardsma.tfbps.controllers;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
 
 import javax.servlet.http.HttpServletRequest;
 

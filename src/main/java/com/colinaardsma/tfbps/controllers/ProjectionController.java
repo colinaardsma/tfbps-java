@@ -356,7 +356,7 @@ public class ProjectionController extends AbstractController {
     }
 	
 	// OTTONEU OLD SCHOOL LEAGUE BATTER
-	@RequestMapping(value = "/user_ottoneu_old_school_fpprojb", method = RequestMethod.GET)
+	@RequestMapping(value = "/user_ottoneu_old_school_steamerb", method = RequestMethod.GET)
 	public String userottoneuoldschoolfpprojbform(Model model, HttpServletRequest request){
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
@@ -377,7 +377,7 @@ public class ProjectionController extends AbstractController {
         return "user_projection_selection";
 	}
 	
-	@RequestMapping(value = "/user_ottoneu_old_school_fpprojb", method = RequestMethod.POST)
+	@RequestMapping(value = "/user_ottoneu_old_school_steamerb", method = RequestMethod.POST)
     public String userottoneuoldschoolfpprojb(Model model, HttpServletRequest request){
 		// check for user in session
 				String currentUser = this.getUsernameFromSession(request);
@@ -388,11 +388,11 @@ public class ProjectionController extends AbstractController {
 				OttoneuOldSchoolLeague league = ottoneuOldSchoolLeagueDao.findByLeagueKey(leagueKey);
 				
 				// pull player list
-				List<FPProjBatter> batters = fpProjBatterDao.findAllByOrderByAvgTotalSGPDesc();
+				List<SteamerBatter> batters = steamerBatterDao.findAllByOrderByAvgTotalSGPDesc();
 				
 				// if hist sgp has not been calculated for this league/user then calculate, otherwise continue
 				if (userCustomRankingsBDao.findByUserAndOttoneuOldSchoolLeague(user, league).size() == 0) {
-					for (FPProjBatter batter : batters) {
+					for (SteamerBatter batter : batters) {
 						UserCustomRankingsB userBatterSGP = new UserCustomRankingsB(batter, league, user);
 						userCustomRankingsBDao.save(userBatterSGP);
 					}
@@ -420,14 +420,26 @@ public class ProjectionController extends AbstractController {
 				}
 				
 				// create and populate list with players and user's custom sgp
-				List<FPProjBatter> customBatterRankings = new ArrayList<FPProjBatter>();
+				List<SteamerBatter> customBatterRankings = new ArrayList<SteamerBatter>();
 				
 				for (UserCustomRankingsB userBatter : userBatterList) {
-					FPProjBatter batter = userBatter.getFpBatter();
+					SteamerBatter batter = userBatter.getSteamerBatter();
 					
 					String name = batter.getName();
 					String team = batter.getTeam();
-					String pos = batter.getPos();
+//					String pos = batter.getPos();
+					String playerId = batter.getPlayerId();
+					int g = batter.getG();
+					int pa = batter.getPa();
+					int hbp = batter.getHbp();
+					int cs = batter.getCs();
+					double woba = batter.getWoba();
+					double wrcPlus = batter.getWrcPlus();
+					double bsr = batter.getBsr();
+					double fld = batter.getFld();
+					double offWar = batter.getOffWar();
+					double defWar = batter.getDefWar();
+					double war = batter.getWar();
 					int ab = batter.getAb();
 					int r = batter.getR();
 					int hr = batter.getHr();
@@ -446,9 +458,10 @@ public class ProjectionController extends AbstractController {
 					double customSGP = userBatter.getHistSGP();
 					BigDecimal customAAV = userBatter.getHistAAV();
 					
-					FPProjBatter customBatter = new FPProjBatter(name, team, pos, ab, r, hr, rbi, sb, avg, obp, h, dbl, tpl, bb, k, slg, ops, category);
-					customBatter.setOpsTotalSGP(customSGP);
-					customBatter.setOpsTotalAAV(customAAV);
+					SteamerBatter customBatter = new SteamerBatter(name, team, playerId, g, pa, ab, h, dbl, tpl, hr, r, rbi, bb, k, hbp, sb, cs, avg, obp, slg, ops, woba, wrcPlus, bsr, fld, offWar, defWar, war, category);
+
+					customBatter.setAvgTotalSGP(customSGP);
+					customBatter.setAvgTotalAAV(customAAV);
 					customBatterRankings.add(customBatter);
 				}
 				

@@ -7,9 +7,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -30,6 +28,7 @@ public class UserCustomRankingsB extends AbstractEntity {
 	private OttoneuOldSchoolLeague ottoneuOldSchoolLeague;
 	private KeeperCosts keeperCost;
 	
+	// YAHOO ROTO LEAGUE
 	public UserCustomRankingsB(FPProjBatter fpBatter, YahooRotoLeague yahooRotoLeague, User user) {
 		this.fpBatter = fpBatter;
 		this.yahooRotoLeague = yahooRotoLeague;
@@ -38,6 +37,15 @@ public class UserCustomRankingsB extends AbstractEntity {
 		this.histSGP = calcLeagueHistSGP(fpBatter, yahooRotoLeague);
 	}
 	
+	public UserCustomRankingsB(SteamerBatter steamerBatter, YahooRotoLeague yahooRotoLeague, User user) {
+		this.steamerBatter = steamerBatter;
+		this.yahooRotoLeague = yahooRotoLeague;
+		this.user = user;
+		this.created = new Date();
+		this.histSGP = calcLeagueHistSGP(steamerBatter, yahooRotoLeague);
+	}
+
+	// OTTONEU OLD SCHOOL LEAGUE
 	public UserCustomRankingsB(FPProjBatter fpBatter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, User user) {
 		this.fpBatter = fpBatter;
 		this.ottoneuOldSchoolLeague = ottoneuOldSchoolLeague;
@@ -46,8 +54,16 @@ public class UserCustomRankingsB extends AbstractEntity {
 		this.histSGP = calcLeagueHistSGP(fpBatter, ottoneuOldSchoolLeague);
 	}
 	
+	public UserCustomRankingsB(SteamerBatter steamerBatter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, User user) {
+		this.steamerBatter = steamerBatter;
+		this.ottoneuOldSchoolLeague = ottoneuOldSchoolLeague;
+		this.user = user;
+		this.created = new Date();
+		this.histSGP = calcLeagueHistSGP(steamerBatter, ottoneuOldSchoolLeague);
+	}
+
 	public UserCustomRankingsB() {}
-	
+
 	@NotNull
     @Column(name = "SGP")
 	public double getHistSGP() {
@@ -131,57 +147,63 @@ public class UserCustomRankingsB extends AbstractEntity {
 		this.keeperCost = keeperCost;
 	}
 
-  public double calcLeagueHistSGP(FPProjBatter batter, YahooRotoLeague yahooRotoLeague) {
-    	BigDecimal r = new BigDecimal(batter.getR()).divide(new BigDecimal(yahooRotoLeague.getRHistSGPMult()), 4, RoundingMode.HALF_UP);
-    	BigDecimal hr = new BigDecimal(batter.getHr()).divide(new BigDecimal(yahooRotoLeague.getHrHistSGPMult()), 4, RoundingMode.HALF_UP);
-    	BigDecimal rbi = new BigDecimal(batter.getRbi()).divide(new BigDecimal(yahooRotoLeague.getRbiHistSGPMult()), 4, RoundingMode.HALF_UP);
-    	BigDecimal sb = new BigDecimal(batter.getSb()).divide(new BigDecimal(yahooRotoLeague.getSbHistSGPMult()), 4, RoundingMode.HALF_UP);
-    	
-    	// ops
-    	BigDecimal ab = new BigDecimal(batter.getAb()).multiply(new BigDecimal(1.15));	
-    	BigDecimal obpNum = new BigDecimal(batter.getObp()).multiply(ab).add(new BigDecimal(2178.8));
-    	BigDecimal obpDenom = ab.add(new BigDecimal(6682));
-    	BigDecimal obp = obpNum.divide(obpDenom, 4, RoundingMode.HALF_UP);
-    	BigDecimal slgNum = new BigDecimal(batter.getSlg()).multiply(new BigDecimal(batter.getAb())).add(new BigDecimal(2528.5));
-    	BigDecimal slgDenom = new BigDecimal(batter.getAb()).add(new BigDecimal(5993));
-    	BigDecimal slg = slgNum.divide(slgDenom, 4, RoundingMode.HALF_UP);
-    	BigDecimal ops = obp.divide(slg, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(0.748));
-    	ops = ops.divide(new BigDecimal(yahooRotoLeague.getOpsHistSGPMult()), 4, RoundingMode.HALF_UP);
-    			 	
-    	return r.add(hr.add(rbi.add(sb.add(ops)))).doubleValue();
-    }
+	// YAHOO ROTO LEAGUE
+	public double calcLeagueHistSGP(FPProjBatter batter, YahooRotoLeague yahooRotoLeague) {
+		BigDecimal r = new BigDecimal(batter.getR()).divide(new BigDecimal(yahooRotoLeague.getRHistSGPMult()), 4, RoundingMode.HALF_UP);
+		BigDecimal hr = new BigDecimal(batter.getHr()).divide(new BigDecimal(yahooRotoLeague.getHrHistSGPMult()), 4, RoundingMode.HALF_UP);
+		BigDecimal rbi = new BigDecimal(batter.getRbi()).divide(new BigDecimal(yahooRotoLeague.getRbiHistSGPMult()), 4, RoundingMode.HALF_UP);
+		BigDecimal sb = new BigDecimal(batter.getSb()).divide(new BigDecimal(yahooRotoLeague.getSbHistSGPMult()), 4, RoundingMode.HALF_UP);
 
-    public double calcLeagueHistSGP(FPProjBatter batter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague) {
-    	BigDecimal r = new BigDecimal(batter.getR()).divide(new BigDecimal(ottoneuOldSchoolLeague.getRHistSGPMult()), 4, RoundingMode.HALF_UP);
-    	BigDecimal hr = new BigDecimal(batter.getHr()).divide(new BigDecimal(ottoneuOldSchoolLeague.getHrHistSGPMult()), 4, RoundingMode.HALF_UP);
-    	BigDecimal rbi = new BigDecimal(batter.getRbi()).divide(new BigDecimal(ottoneuOldSchoolLeague.getRbiHistSGPMult()), 4, RoundingMode.HALF_UP);
-    	BigDecimal sb = new BigDecimal(batter.getSb()).divide(new BigDecimal(ottoneuOldSchoolLeague.getSbHistSGPMult()), 4, RoundingMode.HALF_UP);
-    	
-    	// avg
-    	BigDecimal h = new BigDecimal(batter.getH()).add(new BigDecimal(1768));	
-    	BigDecimal ab = new BigDecimal(batter.getAb()).add(new BigDecimal(6617));
-    	BigDecimal avg = h.divide(ab, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(0.267));
-    	avg = avg.divide(new BigDecimal(ottoneuOldSchoolLeague.getAvgHistSGPMult()), 4, RoundingMode.HALF_UP);
-    			 	
-    	return r.add(hr.add(rbi.add(sb.add(avg)))).doubleValue();
-    }
+		// ops
+		BigDecimal ab = new BigDecimal(batter.getAb()).multiply(new BigDecimal(1.15));	
+		BigDecimal obpNum = new BigDecimal(batter.getObp()).multiply(ab).add(new BigDecimal(2178.8));
+		BigDecimal obpDenom = ab.add(new BigDecimal(6682));
+		BigDecimal obp = obpNum.divide(obpDenom, 4, RoundingMode.HALF_UP);
+		BigDecimal slgNum = new BigDecimal(batter.getSlg()).multiply(new BigDecimal(batter.getAb())).add(new BigDecimal(2528.5));
+		BigDecimal slgDenom = new BigDecimal(batter.getAb()).add(new BigDecimal(5993));
+		BigDecimal slg = slgNum.divide(slgDenom, 4, RoundingMode.HALF_UP);
+		BigDecimal ops = obp.divide(slg, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(0.748));
+		ops = ops.divide(new BigDecimal(yahooRotoLeague.getOpsHistSGPMult()), 4, RoundingMode.HALF_UP);
 
-    public void calcLeagueHistAAV(List<UserCustomRankingsB> batterList, YahooRotoLeague yahooRotoLeague) {
-    	
-    	// player pool
-    	int draftedB = (int) yahooRotoLeague.getHistDraftedB(); // historical average of total batters taken
-    	int oneDollarB = (int) yahooRotoLeague.getHistOneDollarB(); // historical average of total $1 batters taken
-    	int draftedBOverOneDollar = draftedB - oneDollarB; // historical average of total batters taken minus $1 batters taken
-    	
-    	// total league budget (with $1 players taken out)
-    	BigDecimal leagueBudgetOverOneB = new BigDecimal(yahooRotoLeague.getHistBudgetPctB()).multiply(new BigDecimal(yahooRotoLeague.getAuctionBudget()).multiply(new BigDecimal(yahooRotoLeague.getTeamCount()))).subtract(new BigDecimal(yahooRotoLeague.getHistOneDollarB()));
+		return r.add(hr.add(rbi.add(sb.add(ops)))).doubleValue();
+	}
 
-    	// calculate average SGP value of $1 players
-    	BigDecimal oneDollarSGPSum = new BigDecimal(0);
-    	for (int i = draftedBOverOneDollar; i < draftedB; i++) {
-    		oneDollarSGPSum = oneDollarSGPSum.add(new BigDecimal(batterList.get(i).getHistSGP()));
-    	}
-    	BigDecimal oneDollarSGP = oneDollarSGPSum.divide(new BigDecimal(oneDollarB), 4, RoundingMode.HALF_UP);
+	public double calcLeagueHistSGP(SteamerBatter batter, YahooRotoLeague yahooRotoLeague) {
+		BigDecimal r = new BigDecimal(batter.getR()).divide(new BigDecimal(yahooRotoLeague.getRHistSGPMult()), 4, RoundingMode.HALF_UP);
+		BigDecimal hr = new BigDecimal(batter.getHr()).divide(new BigDecimal(yahooRotoLeague.getHrHistSGPMult()), 4, RoundingMode.HALF_UP);
+		BigDecimal rbi = new BigDecimal(batter.getRbi()).divide(new BigDecimal(yahooRotoLeague.getRbiHistSGPMult()), 4, RoundingMode.HALF_UP);
+		BigDecimal sb = new BigDecimal(batter.getSb()).divide(new BigDecimal(yahooRotoLeague.getSbHistSGPMult()), 4, RoundingMode.HALF_UP);
+
+		// ops
+		BigDecimal ab = new BigDecimal(batter.getAb()).multiply(new BigDecimal(1.15));	
+		BigDecimal obpNum = new BigDecimal(batter.getObp()).multiply(ab).add(new BigDecimal(2178.8));
+		BigDecimal obpDenom = ab.add(new BigDecimal(6682));
+		BigDecimal obp = obpNum.divide(obpDenom, 4, RoundingMode.HALF_UP);
+		BigDecimal slgNum = new BigDecimal(batter.getSlg()).multiply(new BigDecimal(batter.getAb())).add(new BigDecimal(2528.5));
+		BigDecimal slgDenom = new BigDecimal(batter.getAb()).add(new BigDecimal(5993));
+		BigDecimal slg = slgNum.divide(slgDenom, 4, RoundingMode.HALF_UP);
+		BigDecimal ops = obp.divide(slg, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(0.748));
+		ops = ops.divide(new BigDecimal(yahooRotoLeague.getOpsHistSGPMult()), 4, RoundingMode.HALF_UP);
+
+		return r.add(hr.add(rbi.add(sb.add(ops)))).doubleValue();
+	}
+
+	public void calcLeagueHistAAV(List<UserCustomRankingsB> batterList, YahooRotoLeague yahooRotoLeague) {
+
+		// player pool
+		int draftedB = (int) yahooRotoLeague.getHistDraftedB(); // historical average of total batters taken
+		int oneDollarB = (int) yahooRotoLeague.getHistOneDollarB(); // historical average of total $1 batters taken
+		int draftedBOverOneDollar = draftedB - oneDollarB; // historical average of total batters taken minus $1 batters taken
+
+		// total league budget (with $1 players taken out)
+		BigDecimal leagueBudgetOverOneB = new BigDecimal(yahooRotoLeague.getHistBudgetPctB()).multiply(new BigDecimal(yahooRotoLeague.getAuctionBudget()).multiply(new BigDecimal(yahooRotoLeague.getTeamCount()))).subtract(new BigDecimal(yahooRotoLeague.getHistOneDollarB()));
+
+		// calculate average SGP value of $1 players
+		BigDecimal oneDollarSGPSum = new BigDecimal(0);
+		for (int i = draftedBOverOneDollar; i < draftedB; i++) {
+			oneDollarSGPSum = oneDollarSGPSum.add(new BigDecimal(batterList.get(i).getHistSGP()));
+		}
+		BigDecimal oneDollarSGP = oneDollarSGPSum.divide(new BigDecimal(oneDollarB), 4, RoundingMode.HALF_UP);
     	
     	// calculate total SGP value above $1 players (with average $1 SGP value subtracted)
     	BigDecimal totalSGPAboveOne = new BigDecimal(0);
@@ -209,8 +231,38 @@ public class UserCustomRankingsB extends AbstractEntity {
     		}
     		counter++;
     	}
-    	
     }
+
+	// OTTONEU OLD SCHOOL LEAGUE
+	public double calcLeagueHistSGP(FPProjBatter batter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague) {
+		BigDecimal r = new BigDecimal(batter.getR()).divide(new BigDecimal(ottoneuOldSchoolLeague.getRHistSGPMult()), 4, RoundingMode.HALF_UP);
+		BigDecimal hr = new BigDecimal(batter.getHr()).divide(new BigDecimal(ottoneuOldSchoolLeague.getHrHistSGPMult()), 4, RoundingMode.HALF_UP);
+		BigDecimal rbi = new BigDecimal(batter.getRbi()).divide(new BigDecimal(ottoneuOldSchoolLeague.getRbiHistSGPMult()), 4, RoundingMode.HALF_UP);
+		BigDecimal sb = new BigDecimal(batter.getSb()).divide(new BigDecimal(ottoneuOldSchoolLeague.getSbHistSGPMult()), 4, RoundingMode.HALF_UP);
+
+		// avg
+		BigDecimal h = new BigDecimal(batter.getH()).add(new BigDecimal(1768));	
+		BigDecimal ab = new BigDecimal(batter.getAb()).add(new BigDecimal(6617));
+		BigDecimal avg = h.divide(ab, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(0.267));
+		avg = avg.divide(new BigDecimal(ottoneuOldSchoolLeague.getAvgHistSGPMult()), 4, RoundingMode.HALF_UP);
+
+		return r.add(hr.add(rbi.add(sb.add(avg)))).doubleValue();
+	}
+
+	public double calcLeagueHistSGP(SteamerBatter batter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague) {
+		BigDecimal r = new BigDecimal(batter.getR()).divide(new BigDecimal(ottoneuOldSchoolLeague.getRHistSGPMult()), 4, RoundingMode.HALF_UP);
+		BigDecimal hr = new BigDecimal(batter.getHr()).divide(new BigDecimal(ottoneuOldSchoolLeague.getHrHistSGPMult()), 4, RoundingMode.HALF_UP);
+		BigDecimal rbi = new BigDecimal(batter.getRbi()).divide(new BigDecimal(ottoneuOldSchoolLeague.getRbiHistSGPMult()), 4, RoundingMode.HALF_UP);
+		BigDecimal sb = new BigDecimal(batter.getSb()).divide(new BigDecimal(ottoneuOldSchoolLeague.getSbHistSGPMult()), 4, RoundingMode.HALF_UP);
+
+		// avg
+		BigDecimal h = new BigDecimal(batter.getH()).add(new BigDecimal(1768));	
+		BigDecimal ab = new BigDecimal(batter.getAb()).add(new BigDecimal(6617));
+		BigDecimal avg = h.divide(ab, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(0.267));
+		avg = avg.divide(new BigDecimal(ottoneuOldSchoolLeague.getAvgHistSGPMult()), 4, RoundingMode.HALF_UP);
+
+		return r.add(hr.add(rbi.add(sb.add(avg)))).doubleValue();
+	}
 
     public void calcLeagueHistAAV(List<UserCustomRankingsB> batterList, OttoneuOldSchoolLeague ottoneuOldSchoolLeague) {
     	
@@ -220,7 +272,7 @@ public class UserCustomRankingsB extends AbstractEntity {
     	int draftedBOverOneDollar = draftedB - oneDollarB; // historical average of total batters taken minus $1 batters taken
     	
     	// total league budget (with $1 players taken out)
-    	BigDecimal leagueBudgetOverOneB = new BigDecimal(ottoneuOldSchoolLeague.getHistBudgetPctB()).multiply(new BigDecimal(400).multiply(new BigDecimal(ottoneuOldSchoolLeague.getTeamCount()))).subtract(new BigDecimal(ottoneuOldSchoolLeague.getHistOneDollarB()));
+    	BigDecimal leagueBudgetOverOneB = new BigDecimal(ottoneuOldSchoolLeague.getHistBudgetPctB()).multiply(new BigDecimal(ottoneuOldSchoolLeague.getHistTotalSpent())).subtract(new BigDecimal(ottoneuOldSchoolLeague.getHistOneDollarB()));
 
     	// calculate average SGP value of $1 players
     	BigDecimal oneDollarSGPSum = new BigDecimal(0);
@@ -241,7 +293,7 @@ public class UserCustomRankingsB extends AbstractEntity {
     	// check to see if this batter is a $1 batter, if so set value to $1
        	int counter = 0;
     	for (UserCustomRankingsB b : batterList) {
-    		if (this.fpBatter == b.getFpBatter()) {
+    		if (this.steamerBatter == b.getSteamerBatter()) {
     			if (counter < draftedBOverOneDollar) {
     		    	this.histAAV = dollarsPerSGP.multiply(new BigDecimal(this.histSGP).subtract(oneDollarSGP)).setScale(2, BigDecimal.ROUND_HALF_UP);
     		    	break;
@@ -255,7 +307,6 @@ public class UserCustomRankingsB extends AbstractEntity {
     		}
     		counter++;
     	}
-    	
     }
 
 }

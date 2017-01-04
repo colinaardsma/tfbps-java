@@ -34,10 +34,10 @@ public class UserAccountController extends AbstractController {
 	FPProjPitcherDao fpProjPitcherDao;
 	
 	@Autowired
-	UserCustomRankingsBDao userBatterSGPDao;
+	UserCustomRankingsBDao userCustomRankingsBDao;
 	
 	@Autowired
-	UserCustomRankingsPDao userPitcherSGPDao;
+	UserCustomRankingsPDao userCustomRankingsPDao;
 	
     @RequestMapping(value = "/useraccount")
     public String useraccount(HttpServletRequest request, Model model) {
@@ -48,9 +48,9 @@ public class UserAccountController extends AbstractController {
 		// create list of user's leagues that already have custom SGPs
 		// YAHOO ROTO LEAGUES
 		// batter
-		List<UserCustomRankingsB> userBatterYahooRotoSGPPlayers = userBatterSGPDao.findByUser(user);
+		List<UserCustomRankingsB> userBatterYahooRotoCustomPlayers = userCustomRankingsBDao.findByUser(user);
 		List<YahooRotoLeague> batterYahooRotoLeagues = new ArrayList<YahooRotoLeague>();
-		for (UserCustomRankingsB player : userBatterYahooRotoSGPPlayers) {
+		for (UserCustomRankingsB player : userBatterYahooRotoCustomPlayers) {
 			if (player.getYahooRotoLeague() != null) {
 				YahooRotoLeague league = player.getYahooRotoLeague();
 				if (!batterYahooRotoLeagues.contains(league)) {
@@ -60,9 +60,9 @@ public class UserAccountController extends AbstractController {
 		}
 		
 		// pitcher
-		List<UserCustomRankingsP> userPitcherYahooRotoSGPPlayers = userPitcherSGPDao.findByUser(user);
+		List<UserCustomRankingsP> userPitcherYahooRotoCustomPlayers = userCustomRankingsPDao.findByUser(user);
 		List<YahooRotoLeague> pitcherYahooRotoLeagues = new ArrayList<YahooRotoLeague>();
-		for (UserCustomRankingsP player : userPitcherYahooRotoSGPPlayers) {
+		for (UserCustomRankingsP player : userPitcherYahooRotoCustomPlayers) {
 			if (player.getYahooRotoLeague() != null) {
 				YahooRotoLeague league = player.getYahooRotoLeague();
 				if (!pitcherYahooRotoLeagues.contains(league)) {
@@ -73,9 +73,9 @@ public class UserAccountController extends AbstractController {
 
 		// OTTONEU OLD SCHOOL LEAGUES
 		// batter
-		List<UserCustomRankingsB> userBatterOttoneuOldSchoolSGPPlayers = userBatterSGPDao.findByUser(user);
+		List<UserCustomRankingsB> userBatterOttoneuOldSchoolCustomPlayers = userCustomRankingsBDao.findByUser(user);
 		List<OttoneuOldSchoolLeague> batterOttoneuOldSchoolLeagues = new ArrayList<OttoneuOldSchoolLeague>();
-		for (UserCustomRankingsB player : userBatterOttoneuOldSchoolSGPPlayers) {
+		for (UserCustomRankingsB player : userBatterOttoneuOldSchoolCustomPlayers) {
 			if (player.getOttoneuOldSchoolLeague() != null) {
 				OttoneuOldSchoolLeague league = player.getOttoneuOldSchoolLeague();
 				if (!batterOttoneuOldSchoolLeagues.contains(league)) {
@@ -85,9 +85,9 @@ public class UserAccountController extends AbstractController {
 		}
 		
 		// pitcher
-		List<UserCustomRankingsP> userPitcherOttoneuOldSchoolSGPPlayers = userPitcherSGPDao.findByUser(user);
+		List<UserCustomRankingsP> userPitcherOttoneuOldSchoolCustomPlayers = userCustomRankingsPDao.findByUser(user);
 		List<OttoneuOldSchoolLeague> pitcherOttoneuOldSchoolLeagues = new ArrayList<OttoneuOldSchoolLeague>();
-		for (UserCustomRankingsP player : userPitcherOttoneuOldSchoolSGPPlayers) {
+		for (UserCustomRankingsP player : userPitcherOttoneuOldSchoolCustomPlayers) {
 			if (player.getOttoneuOldSchoolLeague() != null) {
 				OttoneuOldSchoolLeague league = player.getOttoneuOldSchoolLeague();
 				if (!pitcherOttoneuOldSchoolLeagues.contains(league)) {
