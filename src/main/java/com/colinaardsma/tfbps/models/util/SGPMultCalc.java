@@ -37,7 +37,7 @@ public class SGPMultCalc {
 	}
 	
 	public static double sgpMultAVG() {
-		double sgpMultAVG = 0.0178;
+		double sgpMultAVG = 0.00178;
 		return sgpMultAVG;
 	}
 	
