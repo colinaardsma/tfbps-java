@@ -7,6 +7,7 @@
 			<div id="middle">
 				<h3 th:text="${currentUser} + '\'s account'"></h3>
 				<hr/>
+				<h3>Yahoo! Leagues</h3>
 				<div th:if="${not #lists.isEmpty(batterYahooRotoLeagues) or not #lists.isEmpty(pitcherYahooRotoLeagues)}">
 					<h4 th:text="${currentUser} + '\'s Custom Yahoo Roto League SGP'"></h4>
 					<form action="/user_yahoo_roto_fpprojb" method="post" th:if="${not #lists.isEmpty(batterYahooRotoLeagues)}">
@@ -31,15 +32,46 @@
 						</table>
 					</form>	
 					<br/>
+					<hr style="width:75%"/>
 				</div>
 				<div th:if="${not #lists.isEmpty(user.yahooRotoLeagues)}">
-					<h4>Calculate new Yahoo Roto League Custom SGPs</h4>
+					<h4>Calculate new Yahoo! Roto League Custom SGPs</h4>
 					<ul class="nav nav-pills">
 						<li style="width:49.9%"><a href="/user_yahoo_roto_fpprojb">Calculate Batter SGP</a></li>
 						<li style="width:49.9%"><a href="/user_yahoo_roto_fpprojp">Calculate Pitcher SGP</a></li>
 					</ul>
+					<hr style="width:75%"/>
+				</div>
+				<div th:if="${not #lists.isEmpty(keeperYahooRotoLeagues)}">
+					<h4>Potential Yahoo! Roto League Keepers</h4>
+					<form action="/keepers" method="post">
+						<table style="margin:auto">
+							<tr>
+								<td><select name="leagueKey">
+									<option th:each="league : ${keeperYahooRotoLeagues}" th:value="${league.leagueKey}" th:text="${league.season} + ' - ' + ${league.leagueName}"></option>
+								</select></td>
+								<td><input type="submit" value="Show Recommended League Keepers" /></td>
+							</tr>
+						</table>
+						<br/>
+					</form>
+					<hr style="width:75%"/>
+				</div>
+				<div th:if="${user.yahooOAuthAccessToken} == null">
+					<h4>Link to Yahoo! Account</h4>
+					<ul class="nav nav-pills">
+						<li style="width:100%"><a onclick="javascript:popupWindow('/yahoolinkaccount')">Link Yahoo! Account</a></li>
+					</ul>
 					<hr/>
 				</div>
+				<div th:if="${user.yahooOAuthAccessToken} != null">
+					<h4>Link Your Yahoo! Leagues</h4>
+					<ul class="nav nav-pills">
+						<li style="width:100%"><a href="/useryahooleagues">Link Your Yahoo! Leagues</a></li>
+					</ul>
+					<hr/>
+				</div>
+				<h3>Ottoneu Leagues</h3>
 				<div th:if="${not #lists.isEmpty(batterOttoneuOldSchoolLeagues) or not #lists.isEmpty(pitcherOttoneuOldSchoolLeagues)}">
 					<h4 th:text="${currentUser} + '\'s Custom Ottoneu Old School League SGP'"></h4>
 					<form action="/user_ottoneu_old_school_fpprojb" method="post" th:if="${not #lists.isEmpty(batterOttoneuOldSchoolLeagues)}">
@@ -64,6 +96,7 @@
 						</table>
 					</form>	
 					<br/>
+					<hr style="width:75%"/>
 				</div>
 				<div th:if="${not #lists.isEmpty(user.ottoneuOldSchoolLeagues)}">
 					<h4>Calculate new Ottoneu Old School League Custom SGPs</h4>
@@ -71,21 +104,7 @@
 						<li style="width:49.9%"><a href="/user_ottoneu_old_school_steamerb">Calculate Batter SGP</a></li>
 						<li style="width:49.9%"><a href="/user_ottoneu_old_school_steamerp">Calculate Pitcher SGP</a></li>
 					</ul>
-					<hr/>
-				</div>
-				<div th:if="${user.yahooOAuthAccessToken} == null">
-					<h4>Link to Yahoo! Account</h4>
-					<ul class="nav nav-pills">
-						<li style="width:100%"><a onclick="javascript:popupWindow('/yahoolinkaccount')">Link Yahoo! Account</a></li>
-					</ul>
-				<hr/>
-				</div>
-				<div th:if="${user.yahooOAuthAccessToken} != null">
-					<h4>Link Your Yahoo! Leagues</h4>
-					<ul class="nav nav-pills">
-						<li style="width:100%"><a href="/useryahooleagues">Link Your Yahoo! Leagues</a></li>
-					</ul>
-				<hr/>
+					<hr style="width:75%"/>
 				</div>
 				<div>
 					<h4>Link to Ottoneu League</h4>
