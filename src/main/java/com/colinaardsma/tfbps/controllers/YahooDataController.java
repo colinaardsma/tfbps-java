@@ -485,7 +485,7 @@ public class YahooDataController extends AbstractController {
 					for (KeeperCosts player : players) {
 						String playerKey = player.getPlayerKey();
 						int cost = player.getCost();
-						int keeperCost = checkPlayerTransactions(user, leagueKey, requestedLeagueKey, playerKey, transactionsDocument, costIncrement, faCost, cost);
+						int keeperCost = checkPlayerTransactions(user, league, leagueKey, requestedLeagueKey, playerKey, transactionsDocument, costIncrement, faCost, cost);
 						
 						if (keeperCost != cost) {
 							player.setCost(keeperCost);
@@ -714,6 +714,7 @@ public class YahooDataController extends AbstractController {
 		int teamBatters = 0;
 		int teamPitchers = 0;
 		int teamBench = 0;
+		Calendar draftDate = Calendar.getInstance();
 
 		String settingsURL = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=" + leagueKey + "/settings";
 		Document document = getDocument(user, settingsURL);
@@ -722,6 +723,11 @@ public class YahooDataController extends AbstractController {
 		Node settingsNode = document.getElementsByTagName("settings").item(0);
 		if (settingsNode.getNodeType() == Node.ELEMENT_NODE) {
 			Element settingsElement = (Element) settingsNode;
+			
+			long draft_time = Long.parseLong(settingsElement.getElementsByTagName("draft_time").item(0).getTextContent());
+			
+			draftDate.setTimeInMillis(draft_time * 1000);
+			
 			Node rosterPosNode = settingsElement.getElementsByTagName("roster_positions").item(0);
 			Element rosterPosElement = (Element) rosterPosNode;
 			NodeList rosterPosList = rosterPosElement.getElementsByTagName("roster_position");
@@ -750,6 +756,7 @@ public class YahooDataController extends AbstractController {
 		league.setTeamPitchers(teamPitchers);
 		league.setTeamBench(teamBench);
 		league.setTeamRosterSize(teamRosterSize);
+		league.setDraftDate(draftDate);
 	}
 	
 	public void getFinalRosters(User user, String leagueKey, String requestedLeagueKey, YahooRotoLeague league) throws IOException, ParserConfigurationException, SAXException {
@@ -971,40 +978,36 @@ public class YahooDataController extends AbstractController {
 	}
 			
 	// check playerKey provided against all league transactions, if added as FA return FA keeper cost, if added as FAAB then return FAAB bid + costIncrement, otherwise return original auction cost
-	public int checkPlayerTransactions(User user, String leagueKey, String requestedLeagueKey, String playerKey, Document transactionsDocument, int costIncrement, int faCost, int cost) throws IOException, ParserConfigurationException, SAXException {
+	public int checkPlayerTransactions(User user, YahooRotoLeague league, String leagueKey, String requestedLeagueKey, String playerKey, Document transactionsDocument, int costIncrement, int faCost, int cost) throws IOException, ParserConfigurationException, SAXException {
 		// iterate through the nodes and extract the data.
-//		System.out.println(YahooOAuth.oauthGetRequest("https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=357.l.3091/transactions", user));
 		Node transactionsNode = transactionsDocument.getElementsByTagName("transactions").item(0);
-//		System.out.println("IN TRANSACTIONS");
 		if (transactionsNode.getNodeType() == Node.ELEMENT_NODE) {
 			Element transactionsElement = (Element) transactionsNode;
 			NodeList transactionList = transactionsElement.getElementsByTagName("transaction");
 			for (int i = 0; i < transactionList.getLength(); i++) {
-//				System.out.println("IN TRANSACTION");
 				Node transactionNode = transactionList.item(i);
 				Element transactionElement = (Element) transactionNode;
 				if (!transactionElement.getElementsByTagName("type").item(0).equals("commish")) { // ignore commish transactions
 //					Node playersNode = transactionElement.getElementsByTagName("players").item(0);
 //					Element playersElement = (Element) playersNode;
-					NodeList playerList = transactionElement.getElementsByTagName("player");
-					for (int j = 0; j < playerList.getLength(); j++) {
-//						System.out.println("IN PLAYER");
-						Node playerNode = playerList.item(j);
-						Element playerElement = (Element) playerNode;
-						String player_key = playerElement.getElementsByTagName("player_key").item(0).getTextContent();
-						if (player_key.equals(playerKey)) {
-//							System.out.println("PLAYER KEY = PLAYER KEY");
-							Node transactionDataNode = playerElement.getElementsByTagName("transaction_data").item(0);
-							Element transactionDataElement = (Element) transactionDataNode;
-							if (transactionDataElement.getElementsByTagName("type").item(0).getTextContent().equals("add")) {
-//								System.out.println("IN TD ADD");
-								if (transactionElement.getElementsByTagName("faab_bid").item(0) != null) {
-//									System.out.println("PlayerKey: " + playerKey);
-									int faabBid = Integer.parseInt(transactionElement.getElementsByTagName("faab_bid").item(0).getTextContent());
-//									System.out.println("***FAAB BID: " + faabBid + "***");
-									return faabBid + costIncrement;
+					Calendar timestamp = Calendar.getInstance();
+					timestamp.setTimeInMillis(Long.parseLong(transactionElement.getElementsByTagName("timestamp").item(0).getTextContent()));
+					if (timestamp.after(league.getDraftDate())) { // ignore if transaction took place prior to draft
+						NodeList playerList = transactionElement.getElementsByTagName("player");
+						for (int j = 0; j < playerList.getLength(); j++) {
+							Node playerNode = playerList.item(j);
+							Element playerElement = (Element) playerNode;
+							String player_key = playerElement.getElementsByTagName("player_key").item(0).getTextContent();
+							if (player_key.equals(playerKey)) {
+								Node transactionDataNode = playerElement.getElementsByTagName("transaction_data").item(0);
+								Element transactionDataElement = (Element) transactionDataNode;
+								if (transactionDataElement.getElementsByTagName("type").item(0).getTextContent().equals("add")) {
+									if (transactionElement.getElementsByTagName("faab_bid").item(0) != null) {
+										int faabBid = Integer.parseInt(transactionElement.getElementsByTagName("faab_bid").item(0).getTextContent());
+										return faabBid + costIncrement;
+									}
+									return faCost;
 								}
-								return faCost;
 							}
 						}
 					}

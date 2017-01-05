@@ -2,6 +2,7 @@ package com.colinaardsma.tfbps.models;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -28,6 +29,7 @@ public class YahooRotoLeague extends AbstractEntity {
 	private int teamPitchers;
 	private int teamBench;
 	private int teamRosterSize;
+	private Calendar draftDate = Calendar.getInstance();
 	
 	// yearly sgp variables
 	private double rSGPMult;
@@ -189,6 +191,15 @@ public class YahooRotoLeague extends AbstractEntity {
 
 	public void setTeamRosterSize(int teamRosterSize) {
 		this.teamRosterSize = teamRosterSize;
+	}
+
+    @Column(name = "draftDate")
+	public Calendar getDraftDate() {
+		return draftDate;
+	}
+
+	public void setDraftDate(Calendar draftDate) {
+		this.draftDate = draftDate;
 	}
 
 	@Column(name = "rSGPMult")
