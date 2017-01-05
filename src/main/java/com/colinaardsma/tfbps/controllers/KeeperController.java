@@ -82,7 +82,6 @@ public class KeeperController extends AbstractController {
 				if (userCustomRankingsPDao.findByPitcher(pitcher) != null) {
 					pK.setUserCustomRankingsP(userCustomRankingsPDao.findByPitcher(pitcher));
 				}
-
 			}
 		}
 		

@@ -531,15 +531,24 @@ public class SteamerBatter extends AbstractEntity {
     	this.sbSGP = sb.doubleValue();
 
     	// ops
-    	BigDecimal ab = new BigDecimal(this.ab).multiply(new BigDecimal(1.15));	
-    	BigDecimal obpNum = new BigDecimal(this.obp).multiply(ab).add(new BigDecimal(2178.8));
-    	BigDecimal obpDenom = ab.add(new BigDecimal(6682));
+    	BigDecimal h = new BigDecimal(this.h);
+    	BigDecimal obpNum = h.add(new BigDecimal(this.bb)).add(new BigDecimal(this.hbp)).add(new BigDecimal(2178.8));
+    	System.out.println("Player Name: " + name);
+    	System.out.println("OBP Num: " + obpNum);
+    	BigDecimal obpDenom = new BigDecimal(this.pa).add(new BigDecimal(6682));
+    	System.out.println("OBP Denom: " + obpDenom);
     	BigDecimal obp = obpNum.divide(obpDenom, 4, RoundingMode.HALF_UP);
-    	BigDecimal slgNum = new BigDecimal(this.slg).multiply(new BigDecimal(this.ab)).add(new BigDecimal(2528.5));
+    	System.out.println("OBP: " + obp);
+    	BigDecimal slgNum = h.add(new BigDecimal(this.dbl)).add(new BigDecimal(this.tpl).multiply(new BigDecimal(2))).add(new BigDecimal(this.hr).multiply(new BigDecimal(3))).add(new BigDecimal(2528.5));
+    	System.out.println("SLG Num: " + slgNum);
     	BigDecimal slgDenom = new BigDecimal(this.ab).add(new BigDecimal(5993));
+    	System.out.println("SLG Denom: " + slgDenom);
     	BigDecimal slg = slgNum.divide(slgDenom, 4, RoundingMode.HALF_UP);
-    	BigDecimal ops = obp.divide(slg, 2, RoundingMode.HALF_UP).subtract(new BigDecimal(0.748));
+    	System.out.println("SLG: " + slg);
+    	BigDecimal ops = obp.add(slg).subtract(new BigDecimal(0.748));
+    	System.out.println("OPS: " + ops);
     	ops = ops.divide(new BigDecimal(sgpMultOPS), 4, RoundingMode.HALF_UP);
+    	System.out.println("OPS SGP: " + ops);
     	this.opsSGP = ops.doubleValue();
 
     	this.opsTotalSGP = r.add(hr.add(rbi.add(sb.add(ops)))).doubleValue();

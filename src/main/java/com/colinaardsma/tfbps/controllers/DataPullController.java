@@ -235,11 +235,15 @@ public class DataPullController extends AbstractController {
 				if (name.contains("Name")) { // if header row then skip
 					continue;
 				}
+				int ab = Integer.parseInt(player[4].replaceAll("\"", ""));
+				if (ab < 100) { // if ab is less than 100 then skip
+					continue;
+				}
+				
 				String team = player[1].replaceAll("\"", "");
 
 				int g = Integer.parseInt(player[2].replaceAll("\"", ""));
 				int pa = Integer.parseInt(player[3].replaceAll("\"", ""));
-				int ab = Integer.parseInt(player[4].replaceAll("\"", ""));
 				int h = Integer.parseInt(player[5].replaceAll("\"", ""));
 				int dbl = Integer.parseInt(player[6].replaceAll("\"", ""));
 				int tpl = Integer.parseInt(player[7].replaceAll("\"", ""));
@@ -263,20 +267,6 @@ public class DataPullController extends AbstractController {
 				double defWar = Double.parseDouble(player[28].replaceAll("\"", ""));
 				double war = Double.parseDouble(player[29].replaceAll("\"", ""));
 				String playerId = player[30].replaceAll("\"", "");
-				
-//			// sgp
-//			double rSGP;
-//			double hrSGP;
-//			double rbiSGP;
-//			double sbSGP;
-//			double opsSGP;
-//			double avgSGP;
-//			double opsTotalSGP;
-//			double avgTotalSGP;
-//			
-//			// aav
-//			BigDecimal opsTotalAAV;
-//			BigDecimal avgTotalAAV;
 				
 				String category = "steamerbatter";
 
