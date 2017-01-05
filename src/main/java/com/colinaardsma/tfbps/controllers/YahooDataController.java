@@ -16,6 +16,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.BasicConfigurator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -84,6 +85,79 @@ public class YahooDataController extends AbstractController {
 		return "closewindow";
 	}
 	
+	@RequestMapping(value = "/yahooleaguelookup", method = RequestMethod.GET)
+	public String yahooleaguelookupform() {
+		return "yahooleaguelookup";
+	}
+	
+	@RequestMapping(value = "/yahooleaguelookup", method = RequestMethod.POST)
+    public String yahooleaguelookup(Model model, HttpServletRequest request) {
+		// check for user in session
+		String currentUser = this.getUsernameFromSession(request);
+		User user = this.getUserFromSession(request);
+
+		BasicConfigurator.configure();
+		String league_key = request.getParameter("league_key");
+		String leagueYear = request.getParameter("leagueYear");
+		String prevYearKey = null;
+
+		String url = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=" + leagueYear + ".l." + league_key + "/standings";
+		
+		// general data variables
+		String xmlData = null;
+
+		// variables to pass to html
+		String leagueName = null;
+		String leagueURL = null;
+		String leagueScoringType = null;
+		String error = null;
+
+		try {
+			xmlData = YahooOAuth.oauthGetRequest(url, user);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			error = "Not authorized to view league or league does not exist.";
+			model.addAttribute("error", error);
+			model.addAttribute("league_key", league_key);
+			model.addAttribute("leagueYear", leagueYear);
+			return "yahooleaguelookup";
+		}
+
+		// parse xml data
+		try {
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			//			Document document = builder.parse(xmlData);
+			InputSource is = new InputSource(new StringReader(xmlData));
+			Document document = builder.parse(is);
+
+			// iterate through the nodes and extract the data.	    
+			NodeList leagueList = document.getElementsByTagName("league");
+			for (int i = 0; i < leagueList.getLength(); i++) {
+				Node leagueNode = leagueList.item(i);
+				if (leagueNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element leagueElement = (Element) leagueNode;
+					leagueName = leagueElement.getElementsByTagName("name").item(0).getTextContent();
+					leagueURL = leagueElement.getElementsByTagName("url").item(0).getTextContent();
+					leagueScoringType = leagueElement.getElementsByTagName("scoring_type").item(0).getTextContent();
+					prevYearKey = leagueElement.getElementsByTagName("renew").item(0).getTextContent();
+				}
+
+			}
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			e.printStackTrace();
+		}
+
+		model.addAttribute("leagueName", leagueName);
+		model.addAttribute("leagueURL", leagueURL);
+		model.addAttribute("leagueScoringType", leagueScoringType);
+		model.addAttribute("prevYearKey", prevYearKey);
+    	model.addAttribute("currentUser", currentUser);
+        model.addAttribute("user", user);
+
+        return "yahooleaguelookup";
+    }
+
 	@RequestMapping(value = "/useryahooleagues", method = RequestMethod.GET)
 	public String useryahooleaguesform(Model model, HttpServletRequest request) {
 		// check for user in session
