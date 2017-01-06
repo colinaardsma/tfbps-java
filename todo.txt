@@ -56,7 +56,10 @@ Non-HTML Parsing:
 		-draft position increment
 		-draft position/$ trading
 	-keepers:
-		-fix missing keepers (ie Chris Sales)
+		X-fix missing keepers (ie Chris Sales)
+		X-make keepers optional
+	-draft (non-auction) leagues:
+		-get up to par with auction leagues
 	-Advanced plans:
 		-some sort of manager performance data?
 		-mock draft simulator

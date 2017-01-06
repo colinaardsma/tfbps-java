@@ -241,15 +241,17 @@ public class YahooDataController extends AbstractController {
 		// league variables
 		String leagueKey = request.getParameter("league");
 		String leagueHistory = request.getParameter("leagueHistory");
+		String keeperLeague = request.getParameter("keeperLeague");
 		String requestedLeagueKey = leagueKey;
 		String prevYearKey = null;
 		int prevYears = 0;
 		
 		renewOAuthExpiration(user); // renew authorization to avoid 401 errors later
-		
-		leagueHistory = (leagueHistory == null) ? "false" : "true";
 
-		if (leagueHistory.equals("true")) {
+		boolean isKeeperLeague = (keeperLeague == null) ? false : true; // if checked then true, else false
+		boolean getLeagueHistory = (leagueHistory == null) ? false : true; // if checked then true, else false
+		
+		if (getLeagueHistory) {
 			String py = request.getParameter("prevyears");
 //			System.out.println("Previous Years String: " + py);
 			prevYears = Integer.parseInt(py);
@@ -266,7 +268,7 @@ public class YahooDataController extends AbstractController {
 					
 					// pull current league data and return previous year key
 					// also runs team data pull, calcs # of batters and pitchers, pulls auction data, previous draft data, final rosters, and calcs yearly sgp			
-					prevYearKey = pullLeagueData(user, leagueKey, requestedLeagueKey, leagueHistory, prevYears);				
+					prevYearKey = pullLeagueData(user, leagueKey, requestedLeagueKey, leagueHistory, prevYears, isKeeperLeague);				
 
 					leagueCounter = maxTries; // exit yahoo error while loop
 				} catch (IOException e) {
@@ -421,7 +423,7 @@ public class YahooDataController extends AbstractController {
 		return document;
 	}
 	
-	public String pullLeagueData(User user, String leagueKey, String requestedLeagueKey, String leagueHistory, int prevYears) throws IOException, ParserConfigurationException, SAXException {
+	public String pullLeagueData(User user, String leagueKey, String requestedLeagueKey, String leagueHistory, int prevYears, boolean isKeeperLeague) throws IOException, ParserConfigurationException, SAXException {
 		// league variables
 		String leagueName = null;
 		String leagueURL = null;
@@ -540,14 +542,15 @@ public class YahooDataController extends AbstractController {
 			// auction only section
 			// calculate % of money spent on batters and pitchers
 			if (auctionBudget != -1) {
-				// pull final rosters for this league/year
-				getFinalRosters(user, leagueKey, requestedLeagueKey, league);
+				if (isKeeperLeague) {
+					// pull final rosters for this league/year
+					getFinalRosters(user, leagueKey, requestedLeagueKey, league);
+				}
 				
 				int costIncrement = league.getCostIncrement();
 
 				// pull draft results for this league/year
-				// also determines keepers
-				getAuctionResults(user, leagueKey, requestedLeagueKey, league, counter, totalSpent, costIncrement);
+				getAuctionResults(user, leagueKey, requestedLeagueKey, league, counter, totalSpent, costIncrement, isKeeperLeague);
 
 				if (leagueKey.equals(requestedLeagueKey)) {
 					int faCost = league.getFaCost();
@@ -555,15 +558,18 @@ public class YahooDataController extends AbstractController {
 					String transactionsURL = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=" + leagueKey + "/transactions";
 					Document transactionsDocument = getDocument(user, transactionsURL);
 
-					List<KeeperCosts> players = keeperCostsDao.findByYahooRotoLeague(league);
-					for (KeeperCosts player : players) {
-						String playerKey = player.getPlayerKey();
-						int cost = player.getCost();
-						int keeperCost = checkPlayerTransactions(user, league, leagueKey, requestedLeagueKey, playerKey, transactionsDocument, costIncrement, faCost, cost);
-						
-						if (keeperCost != cost) {
-							player.setCost(keeperCost);
-							keeperCostsDao.save(player); 
+					if (isKeeperLeague) {
+						// determine keeper costs
+						List<KeeperCosts> players = keeperCostsDao.findByYahooRotoLeague(league);
+						for (KeeperCosts player : players) {
+							String playerKey = player.getPlayerKey();
+							int cost = player.getCost();
+							int keeperCost = checkPlayerTransactions(user, league, leagueKey, requestedLeagueKey, playerKey, transactionsDocument, costIncrement, faCost, cost);
+
+							if (keeperCost != cost) {
+								player.setCost(keeperCost);
+								keeperCostsDao.save(player); 
+							}
 						}
 					}
 				}
@@ -914,7 +920,7 @@ public class YahooDataController extends AbstractController {
 		}
 	}
 	
-	public void getAuctionResults(User user, String leagueKey, String requestedLeagueKey, YahooRotoLeague league, int counter, int totalSpent, int costIncrement) throws IOException, ParserConfigurationException, SAXException {
+	public void getAuctionResults(User user, String leagueKey, String requestedLeagueKey, YahooRotoLeague league, int counter, int totalSpent, int costIncrement, boolean isKeeperLeague) throws IOException, ParserConfigurationException, SAXException {
 		String draftResultsURL = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=" + leagueKey + "/draftresults";
 		Document document = getDocument(user, draftResultsURL);
 
@@ -978,7 +984,7 @@ public class YahooDataController extends AbstractController {
 								break;
 							}
 //							System.out.println(batter.getName());
-							if (keeperCostsDao.findByBatterAndYahooRotoLeague(batter, league) != null) {
+							if (isKeeperLeague && keeperCostsDao.findByBatterAndYahooRotoLeague(batter, league) != null) {
 								KeeperCosts keeper = keeperCostsDao.findByBatterAndYahooRotoLeague(batter, league);
 //								System.out.println(keeper.getPlayerKey());
 //								System.out.println("$" + cost);
@@ -1003,7 +1009,7 @@ public class YahooDataController extends AbstractController {
 								break;
 							}
 //							System.out.println(pitcher.getName());
-							if (keeperCostsDao.findByPitcherAndYahooRotoLeague(pitcher, league) != null) {
+							if (isKeeperLeague && keeperCostsDao.findByPitcherAndYahooRotoLeague(pitcher, league) != null) {
 								KeeperCosts keeper = keeperCostsDao.findByPitcherAndYahooRotoLeague(pitcher, league);
 //								System.out.println(keeper.getPlayerKey());
 //								System.out.println("$" + cost);
@@ -1065,7 +1071,7 @@ public class YahooDataController extends AbstractController {
 //					Node playersNode = transactionElement.getElementsByTagName("players").item(0);
 //					Element playersElement = (Element) playersNode;
 					Calendar timestamp = Calendar.getInstance();
-					timestamp.setTimeInMillis(Long.parseLong(transactionElement.getElementsByTagName("timestamp").item(0).getTextContent()));
+					timestamp.setTimeInMillis(Long.parseLong(transactionElement.getElementsByTagName("timestamp").item(0).getTextContent()) * 1000);
 					if (timestamp.after(league.getDraftDate())) { // ignore if transaction took place prior to draft
 						NodeList playerList = transactionElement.getElementsByTagName("player");
 						for (int j = 0; j < playerList.getLength(); j++) {
