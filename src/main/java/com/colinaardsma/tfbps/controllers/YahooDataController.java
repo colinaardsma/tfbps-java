@@ -32,12 +32,14 @@ import org.xml.sax.SAXException;
 import com.colinaardsma.tfbps.models.FPProjBatter;
 import com.colinaardsma.tfbps.models.FPProjPitcher;
 import com.colinaardsma.tfbps.models.KeeperCosts;
+import com.colinaardsma.tfbps.models.KeeperPicks;
 import com.colinaardsma.tfbps.models.User;
 import com.colinaardsma.tfbps.models.YahooRotoLeague;
 import com.colinaardsma.tfbps.models.YahooRotoTeam;
 import com.colinaardsma.tfbps.models.dao.FPProjBatterDao;
 import com.colinaardsma.tfbps.models.dao.FPProjPitcherDao;
 import com.colinaardsma.tfbps.models.dao.KeeperCostsDao;
+import com.colinaardsma.tfbps.models.dao.KeeperPicksDao;
 import com.colinaardsma.tfbps.models.dao.UserDao;
 import com.colinaardsma.tfbps.models.dao.YahooRotoLeagueDao;
 import com.colinaardsma.tfbps.models.dao.YahooRotoTeamDao;
@@ -65,6 +67,9 @@ public class YahooDataController extends AbstractController {
 	
 	@Autowired
 	KeeperCostsDao keeperCostsDao;
+	
+	@Autowired
+	KeeperPicksDao keeperPicksDao;
 	
 	// list of leagues in league history
 	private List<YahooRotoLeague> linkedLeagues = new ArrayList<YahooRotoLeague>();
@@ -539,7 +544,7 @@ public class YahooDataController extends AbstractController {
 			
 			int counter = 0;
 			
-			// auction only section
+			// auction leagues
 			// calculate % of money spent on batters and pitchers
 			if (auctionBudget != -1) {
 				if (isKeeperLeague) {
@@ -547,13 +552,13 @@ public class YahooDataController extends AbstractController {
 					getFinalRosters(user, leagueKey, requestedLeagueKey, league);
 				}
 				
-				int costIncrement = league.getCostIncrement();
+				int costIncrement = league.getCostPickIncrement();
 
-				// pull draft results for this league/year
+				// pull auction results for this league/year
 				getAuctionResults(user, leagueKey, requestedLeagueKey, league, counter, totalSpent, costIncrement, isKeeperLeague);
 
 				if (leagueKey.equals(requestedLeagueKey)) {
-					int faCost = league.getFaCost();
+					int faCost = league.getFaCostPick();
 
 					String transactionsURL = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=" + leagueKey + "/transactions";
 					Document transactionsDocument = getDocument(user, transactionsURL);
@@ -573,9 +578,42 @@ public class YahooDataController extends AbstractController {
 						}
 					}
 				}
-				
+			
+			// draft leagues
 			} else {
-				// draft league methods here
+				if (isKeeperLeague) {
+					// pull final rosters for this league/year
+					getFinalRosters(user, leagueKey, requestedLeagueKey, league);
+				}
+				
+				int roundIncrement = league.getCostPickIncrement();
+
+				
+				// pull draft results for this league/year
+				 getDraftResults(user, leagueKey, requestedLeagueKey, league, counter, roundIncrement, isKeeperLeague);
+				
+				if (leagueKey.equals(requestedLeagueKey)) {
+					int faRound = league.getFaCostPick();
+
+					String transactionsURL = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=" + leagueKey + "/transactions";
+					Document transactionsDocument = getDocument(user, transactionsURL);
+
+					if (isKeeperLeague) {
+						// determine keeper rounds
+						List<KeeperPicks> players = keeperPicksDao.findByYahooRotoLeague(league);
+						for (KeeperPicks player : players) {
+							String playerKey = player.getPlayerKey();
+							int round = player.getPick();
+							int keeperRound = checkPlayerTransactions(user, league, leagueKey, requestedLeagueKey, playerKey, transactionsDocument, roundIncrement, faRound, round);
+
+							if (keeperRound != round) {
+								player.setPick(keeperRound);
+								keeperPicksDao.save(player); 
+							}
+						}
+					}
+				}
+
 			}
 			
 			// calculate SGP for league/year
@@ -883,36 +921,69 @@ public class YahooDataController extends AbstractController {
 
 							// get player position type (B or P)
 							String posType = playerElement.getElementsByTagName("position_type").item(0).getTextContent();
-							int faCost = league.getFaCost();
+							int faCostPick = league.getFaCostPick();
 
-							if (fpProjBatterDao.findByName(fullName) == null && fpProjPitcherDao.findByName(fullName) == null) {
-								KeeperCosts playerCost = new KeeperCosts(fullName, teamAbbr, pos, playerKey, league, fantTeam, faCost, posType);
-								keeperCostsDao.save(playerCost);
-							} else {
-								if (posType.equals("B")) {
-									FPProjBatter batter = new FPProjBatter();
-									if (fpProjBatterDao.findByNameAndTeam(fullName, teamAbbr) != null) {
-										batter = fpProjBatterDao.findByNameAndTeam(fullName, teamAbbr);
-									} else {
-										batter = fpProjBatterDao.findByName(fullName); // if team is missing or incorrect, just check by name
-									}
-//									System.out.println("FPProj Batter: " + batter.getName());
-									KeeperCosts batterCost = new KeeperCosts(fullName, teamAbbr, pos, playerKey, batter, league, fantTeam, faCost, posType);
-									keeperCostsDao.save(batterCost);
-//									System.out.println("Keeper Batter: " + batterCost.getBatter().getName());
+							if (league.getAuctionBudget() != -1) {
+								if (fpProjBatterDao.findByName(fullName) == null && fpProjPitcherDao.findByName(fullName) == null) {
+									KeeperCosts playerCost = new KeeperCosts(fullName, teamAbbr, pos, playerKey, league, fantTeam, faCostPick, posType);
+									keeperCostsDao.save(playerCost);
 								} else {
-									FPProjPitcher pitcher = new FPProjPitcher();
-									if (fpProjPitcherDao.findByNameAndTeam(fullName, teamAbbr) != null) {
-										pitcher = fpProjPitcherDao.findByNameAndTeam(fullName, teamAbbr);
+									if (posType.equals("B")) {
+										FPProjBatter batter = new FPProjBatter();
+										if (fpProjBatterDao.findByNameAndTeam(fullName, teamAbbr) != null) {
+											batter = fpProjBatterDao.findByNameAndTeam(fullName, teamAbbr);
+										} else {
+											batter = fpProjBatterDao.findByName(fullName); // if team is missing or incorrect, just check by name
+										}
+//										System.out.println("FPProj Batter: " + batter.getName());
+										KeeperCosts batterCost = new KeeperCosts(fullName, teamAbbr, pos, playerKey, batter, league, fantTeam, faCostPick, posType);
+										keeperCostsDao.save(batterCost);
+//										System.out.println("Keeper Batter: " + batterCost.getBatter().getName());
 									} else {
-										pitcher = fpProjPitcherDao.findByName(fullName); // if team is missing or incorrect, just check by name
+										FPProjPitcher pitcher = new FPProjPitcher();
+										if (fpProjPitcherDao.findByNameAndTeam(fullName, teamAbbr) != null) {
+											pitcher = fpProjPitcherDao.findByNameAndTeam(fullName, teamAbbr);
+										} else {
+											pitcher = fpProjPitcherDao.findByName(fullName); // if team is missing or incorrect, just check by name
+										}
+//										System.out.println("FPProj Pitcher: " + pitcher.getName());
+										KeeperCosts pitcherCost = new KeeperCosts(fullName, teamAbbr, pos, playerKey, pitcher, league, fantTeam, faCostPick, posType);
+										keeperCostsDao.save(pitcherCost);
+//										System.out.println("Keeper Pitcher: " + pitcherCost.getPitcher().getName());									
 									}
-//									System.out.println("FPProj Pitcher: " + pitcher.getName());
-									KeeperCosts pitcherCost = new KeeperCosts(fullName, teamAbbr, pos, playerKey, pitcher, league, fantTeam, faCost, posType);
-									keeperCostsDao.save(pitcherCost);
-//									System.out.println("Keeper Pitcher: " + pitcherCost.getPitcher().getName());									
+								}
+							} else {
+								if (fpProjBatterDao.findByName(fullName) == null && fpProjPitcherDao.findByName(fullName) == null) {
+									KeeperPicks playerPick = new KeeperPicks(fullName, teamAbbr, pos, playerKey, league, fantTeam, faCostPick, posType);
+									keeperPicksDao.save(playerPick);
+								} else {
+									if (posType.equals("B")) {
+										FPProjBatter batter = new FPProjBatter();
+										if (fpProjBatterDao.findByNameAndTeam(fullName, teamAbbr) != null) {
+											batter = fpProjBatterDao.findByNameAndTeam(fullName, teamAbbr);
+										} else {
+											batter = fpProjBatterDao.findByName(fullName); // if team is missing or incorrect, just check by name
+										}
+//										System.out.println("FPProj Batter: " + batter.getName());
+										KeeperPicks batterPick = new KeeperPicks(fullName, teamAbbr, pos, playerKey, batter, league, fantTeam, faCostPick, posType);
+										keeperPicksDao.save(batterPick);
+//										System.out.println("Keeper Batter: " + batterCost.getBatter().getName());
+									} else {
+										FPProjPitcher pitcher = new FPProjPitcher();
+										if (fpProjPitcherDao.findByNameAndTeam(fullName, teamAbbr) != null) {
+											pitcher = fpProjPitcherDao.findByNameAndTeam(fullName, teamAbbr);
+										} else {
+											pitcher = fpProjPitcherDao.findByName(fullName); // if team is missing or incorrect, just check by name
+										}
+//										System.out.println("FPProj Pitcher: " + pitcher.getName());
+										KeeperPicks pitcherPick = new KeeperPicks(fullName, teamAbbr, pos, playerKey, pitcher, league, fantTeam, faCostPick, posType);
+										keeperPicksDao.save(pitcherPick);
+//										System.out.println("Keeper Pitcher: " + pitcherCost.getPitcher().getName());									
+									}
 								}
 							}
+
+								
 						}
 					}
 				}
@@ -939,6 +1010,7 @@ public class YahooDataController extends AbstractController {
 			for (int i = 0; i < auctionResultList.getLength(); i++) {
 				Node auctionResultNode = auctionResultList.item(i);
 				Element auctionResultElement = (Element) auctionResultNode;
+				int cost = Integer.parseInt(auctionResultElement.getElementsByTagName("cost").item(0).getTextContent());
 				String playerKey = auctionResultElement.getElementsByTagName("player_key").item(0).getTextContent();
 //				String teamKey = draftResultElement.getElementsByTagName("team_key").item(0).getTextContent();
 
@@ -969,7 +1041,6 @@ public class YahooDataController extends AbstractController {
 						if (playerDocument.getElementsByTagName("position_type").item(0).getTextContent().equals("B")) {
 //							String positionType = playerDocument.getElementsByTagName("position_type").item(0).getTextContent();
 							draftedB++;
-							int cost = Integer.parseInt(auctionResultElement.getElementsByTagName("cost").item(0).getTextContent());
 							dollarsB += cost;
 							if (cost == 1) {
 								oneDollarB++;
@@ -994,7 +1065,6 @@ public class YahooDataController extends AbstractController {
 						} else if (playerDocument.getElementsByTagName("position_type").item(0).getTextContent().equals("P")) {
 //							String positionType = playerDocument.getElementsByTagName("position_type").item(0).getTextContent();
 							draftedP++;
-							int cost = Integer.parseInt(auctionResultElement.getElementsByTagName("cost").item(0).getTextContent());
 							dollarsP += cost;
 							if (cost == 1) {
 								oneDollarP++;
@@ -1026,14 +1096,12 @@ public class YahooDataController extends AbstractController {
 							e.printStackTrace();
 							if (counter % 2 == 0) {
 								draftedB++;
-								int cost = Integer.parseInt(auctionResultElement.getElementsByTagName("cost").item(0).getTextContent());
 								dollarsB += cost;
 								if (cost == 1) {
 									oneDollarB++;
 								}
 							} else {
 								draftedP++;
-								int cost = Integer.parseInt(auctionResultElement.getElementsByTagName("cost").item(0).getTextContent());
 								dollarsP += cost;
 								if (cost == 1) {
 									oneDollarP++;
@@ -1057,8 +1125,114 @@ public class YahooDataController extends AbstractController {
 		league.setOneDollarP(oneDollarP);
 	}
 			
+	public void getDraftResults(User user, String leagueKey, String requestedLeagueKey, YahooRotoLeague league, int counter, int roundIncrement, boolean isKeeperLeague) throws IOException, ParserConfigurationException, SAXException {
+		String draftResultsURL = "https://fantasysports.yahooapis.com/fantasy/v2/leagues;league_keys=" + leagueKey + "/draftresults";
+		Document document = getDocument(user, draftResultsURL);
+
+		int draftedB = 0;
+		int draftedP = 0;
+		
+		// iterate through the nodes and extract the data.
+		Node draftResultsNode = document.getElementsByTagName("draft_results").item(0);
+		if (draftResultsNode.getNodeType() == Node.ELEMENT_NODE) {
+			Element draftResultsElement = (Element) draftResultsNode;
+			NodeList draftResultList = draftResultsElement.getElementsByTagName("draft_result");
+			for (int i = 0; i < draftResultList.getLength(); i++) {
+				Node draftResultNode = draftResultList.item(i);
+				Element draftResultElement = (Element) draftResultNode;
+				int pick = Integer.parseInt(draftResultElement.getElementsByTagName("pick").item(0).getTextContent());
+				String playerKey = draftResultElement.getElementsByTagName("player_key").item(0).getTextContent();
+//				String teamKey = draftResultElement.getElementsByTagName("team_key").item(0).getTextContent();
+
+				// add costs to final rosters
+				// determine if player is batter or pitcher
+				String playerURL = "https://fantasysports.yahooapis.com/fantasy/v2/players;player_keys=" + playerKey;
+
+				int playerCounter = 0;
+				int playerMaxTries = maxTries;
+
+				while (playerCounter < playerMaxTries) { // retry if yahoo throws and error
+					try {
+
+						Document playerDocument = getDocument(user, playerURL);
+
+						counter++;
+
+						// extract player name and team
+						String firstName = playerDocument.getElementsByTagName("ascii_first").item(0).getTextContent();
+						String lastName = playerDocument.getElementsByTagName("ascii_last").item(0).getTextContent();
+						String fullName = firstName + " " + lastName;
+						String teamAbbr = playerDocument.getElementsByTagName("editorial_team_abbr").item(0).getTextContent().toUpperCase();
+
+						// determine original draft team for player
+//						String draftTeamKey = auctionResultElement.getElementsByTagName("team_key").item(0).getTextContent();
+
+						// iterate through the nodes and extract the data.
+
+						if (playerDocument.getElementsByTagName("position_type").item(0).getTextContent().equals("B")) {
+//							String positionType = playerDocument.getElementsByTagName("position_type").item(0).getTextContent();
+							draftedB++;
+							FPProjBatter batter = new FPProjBatter();
+							if (fpProjBatterDao.findByNameAndTeam(fullName, teamAbbr) != null) {
+								batter = fpProjBatterDao.findByNameAndTeam(fullName, teamAbbr);
+							} else if (fpProjBatterDao.findByName(fullName) != null) {
+								batter = fpProjBatterDao.findByName(fullName); // if team is missing or incorrect, just check by name
+							} else {
+								break;
+							}
+//							System.out.println(batter.getName());
+							if (isKeeperLeague && keeperPicksDao.findByBatterAndYahooRotoLeague(batter, league) != null) {
+								KeeperPicks keeper = keeperPicksDao.findByBatterAndYahooRotoLeague(batter, league);
+//								System.out.println(keeper.getPlayerKey());
+//								System.out.println("$" + cost);
+								keeper.setPick(pick + roundIncrement);
+								keeperPicksDao.save(keeper);
+							}
+						} else if (playerDocument.getElementsByTagName("position_type").item(0).getTextContent().equals("P")) {
+//							String positionType = playerDocument.getElementsByTagName("position_type").item(0).getTextContent();
+							draftedP++;
+							FPProjPitcher pitcher = new FPProjPitcher();
+							if (fpProjPitcherDao.findByNameAndTeam(fullName, teamAbbr) != null) {
+								pitcher = fpProjPitcherDao.findByNameAndTeam(fullName, teamAbbr);
+							} else if (fpProjPitcherDao.findByName(fullName) != null) {
+								pitcher = fpProjPitcherDao.findByName(fullName); // if team is missing or incorrect, just check by name
+							} else {
+								break;
+							}
+//							System.out.println(pitcher.getName());
+							if (isKeeperLeague && keeperPicksDao.findByPitcherAndYahooRotoLeague(pitcher, league) != null) {
+								KeeperPicks keeper = keeperPicksDao.findByPitcherAndYahooRotoLeague(pitcher, league);
+//								System.out.println(keeper.getPlayerKey());
+//								System.out.println("$" + cost);
+								keeper.setPick(pick + roundIncrement);
+								keeperPicksDao.save(keeper);
+							}
+						}
+						playerCounter = playerMaxTries; // exit yahoo error while loop
+					} catch (IOException e) { // if yahoo throws a 500 error count it as a B or P at whatever the cost was
+						if (playerCounter < playerMaxTries) {
+							playerCounter++;
+							continue;
+						} else {
+							e.printStackTrace();
+							if (counter % 2 == 0) {
+								draftedB++;
+							} else {
+								draftedP++;
+							}
+							counter++;
+						}
+					}
+				}
+			}
+		}
+
+		league.setDraftedB(draftedB);
+		league.setDraftedP(draftedP);
+	}
+			
 	// check playerKey provided against all league transactions, if added as FA return FA keeper cost, if added as FAAB then return FAAB bid + costIncrement, otherwise return original auction cost
-	public int checkPlayerTransactions(User user, YahooRotoLeague league, String leagueKey, String requestedLeagueKey, String playerKey, Document transactionsDocument, int costIncrement, int faCost, int cost) throws IOException, ParserConfigurationException, SAXException {
+	public int checkPlayerTransactions(User user, YahooRotoLeague league, String leagueKey, String requestedLeagueKey, String playerKey, Document transactionsDocument, int costRoundIncrement, int faCostRound, int costRound) throws IOException, ParserConfigurationException, SAXException {
 		// iterate through the nodes and extract the data.
 		Node transactionsNode = transactionsDocument.getElementsByTagName("transactions").item(0);
 		if (transactionsNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -1084,9 +1258,9 @@ public class YahooDataController extends AbstractController {
 								if (transactionDataElement.getElementsByTagName("type").item(0).getTextContent().equals("add")) {
 									if (transactionElement.getElementsByTagName("faab_bid").item(0) != null) {
 										int faabBid = Integer.parseInt(transactionElement.getElementsByTagName("faab_bid").item(0).getTextContent());
-										return faabBid + costIncrement;
+										return faabBid + costRoundIncrement;
 									}
-									return faCost;
+									return faCostRound;
 								}
 							}
 						}
@@ -1094,7 +1268,7 @@ public class YahooDataController extends AbstractController {
 				}
 			}
 		}
-		return cost;
+		return costRound;
 	}
 	
 	public void setSGP(YahooRotoLeague league, String leagueKey, String requestedLeagueKey) {

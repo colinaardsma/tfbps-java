@@ -46,13 +46,15 @@ public class YahooRotoLeague extends AbstractEntity {
 	// yearly auction value variables
 	private double budgetPctB;
 	private double budgetPctP;
-	private int draftedB;
-	private int draftedP;
 	private int totalSpent;
 	private int oneDollarB;
 	private int oneDollarP;
-	private int costIncrement;
-	private int faCost;
+	
+	// yearly draft/auction variables
+	private int draftedB;
+	private int draftedP;
+	private int costPickIncrement;
+	private int faCostPick;
 	
 	// historical sgp variables
 	private double rHistSGPMult;
@@ -92,8 +94,8 @@ public class YahooRotoLeague extends AbstractEntity {
 		this.leagueURL = leagueURL;
 		this.teamCount = teamCount;
 		this.season = season;
-		this.costIncrement = 5;
-		this.faCost = 5;
+		this.costPickIncrement = 5;
+		this.faCostPick = 5;
 	}
 	
 	public YahooRotoLeague() {}
@@ -355,22 +357,22 @@ public class YahooRotoLeague extends AbstractEntity {
 		this.oneDollarP = oneDollarP;
 	}
 
-	@Column(name = "costIncrement")
-	public int getCostIncrement() {
-		return costIncrement;
+	@Column(name = "costPickIncrement")
+	public int getCostPickIncrement() {
+		return costPickIncrement;
 	}
 
-	public void setCostIncrement(int costIncrement) {
-		this.costIncrement = costIncrement;
+	public void setCostPickIncrement(int costPickIncrement) {
+		this.costPickIncrement = costPickIncrement;
 	}
 
-	@Column(name = "faCost")
-	public int getFaCost() {
-		return faCost;
+	@Column(name = "faCostPick")
+	public int getFaCostPick() {
+		return faCostPick;
 	}
 
-	public void setFaCost(int faCost) {
-		this.faCost = faCost;
+	public void setFaCostPick(int faCostPick) {
+		this.faCostPick = faCostPick;
 	}
 
 	@Column(name = "rHistSGPMult")
