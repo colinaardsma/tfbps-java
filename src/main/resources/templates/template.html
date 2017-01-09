@@ -29,9 +29,19 @@
     	        	</tr>
     	        </table>
     	        <ul class="nav nav-pills" style="margin:5px auto 20px;display:inline-block;">
-            	    <li><a href="/">home</a></li>
-                	<li><a href="/fpprojb">fantasy pros batter projections</a></li>
-                	<li><a href="/fpprojp">fantasy pros pitcher projections</a></li>
+            	    <li><a href="/">home</a></li>            	    
+                	<li class="dropdown">
+						<!-- <button class="dropbtn">batter projections</button>
+  						<div class="dropdown-content">
+   		 					<a href="/fpprojp">fantasy pros preseason</a>
+    						<a href="/steamerb">steamer preseason</a>
+    						<a href="#">Link 3</a>
+  						</div> -->
+                	<a href="/fpprojb">fantasy pros batter proj</a>
+                	</li>
+                	<li><a href="/steamerb">steamer batter proj</a></li>
+                	<li><a href="/fpprojp">fantasy pros pitcher proj</a></li>
+                	<li><a href="/steamerp">steamer pitcher proj</a></li>
                 	<li><a href="/blog">blog</a></li>
                 	<li th:if="${user}"><a th:if="${user.userGroup} == 'admin'" href="/admin">admin</a></li>
                  	<li><a th:href="(${currentUser} ? '/useraccount' : '/login')" th:text="(${currentUser} ? ${currentUser} : 'login')"></a></li>
