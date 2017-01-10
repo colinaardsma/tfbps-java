@@ -31,17 +31,45 @@
     	        <ul class="nav nav-pills" style="margin:5px auto 20px;display:inline-block;">
             	    <li><a href="/">home</a></li>            	    
                 	<li class="dropdown">
-						<!-- <button class="dropbtn">batter projections</button>
-  						<div class="dropdown-content">
-   		 					<a href="/fpprojp">fantasy pros preseason</a>
-    						<a href="/steamerb">steamer preseason</a>
-    						<a href="#">Link 3</a>
-  						</div> -->
-                	<a href="/fpprojb">fantasy pros batter proj</a>
-                	</li>
-                	<li><a href="/steamerb">steamer batter proj</a></li>
-                	<li><a href="/fpprojp">fantasy pros pitcher proj</a></li>
-                	<li><a href="/steamerp">steamer pitcher proj</a></li>
+						<a href="#" data-toggle="dropdown" class="dropdown-toggle">batter projections<b class="caret"></b></a>
+						<ul class="dropdown-menu" id="menu1">
+    						<li><a href="/fpprojb">fantasy pros</a></li>
+    						<li><a href="/steamerprojb">steamer</a></li>
+    						<!-- <li class="divider"></li>
+    						<li><a href="#">Separated link</a></li>
+    						<li><a href="#">my custom projections</a>
+        						<ul class="dropdown-menu sub-menu">
+            						<li><a href="/user_yahoo_roto_fpprojb">league 1</a></li>
+            						<li><a href="#">Another action</a></li>
+            						<li><a href="#">Something else here</a></li>
+            						<li class="divider"></li>
+            						<li class="nav-header">Nav header</li>
+            						<li><a href="#">Separated link</a></li>
+            						<li><a href="#">One more separated link</a></li>
+        						</ul>
+    						</li> -->
+  						</ul>
+					</li>
+                	<li class="dropdown">
+						<a href="#" data-toggle="dropdown" class="dropdown-toggle">pitcher projections<b class="caret"></b></a>
+						<ul class="dropdown-menu" id="menu1">
+    						<li><a href="/fpprojp">fantasy pros</a></li>
+    						<li><a href="/steamerprojp">steamer</a></li>
+    						<!-- <li class="divider"></li>
+    						<li><a href="#">Separated link</a></li>
+    						<li><a href="#">2-level Menu</a>
+        						<ul class="dropdown-menu sub-menu">
+            						<li><a href="#">Action</a></li>
+            						<li><a href="#">Another action</a></li>
+            						<li><a href="#">Something else here</a></li>
+            						<li class="divider"></li>
+            						<li class="nav-header">Nav header</li>
+            						<li><a href="#">Separated link</a></li>
+            						<li><a href="#">One more separated link</a></li>
+        						</ul>
+    						</li> -->
+  						</ul>
+					</li>
                 	<li><a href="/blog">blog</a></li>
                 	<li th:if="${user}"><a th:if="${user.userGroup} == 'admin'" href="/admin">admin</a></li>
                  	<li><a th:href="(${currentUser} ? '/useraccount' : '/login')" th:text="(${currentUser} ? ${currentUser} : 'login')"></a></li>

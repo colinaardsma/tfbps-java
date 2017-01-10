@@ -302,7 +302,7 @@ public class DataPullController extends AbstractController {
 			steamerBatterDao.save(b);
 		}
 
-		return "redirect:steamerb";
+		return "redirect:steamerprojb";
 	}
 	
 }

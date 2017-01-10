@@ -103,7 +103,7 @@ public class ProjectionController extends AbstractController {
     }
 	
 	// STEAMER
-	@RequestMapping(value = "/steamerb")
+	@RequestMapping(value = "/steamerprojb")
     public String steamerB(Model model, HttpServletRequest request){
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
