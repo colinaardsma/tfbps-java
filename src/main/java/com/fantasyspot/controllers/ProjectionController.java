@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.fantasyspot.models.FPProjBatter;
 import com.fantasyspot.models.FPProjPitcher;
 import com.fantasyspot.models.OttoneuOldSchoolLeague;
-import com.fantasyspot.models.SteamerBatter;
+import com.fantasyspot.models.SteamerProjBatter;
 import com.fantasyspot.models.User;
 import com.fantasyspot.models.UserCustomRankingsB;
 import com.fantasyspot.models.UserCustomRankingsP;
@@ -26,7 +26,7 @@ import com.fantasyspot.models.YahooRotoLeague;
 import com.fantasyspot.models.dao.FPProjBatterDao;
 import com.fantasyspot.models.dao.FPProjPitcherDao;
 import com.fantasyspot.models.dao.OttoneuOldSchoolLeagueDao;
-import com.fantasyspot.models.dao.SteamerBatterDao;
+import com.fantasyspot.models.dao.SteamerProjBatterDao;
 import com.fantasyspot.models.dao.UserCustomRankingsBDao;
 import com.fantasyspot.models.dao.UserCustomRankingsPDao;
 import com.fantasyspot.models.dao.YahooRotoLeagueDao;
@@ -53,7 +53,7 @@ public class ProjectionController extends AbstractController {
 	UserCustomRankingsBDao userCustomRankingsBDao;
 	
 	@Autowired
-	SteamerBatterDao steamerBatterDao;
+	SteamerProjBatterDao steamerProjBatterDao;
 	
 	// FANTASY PROS
 	@RequestMapping(value = "/fpprojb")
@@ -104,13 +104,13 @@ public class ProjectionController extends AbstractController {
 	
 	// STEAMER
 	@RequestMapping(value = "/steamerprojb")
-    public String steamerB(Model model, HttpServletRequest request){
+    public String steamerProjB(Model model, HttpServletRequest request){
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
 		User user = this.getUserFromSession(request);
 		
 		// populate html table
-		List<SteamerBatter> players = steamerBatterDao.findAllByOrderByOpsTotalSGPDesc();
+		List<SteamerProjBatter> players = steamerProjBatterDao.findAllByOrderByOpsTotalSGPDesc();
 		
 		// get date of last data pull
 		Date lastPullDate = players.get(0).getCreated();
@@ -196,7 +196,7 @@ public class ProjectionController extends AbstractController {
 		List<FPProjBatter> customBatterRankings = new ArrayList<FPProjBatter>();
 		
 		for (UserCustomRankingsB userBatter : userBatterList) {
-			FPProjBatter batter = userBatter.getFpBatter();
+			FPProjBatter batter = userBatter.getFpProjBatter();
 			
 			String name = batter.getName();
 			String team = batter.getTeam();
@@ -388,11 +388,11 @@ public class ProjectionController extends AbstractController {
 				OttoneuOldSchoolLeague league = ottoneuOldSchoolLeagueDao.findByLeagueKey(leagueKey);
 				
 				// pull player list
-				List<SteamerBatter> batters = steamerBatterDao.findAllByOrderByAvgTotalSGPDesc();
+				List<SteamerProjBatter> batters = steamerProjBatterDao.findAllByOrderByAvgTotalSGPDesc();
 				
 				// if hist sgp has not been calculated for this league/user then calculate, otherwise continue
 				if (userCustomRankingsBDao.findByUserAndOttoneuOldSchoolLeague(user, league).size() == 0) {
-					for (SteamerBatter batter : batters) {
+					for (SteamerProjBatter batter : batters) {
 						UserCustomRankingsB userBatterSGP = new UserCustomRankingsB(batter, league, user);
 						userCustomRankingsBDao.save(userBatterSGP);
 					}
@@ -420,10 +420,10 @@ public class ProjectionController extends AbstractController {
 				}
 				
 				// create and populate list with players and user's custom sgp
-				List<SteamerBatter> customBatterRankings = new ArrayList<SteamerBatter>();
+				List<SteamerProjBatter> customBatterRankings = new ArrayList<SteamerProjBatter>();
 				
 				for (UserCustomRankingsB userBatter : userBatterList) {
-					SteamerBatter batter = userBatter.getSteamerBatter();
+					SteamerProjBatter batter = userBatter.getSteamerProjBatter();
 					
 					String name = batter.getName();
 					String team = batter.getTeam();
@@ -458,7 +458,7 @@ public class ProjectionController extends AbstractController {
 					double customSGP = userBatter.getHistSGP();
 					BigDecimal customAAV = userBatter.getHistAAV();
 					
-					SteamerBatter customBatter = new SteamerBatter(name, team, playerId, g, pa, ab, h, dbl, tpl, hr, r, rbi, bb, k, hbp, sb, cs, avg, obp, slg, ops, woba, wrcPlus, bsr, fld, offWar, defWar, war, category);
+					SteamerProjBatter customBatter = new SteamerProjBatter(name, team, playerId, g, pa, ab, h, dbl, tpl, hr, r, rbi, bb, k, hbp, sb, cs, avg, obp, slg, ops, woba, wrcPlus, bsr, fld, offWar, defWar, war, category);
 
 					customBatter.setAvgTotalSGP(customSGP);
 					customBatter.setAvgTotalAAV(customAAV);

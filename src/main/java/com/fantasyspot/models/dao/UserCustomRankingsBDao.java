@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.fantasyspot.models.FPProjBatter;
 import com.fantasyspot.models.OttoneuOldSchoolLeague;
-import com.fantasyspot.models.SteamerBatter;
+import com.fantasyspot.models.SteamerProjBatter;
 import com.fantasyspot.models.User;
 import com.fantasyspot.models.UserCustomRankingsB;
 import com.fantasyspot.models.YahooRotoLeague;
@@ -22,7 +22,7 @@ public interface UserCustomRankingsBDao extends CrudRepository<UserCustomRanking
 	List<UserCustomRankingsB> findAllByOrderByHistSGPDesc();
 	List<UserCustomRankingsB> findByUser(User user);
 	UserCustomRankingsB findByFpBatter(FPProjBatter fpBatter);
-	UserCustomRankingsB findBySteamerBatter(SteamerBatter steamerBatter);
+	UserCustomRankingsB findBySteamerBatter(SteamerProjBatter steamerBatter);
 	
 	// Yahoo Roto Leagues
 	List<UserCustomRankingsB> findByUserAndYahooRotoLeague(User user, YahooRotoLeague league);

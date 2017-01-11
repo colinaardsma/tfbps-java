@@ -22,44 +22,44 @@ public class UserCustomRankingsB extends AbstractEntity {
 	
 	// join variables
 	private User user;
-	private FPProjBatter fpBatter;
-	private SteamerBatter steamerBatter;
+	private FPProjBatter fpProjBatter;
+	private SteamerProjBatter steamerProjBatter;
 	private YahooRotoLeague yahooRotoLeague;
 	private OttoneuOldSchoolLeague ottoneuOldSchoolLeague;
 	private KeeperCosts keeperCost;
 	
 	// YAHOO ROTO LEAGUE
-	public UserCustomRankingsB(FPProjBatter fpBatter, YahooRotoLeague yahooRotoLeague, User user) {
-		this.fpBatter = fpBatter;
+	public UserCustomRankingsB(FPProjBatter fpProjBatter, YahooRotoLeague yahooRotoLeague, User user) {
+		this.fpProjBatter = fpProjBatter;
 		this.yahooRotoLeague = yahooRotoLeague;
 		this.user = user;
 		this.created = new Date();
-		this.histSGP = calcLeagueHistSGP(fpBatter, yahooRotoLeague);
+		this.histSGP = calcLeagueHistSGP(fpProjBatter, yahooRotoLeague);
 	}
 	
-	public UserCustomRankingsB(SteamerBatter steamerBatter, YahooRotoLeague yahooRotoLeague, User user) {
-		this.steamerBatter = steamerBatter;
+	public UserCustomRankingsB(SteamerProjBatter steamerProjBatter, YahooRotoLeague yahooRotoLeague, User user) {
+		this.steamerProjBatter = steamerProjBatter;
 		this.yahooRotoLeague = yahooRotoLeague;
 		this.user = user;
 		this.created = new Date();
-		this.histSGP = calcLeagueHistSGP(steamerBatter, yahooRotoLeague);
+		this.histSGP = calcLeagueHistSGP(steamerProjBatter, yahooRotoLeague);
 	}
 
 	// OTTONEU OLD SCHOOL LEAGUE
-	public UserCustomRankingsB(FPProjBatter fpBatter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, User user) {
-		this.fpBatter = fpBatter;
+	public UserCustomRankingsB(FPProjBatter fpProjBatter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, User user) {
+		this.fpProjBatter = fpProjBatter;
 		this.ottoneuOldSchoolLeague = ottoneuOldSchoolLeague;
 		this.user = user;
 		this.created = new Date();
-		this.histSGP = calcLeagueHistSGP(fpBatter, ottoneuOldSchoolLeague);
+		this.histSGP = calcLeagueHistSGP(fpProjBatter, ottoneuOldSchoolLeague);
 	}
 	
-	public UserCustomRankingsB(SteamerBatter steamerBatter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, User user) {
-		this.steamerBatter = steamerBatter;
+	public UserCustomRankingsB(SteamerProjBatter steamerProjBatter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, User user) {
+		this.steamerProjBatter = steamerProjBatter;
 		this.ottoneuOldSchoolLeague = ottoneuOldSchoolLeague;
 		this.user = user;
 		this.created = new Date();
-		this.histSGP = calcLeagueHistSGP(steamerBatter, ottoneuOldSchoolLeague);
+		this.histSGP = calcLeagueHistSGP(steamerProjBatter, ottoneuOldSchoolLeague);
 	}
 
 	public UserCustomRankingsB() {}
@@ -103,21 +103,21 @@ public class UserCustomRankingsB extends AbstractEntity {
 	}
 
 	@ManyToOne
-	public FPProjBatter getFpBatter() {
-		return fpBatter;
+	public FPProjBatter getFpProjBatter() {
+		return fpProjBatter;
 	}
 
-	public void setFpBatter(FPProjBatter fpBatter) {
-		this.fpBatter = fpBatter;
+	public void setFpProjBatter(FPProjBatter fpProjBatter) {
+		this.fpProjBatter = fpProjBatter;
 	}
 
 	@ManyToOne
-	public SteamerBatter getSteamerBatter() {
-		return steamerBatter;
+	public SteamerProjBatter getSteamerProjBatter() {
+		return steamerProjBatter;
 	}
 
-	public void setSteamerBatter(SteamerBatter steamerBatter) {
-		this.steamerBatter = steamerBatter;
+	public void setSteamerProjBatter(SteamerProjBatter steamerProjBatter) {
+		this.steamerProjBatter = steamerProjBatter;
 	}
 
 	@ManyToOne
@@ -168,7 +168,7 @@ public class UserCustomRankingsB extends AbstractEntity {
 		return r.add(hr.add(rbi.add(sb.add(ops)))).doubleValue();
 	}
 
-	public double calcLeagueHistSGP(SteamerBatter batter, YahooRotoLeague yahooRotoLeague) {
+	public double calcLeagueHistSGP(SteamerProjBatter batter, YahooRotoLeague yahooRotoLeague) {
 		BigDecimal r = new BigDecimal(batter.getR()).divide(new BigDecimal(yahooRotoLeague.getRHistSGPMult()), 4, RoundingMode.HALF_UP);
 		BigDecimal hr = new BigDecimal(batter.getHr()).divide(new BigDecimal(yahooRotoLeague.getHrHistSGPMult()), 4, RoundingMode.HALF_UP);
 		BigDecimal rbi = new BigDecimal(batter.getRbi()).divide(new BigDecimal(yahooRotoLeague.getRbiHistSGPMult()), 4, RoundingMode.HALF_UP);
@@ -217,7 +217,7 @@ public class UserCustomRankingsB extends AbstractEntity {
     	// check to see if this batter is a $1 batter, if so set value to $1
        	int counter = 0;
     	for (UserCustomRankingsB b : batterList) {
-    		if (this.fpBatter == b.getFpBatter()) {
+    		if (this.fpProjBatter == b.getFpProjBatter()) {
     			if (counter < draftedBOverOneDollar) {
     		    	this.histAAV = dollarsPerSGP.multiply(new BigDecimal(this.histSGP).subtract(oneDollarSGP)).setScale(2, BigDecimal.ROUND_HALF_UP);
     		    	break;
@@ -249,7 +249,7 @@ public class UserCustomRankingsB extends AbstractEntity {
 		return r.add(hr.add(rbi.add(sb.add(avg)))).doubleValue();
 	}
 
-	public double calcLeagueHistSGP(SteamerBatter batter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague) {
+	public double calcLeagueHistSGP(SteamerProjBatter batter, OttoneuOldSchoolLeague ottoneuOldSchoolLeague) {
 		BigDecimal r = new BigDecimal(batter.getR()).divide(new BigDecimal(ottoneuOldSchoolLeague.getRHistSGPMult()), 4, RoundingMode.HALF_UP);
 		BigDecimal hr = new BigDecimal(batter.getHr()).divide(new BigDecimal(ottoneuOldSchoolLeague.getHrHistSGPMult()), 4, RoundingMode.HALF_UP);
 		BigDecimal rbi = new BigDecimal(batter.getRbi()).divide(new BigDecimal(ottoneuOldSchoolLeague.getRbiHistSGPMult()), 4, RoundingMode.HALF_UP);
@@ -293,7 +293,7 @@ public class UserCustomRankingsB extends AbstractEntity {
     	// check to see if this batter is a $1 batter, if so set value to $1
        	int counter = 0;
     	for (UserCustomRankingsB b : batterList) {
-    		if (this.steamerBatter == b.getSteamerBatter()) {
+    		if (this.steamerProjBatter == b.getSteamerProjBatter()) {
     			if (counter < draftedBOverOneDollar) {
     		    	this.histAAV = dollarsPerSGP.multiply(new BigDecimal(this.histSGP).subtract(oneDollarSGP)).setScale(2, BigDecimal.ROUND_HALF_UP);
     		    	break;

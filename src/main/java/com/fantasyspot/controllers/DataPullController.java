@@ -20,11 +20,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.fantasyspot.models.FPProjBatter;
 import com.fantasyspot.models.FPProjPitcher;
-import com.fantasyspot.models.SteamerBatter;
+import com.fantasyspot.models.SteamerProjBatter;
 import com.fantasyspot.models.User;
 import com.fantasyspot.models.dao.FPProjBatterDao;
 import com.fantasyspot.models.dao.FPProjPitcherDao;
-import com.fantasyspot.models.dao.SteamerBatterDao;
+import com.fantasyspot.models.dao.SteamerProjBatterDao;
 import com.fantasyspot.models.util.TeamNameNormalization;
 
 @Controller
@@ -37,7 +37,7 @@ public class DataPullController extends AbstractController {
 	FPProjPitcherDao fpProjPitcherDao;
 	
 	@Autowired
-	SteamerBatterDao steamerBatterDao;
+	SteamerProjBatterDao steamerProjBatterDao;
 	
 	// FANTASY PROS
 	@RequestMapping(value = "/fpprojbdatapull")
@@ -204,8 +204,8 @@ public class DataPullController extends AbstractController {
     }
 	
 	// STEAMER
-	@RequestMapping(value = "/steamerbdatapull", method = RequestMethod.GET)
-	public String steamerBDataPullForm(Model model, HttpServletRequest request){
+	@RequestMapping(value = "/steamerprojbdatapull", method = RequestMethod.GET)
+	public String steamerProjBDataPullForm(Model model, HttpServletRequest request){
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
 		User user = this.getUserFromSession(request);
@@ -213,16 +213,16 @@ public class DataPullController extends AbstractController {
     	model.addAttribute("currentUser", currentUser);
         model.addAttribute("user", user);
 
-		return "steamerbdatapull";
+		return "steamerprojbdatapull";
 	}
 	
-	@RequestMapping(value = "/steamerbdatapull", method = RequestMethod.POST)
-	public String steamerBDataPull(Model model, HttpServletRequest request){
+	@RequestMapping(value = "/steamerprojbdatapull", method = RequestMethod.POST)
+	public String steamerProjBDataPull(Model model, HttpServletRequest request){
 		
 		String file = request.getParameter("file");
 		String line = null;
 		
-		steamerBatterDao.deleteAll();
+		steamerProjBatterDao.deleteAll();
 
 //		Scanner scanner = new Scanner(new File(file));
 		try (BufferedReader br = new BufferedReader (new FileReader(file))) {
@@ -270,8 +270,8 @@ public class DataPullController extends AbstractController {
 				
 				String category = "steamerbatter";
 
-				SteamerBatter batter = new SteamerBatter(name, team, playerId, g, pa, ab, h, dbl, tpl, hr, r, rbi, bb, k, hbp, sb, cs, avg, obp, slg, ops, woba, wrcPlus, bsr, fld, offWar, defWar, war, category);
-				steamerBatterDao.save(batter);
+				SteamerProjBatter batter = new SteamerProjBatter(name, team, playerId, g, pa, ab, h, dbl, tpl, hr, r, rbi, bb, k, hbp, sb, cs, avg, obp, slg, ops, woba, wrcPlus, bsr, fld, offWar, defWar, war, category);
+				steamerProjBatterDao.save(batter);
 
 			}
 		} catch (IOException e) {
@@ -279,27 +279,27 @@ public class DataPullController extends AbstractController {
 		}
 
 		// create lists to calculate aav
-		List<SteamerBatter> opsBatterList = steamerBatterDao.findAllByOrderByOpsTotalSGPDesc();
-		List<SteamerBatter> avgBatterList = steamerBatterDao.findAllByOrderByAvgTotalSGPDesc();
+		List<SteamerProjBatter> opsBatterList = steamerProjBatterDao.findAllByOrderByOpsTotalSGPDesc();
+		List<SteamerProjBatter> avgBatterList = steamerProjBatterDao.findAllByOrderByAvgTotalSGPDesc();
 		
 		// create second list to pass into aav calculation method
-		List<SteamerBatter> batterList = new ArrayList<SteamerBatter>();
+		List<SteamerProjBatter> batterList = new ArrayList<SteamerProjBatter>();
 		batterList.addAll(opsBatterList);
 		
 		// calc ops aav and save
-		for (SteamerBatter b : opsBatterList) {
+		for (SteamerProjBatter b : opsBatterList) {
 			b.calcOpsAav(batterList);
-			steamerBatterDao.save(b);
+			steamerProjBatterDao.save(b);
 		}
 		
 		// erase second list, add avg data, and pass into aav calculation method
-		batterList = new ArrayList<SteamerBatter>();
+		batterList = new ArrayList<SteamerProjBatter>();
 		batterList.addAll(avgBatterList);
 		
 		// calc avg aav and save
-		for (SteamerBatter b : avgBatterList) {
+		for (SteamerProjBatter b : avgBatterList) {
 			b.calcAvgAav(batterList);
-			steamerBatterDao.save(b);
+			steamerProjBatterDao.save(b);
 		}
 
 		return "redirect:steamerprojb";

@@ -16,7 +16,7 @@ import com.fantasyspot.models.util.SGPMultCalc;
 
 @Entity
 @Table(name = "steamerb")
-public class SteamerBatter extends AbstractEntity {
+public class SteamerProjBatter extends AbstractEntity {
 
 	// player description
 	private String name;
@@ -87,7 +87,7 @@ public class SteamerBatter extends AbstractEntity {
 	// total league budget (with $1 players taken out)
 	BigDecimal leagueBudgetOverOneB = new BigDecimal(budgetPctB).multiply(new BigDecimal(teamBudget).multiply(new BigDecimal(teamCount))).subtract(new BigDecimal(oneDollarB));
 
-	public SteamerBatter(String name, String team, String playerId, int g, int pa, int ab, int h, int dbl,
+	public SteamerProjBatter(String name, String team, String playerId, int g, int pa, int ab, int h, int dbl,
 			int tpl, int hr, int r, int rbi, int bb, int k, int hbp, int sb, int cs, double avg, double obp, double slg,
 			double ops, double woba, double wrcPlus, double bsr, double fld, double offWar, double defWar, double war, String category) {
 		this.name = name;
@@ -125,7 +125,7 @@ public class SteamerBatter extends AbstractEntity {
 		this.created = new Date();		
 	}
 	
-	public SteamerBatter() {}
+	public SteamerProjBatter() {}
 
     @NotNull
     @Column(name = "name")
@@ -574,7 +574,7 @@ public class SteamerBatter extends AbstractEntity {
     	this.avgTotalSGP = r.add(hr.add(rbi.add(sb.add(avg)))).doubleValue();
     }
 
-    public void calcOpsAav(List<SteamerBatter> batterList) {
+    public void calcOpsAav(List<SteamerProjBatter> batterList) {
 
     	// calculate average SGP value of $1 players
     	BigDecimal oneDollarSGPSum = new BigDecimal(0);
@@ -594,7 +594,7 @@ public class SteamerBatter extends AbstractEntity {
 
     	// check to see if this batter is a $1 batter, if so set value to $1
     	int counter = 0;
-    	for (SteamerBatter b : batterList) {
+    	for (SteamerProjBatter b : batterList) {
     		if (this == b) {
     			if (counter < draftedBOverOneDollar) {
     				this.opsTotalAAV = dollarsPerSGP.multiply(new BigDecimal(this.opsTotalSGP).subtract(oneDollarSGP)).setScale(2, BigDecimal.ROUND_HALF_UP);
@@ -611,7 +611,7 @@ public class SteamerBatter extends AbstractEntity {
     	}
     }
 
-    public void calcAvgAav(List<SteamerBatter> batterList) {
+    public void calcAvgAav(List<SteamerProjBatter> batterList) {
 
     	// calculate average SGP value of $1 players
     	BigDecimal oneDollarSGPSum = new BigDecimal(0);
@@ -631,7 +631,7 @@ public class SteamerBatter extends AbstractEntity {
 
     	// check to see if this batter is a $1 batter, if so set value to $1
     	int counter = 0;
-    	for (SteamerBatter b : batterList) {
+    	for (SteamerProjBatter b : batterList) {
     		if (this == b) {
     			if (counter < draftedBOverOneDollar) {
     				this.avgTotalAAV = dollarsPerSGP.multiply(new BigDecimal(this.avgTotalSGP).subtract(oneDollarSGP)).setScale(2, BigDecimal.ROUND_HALF_UP);
