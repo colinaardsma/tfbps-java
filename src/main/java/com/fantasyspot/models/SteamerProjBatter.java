@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 import com.fantasyspot.models.util.SGPMultCalc;
 
 @Entity
-@Table(name = "steamerb")
+@Table(name = "steamerprojb")
 public class SteamerProjBatter extends AbstractEntity {
 
 	// player description

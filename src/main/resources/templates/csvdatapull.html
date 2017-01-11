@@ -5,9 +5,11 @@
 		<div class="container">
 			<div id="top" th:include="template :: masthead(${currentUser})"></div>
 			<div id="middle">
-				<h4>Import Steamer CSV Data</h4>
+				<h4 th:text="'Import ' + ${dataSet} + ' ' + ${category} + ' CSV Data'"></h4>
 				<form style="width:80%; margin:auto" method="post">
-				    <label>Steamer CSV File<br/>
+				    <label>
+				   		<span th:text="${dataSet} + ' ' + ${category} + ' CSV File'"><br/></span>
+			    	    <!-- <input style="width:20em" type="file" accept=".csv" name="file" th:value="${file}"></input> -->
 			    	    <input style="width:20em" type="text" name="file" th:value="${file}"></input>
 	    			</label>
 	    			<br/>

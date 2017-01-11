@@ -19,6 +19,7 @@ import com.fantasyspot.models.FPProjBatter;
 import com.fantasyspot.models.FPProjPitcher;
 import com.fantasyspot.models.OttoneuOldSchoolLeague;
 import com.fantasyspot.models.SteamerProjBatter;
+import com.fantasyspot.models.SteamerProjPitcher;
 import com.fantasyspot.models.User;
 import com.fantasyspot.models.UserCustomRankingsB;
 import com.fantasyspot.models.UserCustomRankingsP;
@@ -27,6 +28,7 @@ import com.fantasyspot.models.dao.FPProjBatterDao;
 import com.fantasyspot.models.dao.FPProjPitcherDao;
 import com.fantasyspot.models.dao.OttoneuOldSchoolLeagueDao;
 import com.fantasyspot.models.dao.SteamerProjBatterDao;
+import com.fantasyspot.models.dao.SteamerProjPitcherDao;
 import com.fantasyspot.models.dao.UserCustomRankingsBDao;
 import com.fantasyspot.models.dao.UserCustomRankingsPDao;
 import com.fantasyspot.models.dao.YahooRotoLeagueDao;
@@ -55,7 +57,11 @@ public class ProjectionController extends AbstractController {
 	@Autowired
 	SteamerProjBatterDao steamerProjBatterDao;
 	
+	@Autowired
+	SteamerProjPitcherDao steamerProjPitcherDao;
+	
 	// FANTASY PROS
+	// BATTER
 	@RequestMapping(value = "/fpprojb")
     public String fpprojb(Model model, HttpServletRequest request){
 		// check for user in session
@@ -79,6 +85,7 @@ public class ProjectionController extends AbstractController {
         return "projections";
     }
 
+	// PITCHER
 	@RequestMapping(value = "/fpprojp")
     public String fpprojp(Model model, HttpServletRequest request){
 		// check for user in session
@@ -103,6 +110,7 @@ public class ProjectionController extends AbstractController {
     }
 	
 	// STEAMER
+	// BATTER
 	@RequestMapping(value = "/steamerprojb")
     public String steamerProjB(Model model, HttpServletRequest request){
 		// check for user in session
@@ -126,8 +134,30 @@ public class ProjectionController extends AbstractController {
         return "projections";
     }
 	
+	// PITCHER
+	@RequestMapping(value = "/steamerprojp")
+    public String steamerProjP(Model model, HttpServletRequest request){
+		// check for user in session
+		String currentUser = this.getUsernameFromSession(request);
+		User user = this.getUserFromSession(request);
+		
+		// populate html table
+		List<SteamerProjPitcher> players = steamerProjPitcherDao.findAllByOrderBySgpDesc();
+		
+		// get date of last data pull
+		Date lastPullDate = players.get(0).getCreated();
+		// set category of data
+		String category = "pitcher";
+				
+    	model.addAttribute("currentUser", currentUser);
+		model.addAttribute("players", players);
+		model.addAttribute("lastPullDate", lastPullDate);
+		model.addAttribute("category", category);
+        model.addAttribute("user", user);
 
-
+        return "projections";
+    }
+	
 	// YAHOO ROTO LEAGUE BATTER
 	@RequestMapping(value = "/user_yahoo_roto_fpprojb", method = RequestMethod.GET)
 	public String useryahoorotofpprojbform(Model model, HttpServletRequest request){
@@ -310,7 +340,7 @@ public class ProjectionController extends AbstractController {
 		List<FPProjPitcher> customPitcherRankings = new ArrayList<FPProjPitcher>();
 		
 		for (UserCustomRankingsP userPitcher : userPitcherList) {
-			FPProjPitcher pitcher = userPitcher.getPitcher();
+			FPProjPitcher pitcher = userPitcher.getFpProjPitcher();
 			
 			String name = pitcher.getName();
 			String team = pitcher.getTeam();
@@ -622,7 +652,7 @@ public class ProjectionController extends AbstractController {
 			int l = pitcher.getL();
 			int cg = pitcher.getCg();
 			String category = pitcher.getCategory();
-			UserCustomRankingsP userPitcherSGP = userCustomRankingsPDao.findByPitcherAndUserAndOttoneuOldSchoolLeague(pitcher, user, league);
+			UserCustomRankingsP userPitcherSGP = userCustomRankingsPDao.findByFpProjPitcherAndUserAndOttoneuOldSchoolLeague(pitcher, user, league);
 			double customSGP = userPitcherSGP.getHistSGP();
 
 			FPProjPitcher sgpPitcher = new FPProjPitcher(name, team, pos, ip, k, w, sv, era, whip, er, h, bb, hr, g, gs, l, cg, category);

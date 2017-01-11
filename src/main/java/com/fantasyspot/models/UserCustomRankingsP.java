@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -23,25 +22,44 @@ public class UserCustomRankingsP extends AbstractEntity {
 
 	// join variables
 	private User user;
-	private FPProjPitcher pitcher;
+	private FPProjPitcher fpProjpitcher;
+	private SteamerProjPitcher steamerProjPitcher;
 	private YahooRotoLeague yahooRotoLeague;
 	private OttoneuOldSchoolLeague ottoneuOldSchoolLeague;
 	private KeeperCosts keeperCost;
 
-	public UserCustomRankingsP(FPProjPitcher pitcher, YahooRotoLeague yahooRotoLeague, User user) {
-		this.pitcher = pitcher;
+	// YAHOO ROTO LEAGUE
+	public UserCustomRankingsP(FPProjPitcher fpProjpitcher, YahooRotoLeague yahooRotoLeague, User user) {
+		this.fpProjpitcher = fpProjpitcher;
 		this.yahooRotoLeague = yahooRotoLeague;
 		this.user = user;
 		this.created = new Date();
-		this.histSGP = calcLeagueHistSGP(pitcher, yahooRotoLeague);
+		this.histSGP = calcLeagueHistSGP(fpProjpitcher, yahooRotoLeague);
 	}
 
-	public UserCustomRankingsP(FPProjPitcher pitcher, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, User user) {
-		this.pitcher = pitcher;
+	public UserCustomRankingsP(SteamerProjPitcher steamerProjPitcher, YahooRotoLeague yahooRotoLeague, User user) {
+		this.steamerProjPitcher = steamerProjPitcher;
+		this.yahooRotoLeague = yahooRotoLeague;
+		this.user = user;
+		this.created = new Date();
+		this.histSGP = calcLeagueHistSGP(fpProjpitcher, yahooRotoLeague);
+	}
+
+	// OTTONEU OLD SCHOOL LEAGUE
+	public UserCustomRankingsP(FPProjPitcher fpProjpitcher, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, User user) {
+		this.fpProjpitcher = fpProjpitcher;
 		this.ottoneuOldSchoolLeague = ottoneuOldSchoolLeague;
 		this.user = user;
 		this.created = new Date();
-		this.histSGP = calcLeagueHistSGP(pitcher, ottoneuOldSchoolLeague);
+		this.histSGP = calcLeagueHistSGP(fpProjpitcher, ottoneuOldSchoolLeague);
+	}
+
+	public UserCustomRankingsP(SteamerProjPitcher steamerProjPitcher, OttoneuOldSchoolLeague ottoneuOldSchoolLeague, User user) {
+		this.steamerProjPitcher = steamerProjPitcher;
+		this.ottoneuOldSchoolLeague = ottoneuOldSchoolLeague;
+		this.user = user;
+		this.created = new Date();
+		this.histSGP = calcLeagueHistSGP(fpProjpitcher, ottoneuOldSchoolLeague);
 	}
 
 	public UserCustomRankingsP() {}
@@ -86,12 +104,21 @@ public class UserCustomRankingsP extends AbstractEntity {
 	}
 
 	@ManyToOne
-	public FPProjPitcher getPitcher() {
-		return pitcher;
+	public FPProjPitcher getFpProjPitcher() {
+		return fpProjpitcher;
 	}
 
-	public void setPitcher(FPProjPitcher pitcher) {
-		this.pitcher = pitcher;
+	public void setFpProjPitcher(FPProjPitcher fpProjpitcher) {
+		this.fpProjpitcher = fpProjpitcher;
+	}
+
+	@ManyToOne
+	public SteamerProjPitcher getSteamerProjPitcher() {
+		return steamerProjPitcher;
+	}
+
+	public void setSteamerProjPitcher(SteamerProjPitcher steamerProjPitcher) {
+		this.steamerProjPitcher = steamerProjPitcher;
 	}
 
 	@ManyToOne
@@ -122,20 +149,20 @@ public class UserCustomRankingsP extends AbstractEntity {
 	}
 
 	// yahoo roto league
-	public double calcLeagueHistSGP(FPProjPitcher pitcher, YahooRotoLeague yahooRotoLeague) {
-		BigDecimal w = new BigDecimal(pitcher.getW()).divide(new BigDecimal(yahooRotoLeague.getWHistSGPMult()), 4, RoundingMode.HALF_UP);
-		BigDecimal sv = new BigDecimal(pitcher.getSv()).divide(new BigDecimal(yahooRotoLeague.getSvHistSGPMult()), 4, RoundingMode.HALF_UP);
-		BigDecimal k = new BigDecimal(pitcher.getK()).divide(new BigDecimal(yahooRotoLeague.getKHistSGPMult()), 4, RoundingMode.HALF_UP);
+	public double calcLeagueHistSGP(FPProjPitcher fpProjpitcher, YahooRotoLeague yahooRotoLeague) {
+		BigDecimal w = new BigDecimal(fpProjpitcher.getW()).divide(new BigDecimal(yahooRotoLeague.getWHistSGPMult()), 4, RoundingMode.HALF_UP);
+		BigDecimal sv = new BigDecimal(fpProjpitcher.getSv()).divide(new BigDecimal(yahooRotoLeague.getSvHistSGPMult()), 4, RoundingMode.HALF_UP);
+		BigDecimal k = new BigDecimal(fpProjpitcher.getK()).divide(new BigDecimal(yahooRotoLeague.getKHistSGPMult()), 4, RoundingMode.HALF_UP);
 
 		// era
-		BigDecimal er = new BigDecimal(475).add(new BigDecimal(pitcher.getEr()));
+		BigDecimal er = new BigDecimal(475).add(new BigDecimal(fpProjpitcher.getEr()));
 		BigDecimal eraNum = er.multiply(new BigDecimal(9));
-		BigDecimal ip = new BigDecimal(1192).add(new BigDecimal(pitcher.getIp()));
+		BigDecimal ip = new BigDecimal(1192).add(new BigDecimal(fpProjpitcher.getIp()));
 		BigDecimal eraDenom = ip;
 		BigDecimal era = eraNum.divide(eraDenom, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(3.59)).divide(new BigDecimal(yahooRotoLeague.getEraHistSGPMult()), 4, RoundingMode.HALF_UP);
 
 		// whip
-		BigDecimal whipNum = new BigDecimal(1466).add(new BigDecimal(pitcher.getH())).add(new BigDecimal(pitcher.getBb()));
+		BigDecimal whipNum = new BigDecimal(1466).add(new BigDecimal(fpProjpitcher.getH())).add(new BigDecimal(fpProjpitcher.getBb()));
 		BigDecimal whipDenom = ip;
 		BigDecimal whip = whipNum.divide(whipDenom, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(1.23)).divide(new BigDecimal(yahooRotoLeague.getWhipHistSGPMult()), 4, RoundingMode.HALF_UP);
 
@@ -143,20 +170,20 @@ public class UserCustomRankingsP extends AbstractEntity {
 	}
 
 	// ottoneu old school league
-	public double calcLeagueHistSGP(FPProjPitcher pitcher, OttoneuOldSchoolLeague ottoneuOldSchoolLeague) {
-		BigDecimal w = new BigDecimal(pitcher.getW()).divide(new BigDecimal(ottoneuOldSchoolLeague.getWHistSGPMult()), 4, RoundingMode.HALF_UP);
-		BigDecimal sv = new BigDecimal(pitcher.getSv()).divide(new BigDecimal(ottoneuOldSchoolLeague.getSvHistSGPMult()), 4, RoundingMode.HALF_UP);
-		BigDecimal k = new BigDecimal(pitcher.getK()).divide(new BigDecimal(ottoneuOldSchoolLeague.getKHistSGPMult()), 4, RoundingMode.HALF_UP);
+	public double calcLeagueHistSGP(FPProjPitcher fpProjpitcher, OttoneuOldSchoolLeague ottoneuOldSchoolLeague) {
+		BigDecimal w = new BigDecimal(fpProjpitcher.getW()).divide(new BigDecimal(ottoneuOldSchoolLeague.getWHistSGPMult()), 4, RoundingMode.HALF_UP);
+		BigDecimal sv = new BigDecimal(fpProjpitcher.getSv()).divide(new BigDecimal(ottoneuOldSchoolLeague.getSvHistSGPMult()), 4, RoundingMode.HALF_UP);
+		BigDecimal k = new BigDecimal(fpProjpitcher.getK()).divide(new BigDecimal(ottoneuOldSchoolLeague.getKHistSGPMult()), 4, RoundingMode.HALF_UP);
 
 		// era
-		BigDecimal er = new BigDecimal(475).add(new BigDecimal(pitcher.getEr()));
+		BigDecimal er = new BigDecimal(475).add(new BigDecimal(fpProjpitcher.getEr()));
 		BigDecimal eraNum = er.multiply(new BigDecimal(9));
-		BigDecimal ip = new BigDecimal(1192).add(new BigDecimal(pitcher.getIp()));
+		BigDecimal ip = new BigDecimal(1192).add(new BigDecimal(fpProjpitcher.getIp()));
 		BigDecimal eraDenom = ip;
 		BigDecimal era = eraNum.divide(eraDenom, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(3.59)).divide(new BigDecimal(ottoneuOldSchoolLeague.getEraHistSGPMult()), 4, RoundingMode.HALF_UP);
 
 		// whip
-		BigDecimal whipNum = new BigDecimal(1466).add(new BigDecimal(pitcher.getH())).add(new BigDecimal(pitcher.getBb()));
+		BigDecimal whipNum = new BigDecimal(1466).add(new BigDecimal(fpProjpitcher.getH())).add(new BigDecimal(fpProjpitcher.getBb()));
 		BigDecimal whipDenom = ip;
 		BigDecimal whip = whipNum.divide(whipDenom, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(1.23)).divide(new BigDecimal(ottoneuOldSchoolLeague.getWhipHistSGPMult()), 4, RoundingMode.HALF_UP);
 
@@ -192,7 +219,7 @@ public class UserCustomRankingsP extends AbstractEntity {
 		// check to see if this pitcher is a $1 pitcher, if so set value to $1
 		int counter = 0;
 		for (UserCustomRankingsP p : pitcherList) {
-			if (this.pitcher == p.getPitcher()) {
+			if (this.fpProjpitcher == p.getFpProjPitcher()) {
 				if (counter < draftedPOverOneDollar) {
 					this.histAAV = dollarsPerSGP.multiply(new BigDecimal(this.histSGP).subtract(oneDollarSGP)).setScale(2, BigDecimal.ROUND_HALF_UP);
 					break;

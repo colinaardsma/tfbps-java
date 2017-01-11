@@ -14,20 +14,20 @@ import javax.validation.constraints.NotNull;
 
 import com.fantasyspot.models.util.SGPMultCalc;
 
-
 @Entity
-@Table(name = "fpprojp")
-public class FPProjPitcher extends AbstractEntity {
-	
+@Table(name = "steamerprojp")
+public class SteamerProjPitcher extends AbstractEntity {
+
 	// player description
 	private String name;
 	private String team;
 	private String pos;
-	
+	private String playerId;
+
 	// stats
-	private int ip;
-	private int k;
+	private double ip;
 	private int w;
+	private int k;
 	private int sv;
 	private double era;
 	private double whip;
@@ -38,7 +38,13 @@ public class FPProjPitcher extends AbstractEntity {
 	private int g;
 	private int gs;
 	private int l;
-	private int cg;
+	
+	// advanced stats
+	private double kNine;
+	private double bbNine;
+	private double fip;
+	private double war;
+	private double raNineWAR;
 	
 	// sgp
 	private double wSGP;
@@ -59,10 +65,11 @@ public class FPProjPitcher extends AbstractEntity {
 	private List<UserCustomRankingsP> userCustomRankingsP;
     private List<KeeperCosts> keeperCosts;
 
-	public FPProjPitcher(String name, String team, String pos, int ip, int k, int w, int sv, double era, double whip, int er, int h, int bb, int hr, int g, int gs, int l, int cg, String category) {
+		public SteamerProjPitcher(String name, String team, String playerId, double ip, int k, int w, int sv, double era, double whip, int er, int h, int bb, int hr, int g, int gs, int l, 
+				double kNine, double bbNine, double fip, double war, double raNineWAR, String category) {
 		this.name = name;
 		this.team = team;
-		this.pos = pos;
+		this.playerId = playerId;
 		this.ip = ip;
 		this.k = k;
 		this.w = w;
@@ -76,14 +83,18 @@ public class FPProjPitcher extends AbstractEntity {
 		this.g = g;
 		this.gs = gs;
 		this.l = l;
-		this.cg = cg;
+		this.kNine = kNine;
+		this.bbNine = bbNine;
+		this.fip = fip;
+		this.war = war;
+		this.raNineWAR = raNineWAR;
 		calcSgp(SGPMultCalc.sgpMultW(), SGPMultCalc.sgpMultSV(), SGPMultCalc.sgpMultK(), SGPMultCalc.sgpMultERA(), SGPMultCalc.sgpMultWHIP());
 
 		this.category = category;
 		this.created = new Date();
 	}
 	
-	public FPProjPitcher() {}
+	public SteamerProjPitcher() {}
 	
 	@NotNull
     @Column(name = "name")
@@ -95,7 +106,6 @@ public class FPProjPitcher extends AbstractEntity {
 		this.name = name;
 	}
 
-	@NotNull
     @Column(name = "team")
 	public String getTeam() {
 		return team;
@@ -105,7 +115,6 @@ public class FPProjPitcher extends AbstractEntity {
 		this.team = team;
 	}
 
-	@NotNull
     @Column(name = "pos")
 	public String getPos() {
 		return pos;
@@ -116,12 +125,22 @@ public class FPProjPitcher extends AbstractEntity {
 	}
 
 	@NotNull
+	@Column(name = "playerId")
+	public String getPlayerId() {
+		return playerId;
+	}
+
+	public void setPlayerId(String playerId) {
+		this.playerId = playerId;
+	}
+
+	@NotNull
     @Column(name = "ip")
-	public int getIp() {
+	public double getIp() {
 		return ip;
 	}
 
-	public void setIp(int ip) {
+	public void setIp(double ip) {
 		this.ip = ip;
 	}
 
@@ -246,13 +265,53 @@ public class FPProjPitcher extends AbstractEntity {
 	}
 
 	@NotNull
-    @Column(name = "cg")
-	public int getCg() {
-		return cg;
+    @Column(name = "kNine")
+	public double getKNine() {
+		return kNine;
 	}
 
-	public void setCg(int cg) {
-		this.cg = cg;
+	public void setKNine(double kNine) {
+		this.kNine = kNine;
+	}
+
+	@NotNull
+    @Column(name = "bbNine")
+	public double getBbNine() {
+		return bbNine;
+	}
+
+	public void setBbNine(double bbNine) {
+		this.bbNine = bbNine;
+	}
+
+	@NotNull
+    @Column(name = "fip")
+	public double getFip() {
+		return fip;
+	}
+
+	public void setFip(double fip) {
+		this.fip = fip;
+	}
+
+	@NotNull
+    @Column(name = "war")
+	public double getWar() {
+		return war;
+	}
+
+	public void setWar(double war) {
+		this.war = war;
+	}
+
+	@NotNull
+    @Column(name = "raNineWAR")
+	public double getRaNineWAR() {
+		return raNineWAR;
+	}
+
+	public void setRaNineWAR(double raNineWAR) {
+		this.raNineWAR = raNineWAR;
 	}
 
 	@NotNull
@@ -392,7 +451,7 @@ public class FPProjPitcher extends AbstractEntity {
     	this.sgp = w.add(sv.add(k.add(era.add(whip)))).doubleValue();
     }
     
-	public void calcAav(List<FPProjPitcher> pitcherList) {
+	public void calcAav(List<SteamerProjPitcher> pitcherList) {
 
 		// player pool
 		int draftedP = 154; // total batters taken
@@ -423,8 +482,8 @@ public class FPProjPitcher extends AbstractEntity {
     	
     	// check to see if this pitcher is a $1 pitcher, if so set value to $1
        	int counter = 0;
-    	for (FPProjPitcher b : pitcherList) {
-    		if (this == b) {
+    	for (SteamerProjPitcher p : pitcherList) {
+    		if (this == p) {
     			if (counter < draftedPOverOneDollar) {
     		    	this.aav = dollarsPerSGP.multiply(new BigDecimal(this.sgp).subtract(oneDollarSGP)).setScale(2, BigDecimal.ROUND_HALF_UP);
     		    	break;

@@ -18,9 +18,12 @@ import com.fantasyspot.models.util.SGPMultCalc;
 @Table(name = "fpprojb")
 public class FPProjBatter extends AbstractEntity {
 	
+	// player description
 	private String name;
 	private String team;
 	private String pos;
+
+	// stats
 	private int ab;
 	private int r;
 	private int hr;
@@ -35,6 +38,8 @@ public class FPProjBatter extends AbstractEntity {
 	private int k;
 	private double slg;
 	private double ops;
+	
+	// sgp
 	private double rSGP;
 	private double hrSGP;
 	private double rbiSGP;
@@ -43,8 +48,12 @@ public class FPProjBatter extends AbstractEntity {
 	private double avgSGP;
 	private double opsTotalSGP;
 	private double avgTotalSGP;
+	
+	// aav
 	private BigDecimal opsTotalAAV;
 	private BigDecimal avgTotalAAV;
+	
+	// other
 	private String category;
 	private Date created;
 	

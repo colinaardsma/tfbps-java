@@ -21,10 +21,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.fantasyspot.models.FPProjBatter;
 import com.fantasyspot.models.FPProjPitcher;
 import com.fantasyspot.models.SteamerProjBatter;
+import com.fantasyspot.models.SteamerProjPitcher;
 import com.fantasyspot.models.User;
 import com.fantasyspot.models.dao.FPProjBatterDao;
 import com.fantasyspot.models.dao.FPProjPitcherDao;
 import com.fantasyspot.models.dao.SteamerProjBatterDao;
+import com.fantasyspot.models.dao.SteamerProjPitcherDao;
 import com.fantasyspot.models.util.TeamNameNormalization;
 
 @Controller
@@ -39,7 +41,11 @@ public class DataPullController extends AbstractController {
 	@Autowired
 	SteamerProjBatterDao steamerProjBatterDao;
 	
+	@Autowired
+	SteamerProjPitcherDao steamerProjPitcherDao;
+	
 	// FANTASY PROS
+	// BATTER
 	@RequestMapping(value = "/fpprojbdatapull")
     public String fpprojbdatapull(Model model, HttpServletRequest request){
 		
@@ -127,6 +133,7 @@ public class DataPullController extends AbstractController {
         return "redirect:fpprojb";
     }
 	
+	// PITCHER
 	@RequestMapping(value = "/fpprojpdatapull")
     public String fpprojpdatapull(Model model, HttpServletRequest request){
 
@@ -204,16 +211,21 @@ public class DataPullController extends AbstractController {
     }
 	
 	// STEAMER
+	// BATTER
 	@RequestMapping(value = "/steamerprojbdatapull", method = RequestMethod.GET)
 	public String steamerProjBDataPullForm(Model model, HttpServletRequest request){
 		// check for user in session
 		String currentUser = this.getUsernameFromSession(request);
 		User user = this.getUserFromSession(request);
+		String dataSet = "Steamer";
+		String category = "batter";
 
     	model.addAttribute("currentUser", currentUser);
         model.addAttribute("user", user);
+        model.addAttribute("dataSet", dataSet);
+        model.addAttribute("category", category);
 
-		return "steamerprojbdatapull";
+		return "csvdatapull";
 	}
 	
 	@RequestMapping(value = "/steamerprojbdatapull", method = RequestMethod.POST)
@@ -224,11 +236,7 @@ public class DataPullController extends AbstractController {
 		
 		steamerProjBatterDao.deleteAll();
 
-//		Scanner scanner = new Scanner(new File(file));
 		try (BufferedReader br = new BufferedReader (new FileReader(file))) {
-		
-//		while (scanner.hasNext()) {
-
 			while ((line = br.readLine()) != null) {
 				String[] player = line.split(",");
 				String name = player[0].replaceAll("\"", "");
@@ -239,7 +247,7 @@ public class DataPullController extends AbstractController {
 				if (ab < 100) { // if ab is less than 100 then skip
 					continue;
 				}
-				
+
 				String team = player[1].replaceAll("\"", "");
 
 				int g = Integer.parseInt(player[2].replaceAll("\"", ""));
@@ -267,8 +275,8 @@ public class DataPullController extends AbstractController {
 				double defWar = Double.parseDouble(player[28].replaceAll("\"", ""));
 				double war = Double.parseDouble(player[29].replaceAll("\"", ""));
 				String playerId = player[30].replaceAll("\"", "");
-				
-				String category = "steamerbatter";
+
+				String category = "steamerprojbatter";
 
 				SteamerProjBatter batter = new SteamerProjBatter(name, team, playerId, g, pa, ab, h, dbl, tpl, hr, r, rbi, bb, k, hbp, sb, cs, avg, obp, slg, ops, woba, wrcPlus, bsr, fld, offWar, defWar, war, category);
 				steamerProjBatterDao.save(batter);
@@ -303,6 +311,100 @@ public class DataPullController extends AbstractController {
 		}
 
 		return "redirect:steamerprojb";
+	}
+	
+	// PITCHER
+	@RequestMapping(value = "/steamerprojpdatapull", method = RequestMethod.GET)
+	public String steamerProjPDataPullForm(Model model, HttpServletRequest request){
+		// check for user in session
+		String currentUser = this.getUsernameFromSession(request);
+		User user = this.getUserFromSession(request);
+		String dataSet = "Steamer";
+		String category = "pitcher";
+
+    	model.addAttribute("currentUser", currentUser);
+        model.addAttribute("user", user);
+        model.addAttribute("dataSet", dataSet);
+        model.addAttribute("category", category);
+
+		return "csvdatapull";
+	}
+	
+	@RequestMapping(value = "/steamerprojpdatapull", method = RequestMethod.POST)
+	public String steamerProjPDataPull(Model model, HttpServletRequest request){
+		
+		String file = request.getParameter("file");
+		String line = null;
+		
+		steamerProjPitcherDao.deleteAll();
+
+		try (BufferedReader br = new BufferedReader (new FileReader(file))) {
+			while ((line = br.readLine()) != null) {
+				String[] player = line.split(",");
+				String name = player[0].replaceAll("\"", "");
+				if (name.contains("Name")) { // if header row then skip
+					continue;
+				}
+				double ip = Double.parseDouble(player[8].replaceAll("\"", ""));
+				if (ip < 40) { // if ab is less than 100 then skip
+					continue;
+				}
+
+				String team = player[1].replaceAll("\"", "");
+
+				int w = Integer.parseInt(player[2].replaceAll("\"", ""));
+				int l = Integer.parseInt(player[3].replaceAll("\"", ""));
+				double era = Double.parseDouble(player[4].replaceAll("\"", ""));
+				int gs = Integer.parseInt(player[5].replaceAll("\"", ""));
+				int g = Integer.parseInt(player[6].replaceAll("\"", ""));
+				int sv = Integer.parseInt(player[7].replaceAll("\"", ""));
+				int h = Integer.parseInt(player[9].replaceAll("\"", ""));
+				int er = Integer.parseInt(player[10].replaceAll("\"", ""));
+				int hr = Integer.parseInt(player[11].replaceAll("\"", ""));
+				int k = Integer.parseInt(player[12].replaceAll("\"", ""));
+				int bb = Integer.parseInt(player[13].replaceAll("\"", ""));
+				double whip = Double.parseDouble(player[14].replaceAll("\"", ""));
+				double kNine = Double.parseDouble(player[15].replaceAll("\"", ""));
+				double bbNine = Double.parseDouble(player[16].replaceAll("\"", ""));
+				double fip = Double.parseDouble(player[17].replaceAll("\"", ""));
+				double war = Double.parseDouble(player[18].replaceAll("\"", ""));
+				double raNineWAR = Double.parseDouble(player[19].replaceAll("\"", ""));
+				String playerId = player[20].replaceAll("\"", "");
+
+				String category = "steamerprojpitcher";
+
+				SteamerProjPitcher pitcher = new SteamerProjPitcher(name, team, playerId, ip, k, w, sv, era, whip, er, h, bb, hr, g, gs, l, kNine, bbNine, fip, war, raNineWAR, category);
+				steamerProjPitcherDao.save(pitcher);
+
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// create lists to calculate aav
+		List<SteamerProjPitcher> pitcherList = steamerProjPitcherDao.findAllByOrderBySgpDesc();
+		
+		// create second list to pass into aav calculation method
+		List<SteamerProjPitcher> pList = new ArrayList<SteamerProjPitcher>();
+		pList.addAll(pitcherList);
+		
+		// calc ops aav and save
+		for (SteamerProjPitcher b : pitcherList) {
+			b.calcAav(pList);
+			steamerProjPitcherDao.save(b);
+		}
+		
+		// erase second list, add avg data, and pass into aav calculation method
+		pList = new ArrayList<SteamerProjPitcher>();
+		pList.addAll(pitcherList);
+		
+		// calc avg aav and save
+		for (SteamerProjPitcher p : pitcherList) {
+			p.calcAav(pList);
+			steamerProjPitcherDao.save(p);
+		}
+
+		return "redirect:steamerprojp";
 	}
 	
 }

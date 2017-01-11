@@ -74,13 +74,13 @@ public class KeeperController extends AbstractController {
 			String posType = pK.getPosType();
 			if (posType.equals("B")) {
 				FPProjBatter batter = pK.getBatter();
-				if (userCustomRankingsBDao.findByFpBatter(batter) != null) {
-					pK.setUserCustomRankingsB(userCustomRankingsBDao.findByFpBatter(batter));
+				if (userCustomRankingsBDao.findByFpProjBatter(batter) != null) {
+					pK.setUserCustomRankingsB(userCustomRankingsBDao.findByFpProjBatter(batter));
 				}
 			} else {
 				FPProjPitcher pitcher = pK.getPitcher();
-				if (userCustomRankingsPDao.findByPitcher(pitcher) != null) {
-					pK.setUserCustomRankingsP(userCustomRankingsPDao.findByPitcher(pitcher));
+				if (userCustomRankingsPDao.findByFpProjPitcher(pitcher) != null) {
+					pK.setUserCustomRankingsP(userCustomRankingsPDao.findByFpProjPitcher(pitcher));
 				}
 			}
 		}
