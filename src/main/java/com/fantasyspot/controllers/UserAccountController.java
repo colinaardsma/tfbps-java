@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.fantasyspot.models.OttoneuOldSchoolLeague;
 import com.fantasyspot.models.User;
 import com.fantasyspot.models.YahooRotoLeague;
-import com.fantasyspot.models.dao.FPProjBatterDao;
-import com.fantasyspot.models.dao.FPProjPitcherDao;
 import com.fantasyspot.models.dao.KeeperCostsDao;
 import com.fantasyspot.models.dao.OttoneuOldSchoolLeagueDao;
 import com.fantasyspot.models.dao.UserCustomRankingsBDao;
@@ -28,12 +26,6 @@ public class UserAccountController extends AbstractController {
 	@Autowired
 	UserDao userdao;
 
-	@Autowired
-	FPProjBatterDao fpProjBatterDao;
-	
-	@Autowired
-	FPProjPitcherDao fpProjPitcherDao;
-	
 	@Autowired
 	YahooRotoLeagueDao yahooRotoLeagueDao;
 	
@@ -74,70 +66,25 @@ public class UserAccountController extends AbstractController {
 				keeperYahooRotoLeagues.add(league);
 			}
 		}
-
-
-
-//		List<UserCustomRankingsB> userBatterYahooRotoCustomPlayers = userCustomRankingsBDao.findByUser(user);
-//		List<YahooRotoLeague> batterYahooRotoLeagues = new ArrayList<YahooRotoLeague>();
-//		for (UserCustomRankingsB player : userBatterYahooRotoCustomPlayers) {
-//			if (player.getYahooRotoLeague() != null) {
-//				YahooRotoLeague league = player.getYahooRotoLeague();
-//				if (!batterYahooRotoLeagues.contains(league)) {
-//					batterYahooRotoLeagues.add(league);
-//				}
-//			}
-//		}
 		
-//		List<UserCustomRankingsP> userPitcherYahooRotoCustomPlayers = userCustomRankingsPDao.findByUser(user);
-//		List<YahooRotoLeague> pitcherYahooRotoLeagues = new ArrayList<YahooRotoLeague>();
-//		for (UserCustomRankingsP player : userPitcherYahooRotoCustomPlayers) {
-//			if (player.getYahooRotoLeague() != null) {
-//				YahooRotoLeague league = player.getYahooRotoLeague();
-//				if (!pitcherYahooRotoLeagues.contains(league)) {
-//					pitcherYahooRotoLeagues.add(league);
-//				}
-//			}
-//		}
-		
-
 		// OTTONEU OLD SCHOOL LEAGUES
 		List<OttoneuOldSchoolLeague> userOttoneuOldSchoolLeagues = ottoneuOldSchoolLeagueDao.findByUsers(user);
 		
-		// batter
 		List<OttoneuOldSchoolLeague> batterOttoneuOldSchoolLeagues = new ArrayList<OttoneuOldSchoolLeague>();
-		for (OttoneuOldSchoolLeague league : userOttoneuOldSchoolLeagues) {
-			if (!userCustomRankingsBDao.findByUserAndOttoneuOldSchoolLeague(user, league).isEmpty()) {
-				batterOttoneuOldSchoolLeagues.add(league);
-			}
-		}
-//		List<UserCustomRankingsB> userBatterOttoneuOldSchoolCustomPlayers = userCustomRankingsBDao.findByUser(user);
-//		for (int i = 0; i < userBatterOttoneuOldSchoolCustomPlayers.size(); i++) {
-////		for (UserCustomRankingsB player : userBatterOttoneuOldSchoolCustomPlayers) {
-//			if (player.getOttoneuOldSchoolLeague() != null) {
-//				OttoneuOldSchoolLeague league = player.getOttoneuOldSchoolLeague();
-//				if (!batterOttoneuOldSchoolLeagues.contains(league)) {
-//					batterOttoneuOldSchoolLeagues.add(league);
-//				}
-//			}
-//		}
-		
-		// pitcher
 		List<OttoneuOldSchoolLeague> pitcherOttoneuOldSchoolLeagues = new ArrayList<OttoneuOldSchoolLeague>();
+		List<OttoneuOldSchoolLeague> keeperOttoneuOldSchoolLeagues = new ArrayList<OttoneuOldSchoolLeague>();
+
 		for (OttoneuOldSchoolLeague league : userOttoneuOldSchoolLeagues) {
+			if (!userCustomRankingsPDao.findByUserAndOttoneuOldSchoolLeague(user, league).isEmpty()) {
+				pitcherOttoneuOldSchoolLeagues.add(league);
+			}
 			if (!userCustomRankingsBDao.findByUserAndOttoneuOldSchoolLeague(user, league).isEmpty()) {
 				batterOttoneuOldSchoolLeagues.add(league);
 			}
+			if (!keeperCostsDao.findByUserAndOttoneuOldSchoolLeague(user, league).isEmpty()) {
+				keeperOttoneuOldSchoolLeagues.add(league);
+			}
 		}
-//		List<UserCustomRankingsP> userPitcherOttoneuOldSchoolCustomPlayers = userCustomRankingsPDao.findByUser(user);
-//		List<OttoneuOldSchoolLeague> pitcherOttoneuOldSchoolLeagues = new ArrayList<OttoneuOldSchoolLeague>();
-//		for (UserCustomRankingsP player : userPitcherOttoneuOldSchoolCustomPlayers) {
-//			if (player.getOttoneuOldSchoolLeague() != null) {
-//				OttoneuOldSchoolLeague league = player.getOttoneuOldSchoolLeague();
-//				if (!pitcherOttoneuOldSchoolLeagues.contains(league)) {
-//					pitcherOttoneuOldSchoolLeagues.add(league);
-//				}
-//			}
-//		}
 		
     	model.addAttribute("currentUser", currentUser);
         model.addAttribute("user", user);

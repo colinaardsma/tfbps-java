@@ -272,7 +272,8 @@ public class UserCustomRankingsB extends AbstractEntity {
     	int draftedBOverOneDollar = draftedB - oneDollarB; // historical average of total batters taken minus $1 batters taken
     	
     	// total league budget (with $1 players taken out)
-    	BigDecimal leagueBudgetOverOneB = new BigDecimal(ottoneuOldSchoolLeague.getHistBudgetPctB()).multiply(new BigDecimal(ottoneuOldSchoolLeague.getHistTotalSpent())).subtract(new BigDecimal(ottoneuOldSchoolLeague.getHistOneDollarB()));
+//    	BigDecimal leagueBudgetOverOneB = new BigDecimal(ottoneuOldSchoolLeague.getHistBudgetPctB()).multiply(new BigDecimal(ottoneuOldSchoolLeague.getHistTotalSpent())).subtract(new BigDecimal(ottoneuOldSchoolLeague.getHistOneDollarB()));
+    	BigDecimal leagueBudgetOverOneB = new BigDecimal(ottoneuOldSchoolLeague.getHistBudgetPctB()).multiply(new BigDecimal(4800)).subtract(new BigDecimal(ottoneuOldSchoolLeague.getHistOneDollarB()));
 
     	// calculate average SGP value of $1 players
     	BigDecimal oneDollarSGPSum = new BigDecimal(0);

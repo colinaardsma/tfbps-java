@@ -74,7 +74,7 @@
 				<h3>Ottoneu Leagues</h3>
 				<div th:if="${not #lists.isEmpty(batterOttoneuOldSchoolLeagues) or not #lists.isEmpty(pitcherOttoneuOldSchoolLeagues)}">
 					<h4 th:text="${currentUser} + '\'s Custom Ottoneu Old School League SGP'"></h4>
-					<form action="/user_ottoneu_old_school_fpprojb" method="post" th:if="${not #lists.isEmpty(batterOttoneuOldSchoolLeagues)}">
+					<form action="/user_ottoneu_old_school_steamerprojb" method="post" th:if="${not #lists.isEmpty(batterOttoneuOldSchoolLeagues)}">
 						<table style="margin:auto">
 							<tr>
 								<td><select name="league">
@@ -85,7 +85,7 @@
 						</table>
 						<br/>
 					</form>
-					<form action="/user_ottoneu_old_school_fpprojp" method="post" th:if="${not #lists.isEmpty(pitcherOttoneuOldSchoolLeagues)}">
+					<form action="/user_ottoneu_old_school_steamerprojp" method="post" th:if="${not #lists.isEmpty(pitcherOttoneuOldSchoolLeagues)}">
 						<table style="margin:auto">
 							<tr>
 								<td><select name="league">
@@ -101,8 +101,8 @@
 				<div th:if="${not #lists.isEmpty(user.ottoneuOldSchoolLeagues)}">
 					<h4>Calculate new Ottoneu Old School League Custom SGPs</h4>
 					<ul class="nav nav-pills">
-						<li style="width:49.9%"><a href="/user_ottoneu_old_school_steamerb">Calculate Batter SGP</a></li>
-						<li style="width:49.9%"><a href="/user_ottoneu_old_school_steamerp">Calculate Pitcher SGP</a></li>
+						<li style="width:49.9%"><a href="/user_ottoneu_old_school_steamerprojb">Calculate Batter SGP</a></li>
+						<li style="width:49.9%"><a href="/user_ottoneu_old_school_steamerprojp">Calculate Pitcher SGP</a></li>
 					</ul>
 					<hr style="width:75%"/>
 				</div>
