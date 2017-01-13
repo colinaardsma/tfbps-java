@@ -74,8 +74,7 @@ public class FVARzMultCalc {
 	// league specific multipliers	
 
 	// https://www.mathsisfun.com/data/standard-deviation-formulas.html
-	public static double calcRzScore(List<Integer> rs, double mean, int run) {
-		List<BigDecimal> zRs = new ArrayList<BigDecimal>();
+	public static double calcRzScore(List<Integer> rs, int run) {
 		BigDecimal sum = new BigDecimal(0);
 		BigDecimal zSum = new BigDecimal(0);
 
@@ -88,11 +87,12 @@ public class FVARzMultCalc {
 			BigDecimal zR = new BigDecimal(r).subtract(mean).pow(2);
 			zSum = zSum.add(zR);
 		}
-		BigDecimal zMean = 
+		BigDecimal zMean = zSum.divide(new BigDecimal(rs.size()), 4, RoundingMode.HALF_UP);
 		
+		BigDecimal stdDev = new BigDecimal(Math.sqrt(zMean.doubleValue()));
 		
-		BigDecimal stdDev = (run - mean)^2
-		BigDecimal rZScore = new BigDecimal(r).subtract(new BigDecimal(mean)).divide(new BigDecimal())  
+		BigDecimal rZScore = new BigDecimal(run).subtract(mean).divide(stdDev);
+		
 		return rZScore.doubleValue();
 	}
 	
