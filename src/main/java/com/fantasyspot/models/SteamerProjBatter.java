@@ -2,6 +2,9 @@ package com.fantasyspot.models;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -66,6 +69,18 @@ public class SteamerProjBatter extends AbstractEntity {
 	// aav
 	private BigDecimal opsTotalAAV;
 	private BigDecimal avgTotalAAV;
+	
+	// FVARz
+	private double r_zScore;
+	private double hr_zScore;
+	private double rbi_zScore;
+	private double sb_zScore;
+	private double ops_zScore;
+	private double avg_zScore;
+	private double opsFVAAz;
+	private double avgFVAAz;
+	private double opsFVARz;
+	private double avgFVARz;
 
 	// other
 	private String category;
@@ -480,7 +495,97 @@ public class SteamerProjBatter extends AbstractEntity {
 		this.avgTotalAAV = avgTotalAAV;
 	}
 
-    @Column(name = "category")
+	@Column(name = "r_zScore")
+    public double getR_zScore() {
+		return r_zScore;
+	}
+
+	public void setR_zScore(double r_zScore) {
+		this.r_zScore = r_zScore;
+	}
+
+	@Column(name = "hr_zScore")
+	public double getHr_zScore() {
+		return hr_zScore;
+	}
+
+	public void setHr_zScore(double hr_zScore) {
+		this.hr_zScore = hr_zScore;
+	}
+
+	@Column(name = "rbi_zScore")
+	public double getRbi_zScore() {
+		return rbi_zScore;
+	}
+
+	public void setRbi_zScore(double rbi_zScore) {
+		this.rbi_zScore = rbi_zScore;
+	}
+
+	@Column(name = "sb_zScore")
+	public double getSb_zScore() {
+		return sb_zScore;
+	}
+
+	public void setSb_zScore(double sb_zScore) {
+		this.sb_zScore = sb_zScore;
+	}
+
+	@Column(name = "ops_zScore")
+	public double getOps_zScore() {
+		return ops_zScore;
+	}
+
+	public void setOps_zScore(double ops_zScore) {
+		this.ops_zScore = ops_zScore;
+	}
+
+	@Column(name = "avg_zScore")
+	public double getAvg_zScore() {
+		return avg_zScore;
+	}
+
+	public void setAvg_zScore(double avg_zScore) {
+		this.avg_zScore = avg_zScore;
+	}
+
+	@Column(name = "opsFVAAz")
+	public double getOpsFVAAz() {
+		return opsFVAAz;
+	}
+
+	public void setOpsFVAAz(double opsFVAAz) {
+		this.opsFVAAz = opsFVAAz;
+	}
+
+	@Column(name = "avgFVAAz")
+	public double getAvgFVAAz() {
+		return avgFVAAz;
+	}
+
+	public void setAvgFVAAz(double avgFVAAz) {
+		this.avgFVAAz = avgFVAAz;
+	}
+
+	@Column(name = "opsFVARz")
+	public double getOpsFVARz() {
+		return opsFVARz;
+	}
+
+	public void setOpsFVARz(double opsFVARz) {
+		this.opsFVARz = opsFVARz;
+	}
+
+	@Column(name = "avgFVARz")
+	public double getAvgFVARz() {
+		return avgFVARz;
+	}
+
+	public void setAvgFVARz(double avgFVARz) {
+		this.avgFVARz = avgFVARz;
+	}
+
+	@Column(name = "category")
 	public String getCategory() {
 		return category;
 	}
@@ -520,6 +625,7 @@ public class SteamerProjBatter extends AbstractEntity {
     	this.keeperCosts = keeperCosts;
     }
 
+    // SGP
     protected void calcOpsSgp(double sgpMultR, double sgpMultHR, double sgpMultRBI, double sgpMultSB, double sgpMultOPS) {
     	BigDecimal r = new BigDecimal(this.r).divide(new BigDecimal(sgpMultR), 4, RoundingMode.HALF_UP);
     	this.rSGP = r.doubleValue();
@@ -647,6 +753,105 @@ public class SteamerProjBatter extends AbstractEntity {
     		counter++;
     	}
     }
+    public void calcFVARz(List<SteamerProjBatter> batterList, String orderedBy) {
+    	int repC = 12;
+    	int rep1B = 23;
+    	int rep2B = 18;
+    	int rep3B = 17;
+    	int repSS = 16;
+    	int repOF = 62;
+    	int repSP = 62;
+    	int repRP = 36;
+    	
+    	if (this.pos.contains("C")) {
+    		replacementLevel(batterList, orderedBy, "C", repC);
+//    		// sort list by user's custom sgp calculation (desc)
+//    		Collections.sort(cList, new Comparator<SteamerProjBatter>() {
+//    			@Override
+//    			public int compare(SteamerProjBatter b1, SteamerProjBatter b2) {
+//    				if (b1.getAvgTotal_zScore() < b2.getAvgTotal_zScore()) return 1;
+//    				if (b1.getAvgTotal_zScore() > b2.getAvgTotal_zScore()) return -1;
+//    				return 0;
+//    			}
+//    		});    		
+    	} else if (this.pos.contains("SS")) {
+    		replacementLevel(batterList, orderedBy, "SS", repSS);
+    	} else if (this.pos.contains("2B")) {
+    		replacementLevel(batterList, orderedBy, "2B", rep2B);
+    	} else if (this.pos.contains("3B")) {
+    		replacementLevel(batterList, orderedBy, "3B", rep3B);
+    	} else if (this.pos.contains("1B")) {
+    		replacementLevel(batterList, orderedBy, "1B", rep1B);
+    	} else if (this.pos.contains("OF")) {
+    		replacementLevel(batterList, orderedBy, "OF", repOF);
+    	}
+    }
+
+    public void replacementLevel(List<SteamerProjBatter> batterList, String orderedBy, String pos, int repLvl) {
+		List<SteamerProjBatter> posList = new ArrayList<SteamerProjBatter>();
+		for (SteamerProjBatter batter : batterList) {
+			if (batter.pos.contains(pos)) {
+				posList.add(batter);
+			}
+		}
+		if (orderedBy.equals("AVG")) {
+    		double repFVAAz = posList.get(repLvl).getAvgFVAAz();
+    		this.avgFVARz = this.avgFVAAz - repFVAAz;
+		} else {
+    		double repFVAAz = posList.get(repLvl).getOpsFVAAz();
+    		this.opsFVARz = this.opsFVAAz - repFVAAz;
+		}
+    }
+    
+    //FVARz
+    public static void calcFVAAz(List<SteamerProjBatter> batterList) {
+    	List<Double> rList = new ArrayList<Double>();
+    	List<Double> rbiList = new ArrayList<Double>();
+    	List<Double> hrList = new ArrayList<Double>();
+    	List<Double> sbList = new ArrayList<Double>();
+    	List<Double> avgList = new ArrayList<Double>();
+    	List<Double> opsList = new ArrayList<Double>();
+
+    	for (SteamerProjBatter batter : batterList) {
+    		rList.add((double) batter.getR());
+    		hrList.add((double) batter.getHr());
+    		rbiList.add((double) batter.getRbi());
+    		sbList.add((double) batter.getSb());
+    		avgList.add(batter.getAvg());
+    		opsList.add(batter.getOps());
+    	}
+    	this.r_zScore = calc_zScore(rList, (double) this.r);
+    	this.hr_zScore = calc_zScore(rbiList, (double) this.hr);
+    	this.rbi_zScore = calc_zScore(hrList, (double) this.rbi);
+    	this.sb_zScore = calc_zScore(sbList, (double) this.sb);
+    	this.avg_zScore = calc_zScore(avgList, this.avg);
+    	this.ops_zScore = calc_zScore(opsList, this.ops);
+    	
+    	this.avgFVAAz = this.r_zScore + this.hr_zScore + this.rbi_zScore + this.sb_zScore + this.avg_zScore; 
+    	this.opsFVAAz = this.r_zScore + this.hr_zScore + this.rbi_zScore + this.sb_zScore + this.ops_zScore; 
+    }
+    
+	private double calc_zScore(List<Double> statList, double stat) {
+		BigDecimal sum = new BigDecimal(0);
+		BigDecimal zSum = new BigDecimal(0);
+
+		for (double s : statList) {
+			sum = sum.add(new BigDecimal(s));
+		}
+		BigDecimal mean = sum.divide(new BigDecimal(statList.size()), 4, RoundingMode.HALF_UP);
+
+		for (double s : statList) {
+			BigDecimal zS = new BigDecimal(s).subtract(mean).pow(2);
+			zSum = zSum.add(zS);
+		}
+		BigDecimal zMean = zSum.divide(new BigDecimal(statList.size()), 4, RoundingMode.HALF_UP);
+		
+		BigDecimal stdDev = new BigDecimal(Math.sqrt(zMean.doubleValue()));
+		BigDecimal stat_zScore = new BigDecimal(stat).subtract(mean).divide(stdDev);
+		
+		return stat_zScore.doubleValue();
+	}
+	
 
 
 }

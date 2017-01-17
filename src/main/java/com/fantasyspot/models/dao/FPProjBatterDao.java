@@ -16,6 +16,8 @@ public interface FPProjBatterDao extends CrudRepository<FPProjBatter, Integer> {
 	List<FPProjBatter> findAll(); // get all players
 	List<FPProjBatter> findAllByOrderByOpsTotalSGPDesc();
 	List<FPProjBatter> findAllByOrderByAvgTotalSGPDesc();
+	List<FPProjBatter> findAllByOrderByAvgFVAAzDesc();
+	List<FPProjBatter> findAllByOrderByOpsFVAAzDesc();
 	
 	List<FPProjBatter> findByTeam(String team); // get players on a team
 	FPProjBatter findByName(String name); // get object with name only

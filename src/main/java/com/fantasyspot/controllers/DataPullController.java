@@ -129,7 +129,24 @@ public class DataPullController extends AbstractController {
 			b.calcAvgAav(batterList);
 			fpProjBatterDao.save(b);
 		}
+		
+		// calc FVAAz and save
+		for (FPProjBatter b : avgBatterList) {
+			b.calcFVAAz(batterList);
+			fpProjBatterDao.save(b);
+		}
+		
+		// create lists to calculate FVARz
+		List<FPProjBatter> opsFVARzList = fpProjBatterDao.findAllByOrderByAvgFVAAzDesc();
+		List<FPProjBatter> avgFVARzList = fpProjBatterDao.findAllByOrderByOpsFVAAzDesc();
 
+		// calc FVARz and save
+		calcFVARz(batterList, "AVG");
+		calcFVARz(batterList, "OPS");
+		// copy this method from steamer to fp
+		// need to get POS data into steamer (cross reference?)
+		
+		
         return "redirect:fpprojb";
     }
 	
