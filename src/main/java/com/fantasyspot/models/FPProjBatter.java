@@ -76,15 +76,15 @@ public class FPProjBatter extends AbstractEntity {
 	
 	// aav calculation variables
 	// player pool
-	int draftedB = 154; // total batters taken
-	int oneDollarB = 45; // total $1 batters taken
-	int draftedBOverOneDollar = draftedB - oneDollarB; // total batters taken minus $1 batters taken
-	int teamBudget = 260; // total budget per team
-	int teamCount = 12; // total teams in league
-	double budgetPctB = 0.65; // % of league budget spent on batters
+	private int draftedB = 154; // total batters taken
+	private int oneDollarB = 45; // total $1 batters taken
+	private int draftedBOverOneDollar = draftedB - oneDollarB; // total batters taken minus $1 batters taken
+	private int teamBudget = 260; // total budget per team
+	private int teamCount = 12; // total teams in league
+	private double budgetPctB = 0.65; // % of league budget spent on batters
 	
 	// total league budget (with $1 players taken out)
-	BigDecimal leagueBudgetOverOneB = new BigDecimal(budgetPctB).multiply(new BigDecimal(teamBudget).multiply(new BigDecimal(teamCount))).subtract(new BigDecimal(oneDollarB));
+	private BigDecimal leagueBudgetOverOneB = new BigDecimal(budgetPctB).multiply(new BigDecimal(teamBudget).multiply(new BigDecimal(teamCount))).subtract(new BigDecimal(oneDollarB));
 
 	public FPProjBatter(String name, String team, String pos, int ab, int r, int hr, int rbi, int sb, double avg, double obp, int h, int dbl, int tpl, int bb, int k, double slg, double ops, String category) {
 		this.name = name;
@@ -651,8 +651,8 @@ public class FPProjBatter extends AbstractEntity {
     	int rep3B = 17;
     	int repSS = 16;
     	int repOF = 62;
-    	int repSP = 62;
-    	int repRP = 36;
+//    	int repSP = 62;
+//    	int repRP = 36;
     	
     	if (this.pos.contains("C")) {
     		replacementLevel(batterList, orderedBy, "C", repC);
@@ -681,7 +681,11 @@ public class FPProjBatter extends AbstractEntity {
     public void replacementLevel(List<FPProjBatter> batterList, String orderedBy, String pos, int repLvl) {
 		List<FPProjBatter> posList = new ArrayList<FPProjBatter>();
 		for (FPProjBatter batter : batterList) {
-			if (batter.pos.contains(pos)) {
+			if (pos.equals("OF")) {
+				if (batter.pos.contains(pos) || batter.pos.contains("LF") || batter.pos.contains("CF") || batter.pos.contains("RF")) {
+					posList.add(batter);
+				}
+			} else if (batter.pos.contains(pos)) {
 				posList.add(batter);
 			}
 		}
@@ -693,6 +697,13 @@ public class FPProjBatter extends AbstractEntity {
     		this.opsFVARz = this.opsFVAAz - repFVAAz;
 		}
     }
+    
+    
+    //http://www.fangraphs.com/plus/auction-values-for-all-three-ottoneu-formats/
+    //http://www.fangraphs.com/fantasy/value-above-replacement-part-one/
+    //http://www.fangraphs.com/fantasy/value-above-replacement-part-two/
+    //https://www.mathsisfun.com/data/standard-deviation-formulas.html
+    //http://fantasybaseballcalculator.webs.com/how-does-it-work
     
     //FVARz
     public void calcFVAAz(List<FPProjBatter> batterList) {
@@ -738,7 +749,7 @@ public class FPProjBatter extends AbstractEntity {
 		BigDecimal zMean = zSum.divide(new BigDecimal(statList.size()), 4, RoundingMode.HALF_UP);
 		
 		BigDecimal stdDev = new BigDecimal(Math.sqrt(zMean.doubleValue()));
-		BigDecimal stat_zScore = new BigDecimal(stat).subtract(mean).divide(stdDev);
+		BigDecimal stat_zScore = new BigDecimal(stat).subtract(mean).divide(stdDev, 4, RoundingMode.HALF_UP);
 		
 		return stat_zScore.doubleValue();
 	}

@@ -466,7 +466,7 @@ public class YahooDataController extends AbstractController {
 				Element teamElement = (Element) teamNode;
 				if (teamElement.getElementsByTagName("auction_budget_total").item(0) != null) {
 					auctionBudget = Integer.parseInt(teamElement.getElementsByTagName("auction_budget_total").item(0).getTextContent());
-
+					
 					for (int j = 0; j < teamList.getLength(); j++) {
 						Node teamListNode = teamList.item(j);
 						Element teamListElement = (Element) teamListNode;

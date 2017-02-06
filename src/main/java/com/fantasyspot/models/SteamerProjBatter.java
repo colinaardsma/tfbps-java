@@ -3,8 +3,6 @@ package com.fantasyspot.models;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -92,15 +90,15 @@ public class SteamerProjBatter extends AbstractEntity {
 	
 	// aav calculation variables
 	// player pool
-	int draftedB = 154; // total batters taken
-	int oneDollarB = 45; // total $1 batters taken
-	int draftedBOverOneDollar = draftedB - oneDollarB; // total batters taken minus $1 batters taken
-	int teamBudget = 260; // total budget per team
-	int teamCount = 12; // total teams in league
-	double budgetPctB = 0.65; // % of league budget spent on batters
+	private int draftedB = 154; // total batters taken
+	private int oneDollarB = 45; // total $1 batters taken
+	private int draftedBOverOneDollar = draftedB - oneDollarB; // total batters taken minus $1 batters taken
+	private int teamBudget = 260; // total budget per team
+	private int teamCount = 12; // total teams in league
+	private double budgetPctB = 0.65; // % of league budget spent on batters
 	
 	// total league budget (with $1 players taken out)
-	BigDecimal leagueBudgetOverOneB = new BigDecimal(budgetPctB).multiply(new BigDecimal(teamBudget).multiply(new BigDecimal(teamCount))).subtract(new BigDecimal(oneDollarB));
+	private BigDecimal leagueBudgetOverOneB = new BigDecimal(budgetPctB).multiply(new BigDecimal(teamBudget).multiply(new BigDecimal(teamCount))).subtract(new BigDecimal(oneDollarB));
 
 	public SteamerProjBatter(String name, String team, String playerId, int g, int pa, int ab, int h, int dbl,
 			int tpl, int hr, int r, int rbi, int bb, int k, int hbp, int sb, int cs, double avg, double obp, double slg,
@@ -760,8 +758,8 @@ public class SteamerProjBatter extends AbstractEntity {
     	int rep3B = 17;
     	int repSS = 16;
     	int repOF = 62;
-    	int repSP = 62;
-    	int repRP = 36;
+//    	int repSP = 62;
+//    	int repRP = 36;
     	
     	if (this.pos.contains("C")) {
     		replacementLevel(batterList, orderedBy, "C", repC);
@@ -804,7 +802,7 @@ public class SteamerProjBatter extends AbstractEntity {
     }
     
     //FVARz
-    public static void calcFVAAz(List<SteamerProjBatter> batterList) {
+    public void calcFVAAz(List<SteamerProjBatter> batterList) {
     	List<Double> rList = new ArrayList<Double>();
     	List<Double> rbiList = new ArrayList<Double>();
     	List<Double> hrList = new ArrayList<Double>();
