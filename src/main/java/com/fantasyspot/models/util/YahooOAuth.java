@@ -44,7 +44,7 @@ public class YahooOAuth {
 		String signature_method = "HMAC-SHA1";
 		String version = "1.0";
 		String lang_pref = "en-us";
-		String callback = "http://localhost:8080/yahoolinkaccount";
+		String callback = "http://104.131.23.126:8080/yahoolinkaccount";
 		
 		// build map of parameters for oauth normalization
 		Map<String,String> paramMap = new HashMap<String,String>();
