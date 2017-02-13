@@ -60,7 +60,11 @@ public class FPProjBatter extends AbstractEntity {
 	private double rbi_zScore;
 	private double sb_zScore;
 	private double ops_zScore;
+	private double wOPS;
+	private double wOPS_zScore;
 	private double avg_zScore;
+	private double wAVG;
+	private double wAVG_zScore;
 	private double opsFVAAz;
 	private double avgFVAAz;
 	private double opsFVARz;
@@ -426,6 +430,24 @@ public class FPProjBatter extends AbstractEntity {
 		this.ops_zScore = ops_zScore;
 	}
 
+	@Column(name = "wops")
+	public double getWOPS() {
+		return wOPS;
+	}
+
+	public void setWOPS(double wOPS) {
+		this.wOPS = wOPS;
+	}
+
+	@Column(name = "wops_zScore")
+	public double getWOPS_zScore() {
+		return wOPS_zScore;
+	}
+
+	public void setWOPS_zScore(double wOPS_zScore) {
+		this.wOPS_zScore = wOPS_zScore;
+	}
+
 	@Column(name = "avg_zScore")
 	public double getAvg_zScore() {
 		return avg_zScore;
@@ -433,6 +455,24 @@ public class FPProjBatter extends AbstractEntity {
 
 	public void setAvg_zScore(double avg_zScore) {
 		this.avg_zScore = avg_zScore;
+	}
+
+	@Column(name = "wavg")
+	public double getWAVG() {
+		return wAVG;
+	}
+
+	public void setWAVG(double wAVG) {
+		this.wAVG = wAVG;
+	}
+
+	@Column(name = "wavg_zScore")
+	public double getWAVG_zScore() {
+		return wAVG_zScore;
+	}
+
+	public void setWAVG_zScore(double wAVG_zScore) {
+		this.wAVG_zScore = wAVG_zScore;
 	}
 
 	@Column(name = "opsFVAAz")
@@ -644,6 +684,83 @@ public class FPProjBatter extends AbstractEntity {
     	}
     }
     
+    //http://www.fangraphs.com/plus/auction-values-for-all-three-ottoneu-formats/
+    //http://www.fangraphs.com/fantasy/value-above-replacement-part-one/
+    //http://www.fangraphs.com/fantasy/value-above-replacement-part-two/
+    //https://www.mathsisfun.com/data/standard-deviation-formulas.html
+    //http://fantasybaseballcalculator.webs.com/how-does-it-work
+    
+    //FVARz
+	private double calc_zScore(List<Double> statList, double stat) {
+		BigDecimal sum = new BigDecimal(0);
+		BigDecimal zSum = new BigDecimal(0);
+
+		for (double s : statList) {
+			sum = sum.add(new BigDecimal(s));
+		}
+		BigDecimal mean = sum.divide(new BigDecimal(statList.size()), 4, RoundingMode.HALF_UP);
+
+		for (double s : statList) {
+			BigDecimal zS = new BigDecimal(s).subtract(mean).pow(2);
+			zSum = zSum.add(zS);
+		}
+		BigDecimal zMean = zSum.divide(new BigDecimal(statList.size()), 4, RoundingMode.HALF_UP);
+		
+		BigDecimal stdDev = new BigDecimal(Math.sqrt(zMean.doubleValue()));
+		BigDecimal stat_zScore = new BigDecimal(stat).subtract(mean).divide(stdDev, 4, RoundingMode.HALF_UP);
+		
+		return stat_zScore.doubleValue();
+	}
+	
+    public void calcFVAAz(List<FPProjBatter> batterList) {
+    	List<Double> rList = new ArrayList<Double>();
+    	List<Double> rbiList = new ArrayList<Double>();
+    	List<Double> hrList = new ArrayList<Double>();
+    	List<Double> sbList = new ArrayList<Double>();
+    	List<Double> avgList = new ArrayList<Double>();
+    	List<Double> opsList = new ArrayList<Double>();
+
+    	for (FPProjBatter batter : batterList) {
+    		rList.add((double) batter.getR());
+    		hrList.add((double) batter.getHr());
+    		rbiList.add((double) batter.getRbi());
+    		sbList.add((double) batter.getSb());
+    		avgList.add(batter.getAvg());
+    		opsList.add(batter.getOps());
+    	}
+    	this.r_zScore = calc_zScore(rList, (double) this.r);
+    	this.hr_zScore = calc_zScore(rbiList, (double) this.hr);
+    	this.rbi_zScore = calc_zScore(hrList, (double) this.rbi);
+    	this.sb_zScore = calc_zScore(sbList, (double) this.sb);
+    	this.avg_zScore = calc_zScore(avgList, this.avg);
+    	this.wAVG = this.avg_zScore * this.ab;
+    	this.ops_zScore = calc_zScore(opsList, this.ops);
+    	this.wOPS = this.ops_zScore * this.ab;
+    	
+    	this.avgFVAAz = this.r_zScore + this.hr_zScore + this.rbi_zScore + this.sb_zScore + this.avg_zScore; 
+    	this.opsFVAAz = this.r_zScore + this.hr_zScore + this.rbi_zScore + this.sb_zScore + this.ops_zScore; 
+    }
+    
+    public void replacementLevel(List<FPProjBatter> batterList, String orderedBy, String pos, int repLvl) {
+		List<FPProjBatter> posList = new ArrayList<FPProjBatter>();
+		for (FPProjBatter batter : batterList) {
+			if (pos.equals("OF")) {
+				if (batter.pos.contains(pos) || batter.pos.contains("LF") || batter.pos.contains("CF") || batter.pos.contains("RF")) {
+					posList.add(batter);
+				}
+			} else if (batter.pos.contains(pos)) {
+				posList.add(batter);
+			}
+		}
+		if (orderedBy.equals("AVG")) {
+    		double repFVAAz = posList.get(repLvl).getAvgFVAAz();
+    		this.avgFVARz = this.avgFVAAz - repFVAAz;
+		} else {
+    		double repFVAAz = posList.get(repLvl).getOpsFVAAz();
+    		this.opsFVARz = this.opsFVAAz - repFVAAz;
+		}
+    }
+    
     public void calcFVARz(List<FPProjBatter> batterList, String orderedBy) {
     	int repC = 12;
     	int rep1B = 23;
@@ -677,81 +794,12 @@ public class FPProjBatter extends AbstractEntity {
     		replacementLevel(batterList, orderedBy, "OF", repOF);
     	}
     }
-
-    public void replacementLevel(List<FPProjBatter> batterList, String orderedBy, String pos, int repLvl) {
-		List<FPProjBatter> posList = new ArrayList<FPProjBatter>();
-		for (FPProjBatter batter : batterList) {
-			if (pos.equals("OF")) {
-				if (batter.pos.contains(pos) || batter.pos.contains("LF") || batter.pos.contains("CF") || batter.pos.contains("RF")) {
-					posList.add(batter);
-				}
-			} else if (batter.pos.contains(pos)) {
-				posList.add(batter);
-			}
-		}
-		if (orderedBy.equals("AVG")) {
-    		double repFVAAz = posList.get(repLvl).getAvgFVAAz();
-    		this.avgFVARz = this.avgFVAAz - repFVAAz;
-		} else {
-    		double repFVAAz = posList.get(repLvl).getOpsFVAAz();
-    		this.opsFVARz = this.opsFVAAz - repFVAAz;
-		}
+    
+    public void weightedOPSAVG(List<Double> opsList, List<Double> avgList) {
+		this.wOPS_zScore = this.calc_zScore(opsList,this.wOPS);
+		this.opsFVAAz = this.ops_zScore + wOPS_zScore;
+		this.wAVG_zScore = this.calc_zScore(avgList,this.wAVG);
+		this.avgFVAAz = this.avg_zScore + wAVG_zScore;
     }
-    
-    
-    //http://www.fangraphs.com/plus/auction-values-for-all-three-ottoneu-formats/
-    //http://www.fangraphs.com/fantasy/value-above-replacement-part-one/
-    //http://www.fangraphs.com/fantasy/value-above-replacement-part-two/
-    //https://www.mathsisfun.com/data/standard-deviation-formulas.html
-    //http://fantasybaseballcalculator.webs.com/how-does-it-work
-    
-    //FVARz
-    public void calcFVAAz(List<FPProjBatter> batterList) {
-    	List<Double> rList = new ArrayList<Double>();
-    	List<Double> rbiList = new ArrayList<Double>();
-    	List<Double> hrList = new ArrayList<Double>();
-    	List<Double> sbList = new ArrayList<Double>();
-    	List<Double> avgList = new ArrayList<Double>();
-    	List<Double> opsList = new ArrayList<Double>();
-
-    	for (FPProjBatter batter : batterList) {
-    		rList.add((double) batter.getR());
-    		hrList.add((double) batter.getHr());
-    		rbiList.add((double) batter.getRbi());
-    		sbList.add((double) batter.getSb());
-    		avgList.add(batter.getAvg());
-    		opsList.add(batter.getOps());
-    	}
-    	this.r_zScore = calc_zScore(rList, (double) this.r);
-    	this.hr_zScore = calc_zScore(rbiList, (double) this.hr);
-    	this.rbi_zScore = calc_zScore(hrList, (double) this.rbi);
-    	this.sb_zScore = calc_zScore(sbList, (double) this.sb);
-    	this.avg_zScore = calc_zScore(avgList, this.avg);
-    	this.ops_zScore = calc_zScore(opsList, this.ops);
-    	
-    	this.avgFVAAz = this.r_zScore + this.hr_zScore + this.rbi_zScore + this.sb_zScore + this.avg_zScore; 
-    	this.opsFVAAz = this.r_zScore + this.hr_zScore + this.rbi_zScore + this.sb_zScore + this.ops_zScore; 
-    }
-    
-	private double calc_zScore(List<Double> statList, double stat) {
-		BigDecimal sum = new BigDecimal(0);
-		BigDecimal zSum = new BigDecimal(0);
-
-		for (double s : statList) {
-			sum = sum.add(new BigDecimal(s));
-		}
-		BigDecimal mean = sum.divide(new BigDecimal(statList.size()), 4, RoundingMode.HALF_UP);
-
-		for (double s : statList) {
-			BigDecimal zS = new BigDecimal(s).subtract(mean).pow(2);
-			zSum = zSum.add(zS);
-		}
-		BigDecimal zMean = zSum.divide(new BigDecimal(statList.size()), 4, RoundingMode.HALF_UP);
-		
-		BigDecimal stdDev = new BigDecimal(Math.sqrt(zMean.doubleValue()));
-		BigDecimal stat_zScore = new BigDecimal(stat).subtract(mean).divide(stdDev, 4, RoundingMode.HALF_UP);
-		
-		return stat_zScore.doubleValue();
-	}
 	
 }

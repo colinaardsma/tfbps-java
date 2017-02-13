@@ -140,7 +140,7 @@ public class DataPullController extends AbstractController {
 		List<FPProjBatter> opsFVARzList = fpProjBatterDao.findAllByOrderByAvgFVAAzDesc();
 		List<FPProjBatter> avgFVARzList = fpProjBatterDao.findAllByOrderByOpsFVAAzDesc();
 
-		// erase second list, add avg data, and pass into aav calculation method
+		// erase second list, add avg data, and pass into FVARz calculation method
 		batterList = new ArrayList<FPProjBatter>();
 		batterList.addAll(opsFVARzList);
 		
@@ -150,7 +150,7 @@ public class DataPullController extends AbstractController {
 			fpProjBatterDao.save(batter);
 		}
 
-		// erase second list, add avg data, and pass into aav calculation method
+		// erase second list, add avg data, and pass into FVARz calculation method
 		batterList = new ArrayList<FPProjBatter>();
 		batterList.addAll(avgFVARzList);
 		
@@ -159,6 +159,23 @@ public class DataPullController extends AbstractController {
 			batter.calcFVARz(batterList, "AVG");
 			fpProjBatterDao.save(batter);
 		}
+		
+		// calc weighted OPS and AVG
+		List<Double> opsList = new ArrayList<Double>();
+		for (FPProjBatter batter : batterList) {
+			opsList.add(batter.getWOPS());
+		}
+		List<Double> avgList = new ArrayList<Double>();
+		for (FPProjBatter batter : batterList) {
+			avgList.add(batter.getWAVG());
+		}
+
+		for (FPProjBatter batter : avgFVARzList) {
+			batter.weightedOPSAVG(opsList, avgList);
+			fpProjBatterDao.save(batter);
+		}
+
+
 		// copy these methods from fp to steamer
 		// need to get POS data into steamer (cross reference?)
 		
